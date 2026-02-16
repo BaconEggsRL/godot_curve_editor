@@ -5,23 +5,6 @@ extends Resource
 const MIN_X_RANGE: float = 0.01
 const MIN_Y_RANGE: float = 0.01
 
-#class Point extends Resource:
-	#var position: Vector2 = Vector2.ZERO
-	#var left_tangent: float = 0.0
-	#var right_tangent: float = 0.0
-	#var left_mode: TangentMode = TangentMode.TANGENT_FREE
-	#var right_mode: TangentMode = TangentMode.TANGENT_FREE
-#
-	#func _init(pos: Vector2 = Vector2.ZERO, l_tan: float = 0.0, r_tan: float = 0.0,
-			   #l_mode: TangentMode = TangentMode.TANGENT_FREE,
-			   #r_mode: TangentMode = TangentMode.TANGENT_FREE) -> void:
-		#position = pos
-		#left_tangent = l_tan
-		#right_tangent = r_tan
-		#left_mode = l_mode
-		#right_mode = r_mode
-
-
 var _min_domain: float = 0.0
 var _max_domain: float = 1.0
 var _min_value: float = 0.0
@@ -32,6 +15,9 @@ var _points: Array[Point] = []
 signal range_changed
 signal domain_changed
 signal bake_resolution_changed
+
+@export_group("Curve Editor")
+@export var bacon_curve_editor:bool
 
 @export_group("Settings")
 @export_range(-1024, 1024, 0.01, "or_less") var min_domain:float=0.0: get = get_min_domain, set = set_min_domain

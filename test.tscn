@@ -4,18 +4,48 @@
 [ext_resource type="Script" uid="uid://cxmmenoobxiyp" path="res://point.gd" id="2_6uqi0"]
 [ext_resource type="Script" uid="uid://c10cjby72qngf" path="res://bacon_curve.gd" id="2_8uh7m"]
 
-[sub_resource type="Resource" id="Resource_6uqi0"]
-script = ExtResource("2_6uqi0")
-metadata/_custom_type_script = "uid://cxmmenoobxiyp"
-
 [sub_resource type="Resource" id="Resource_ppyta"]
 script = ExtResource("2_8uh7m")
-points = Array[ExtResource("2_6uqi0")]([SubResource("Resource_6uqi0")])
 metadata/_custom_type_script = "uid://c10cjby72qngf"
 
 [sub_resource type="Curve" id="Curve_ykrsh"]
 _data = [Vector2(0, 0), 0.0, 0.0, 0, 0, Vector2(1, 1), 0.0, 0.0, 0, 0]
 point_count = 2
+
+[sub_resource type="Animation" id="Animation_6uqi0"]
+length = 0.001
+tracks/0/type = "bezier"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:rotation")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"handle_modes": PackedInt32Array(0),
+"points": PackedFloat32Array(0, -0.25, 0, 0.25, 0),
+"times": PackedFloat32Array(0)
+}
+
+[sub_resource type="Animation" id="Animation_ppyta"]
+resource_name = "new_animation"
+step = 0.0333333
+tracks/0/type = "bezier"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:rotation")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"handle_modes": PackedInt32Array(0, 2, 0),
+"points": PackedFloat32Array(0, -0.25, 0, 0.33333334, 0.54609036, 0.48040503, -0.10084182, -0.1887792, 0.099999964, 0.18720323, 1, -0.3, -0.6706712, 0, 0),
+"times": PackedFloat32Array(0, 0.53333336, 1)
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_ykrsh"]
+_data = {
+&"RESET": SubResource("Animation_6uqi0"),
+&"new_animation": SubResource("Animation_ppyta")
+}
 
 [node name="Test" type="Control" unique_id=198225181]
 layout_mode = 3
@@ -27,3 +57,6 @@ grow_vertical = 2
 script = ExtResource("1_37kl0")
 bacon_curve = SubResource("Resource_ppyta")
 curve = SubResource("Curve_ykrsh")
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="." unique_id=2040447065]
+libraries/ = SubResource("AnimationLibrary_ykrsh")

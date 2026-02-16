@@ -15,6 +15,10 @@ run/main_scene="uid://bkkl6rrr0brp7"
 config/features=PackedStringArray("4.6", "GL Compatibility")
 config/icon="res://icon.svg"
 
+[editor_plugins]
+
+enabled=PackedStringArray("res://addons/easing_curve/plugin.cfg")
+
 [physics]
 
 3d/physics_engine="Jolt Physics"
