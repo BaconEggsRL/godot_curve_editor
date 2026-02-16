@@ -4,8 +4,18 @@
 [ext_resource type="Script" uid="uid://cxmmenoobxiyp" path="res://point.gd" id="2_6uqi0"]
 [ext_resource type="Script" uid="uid://c10cjby72qngf" path="res://bacon_curve.gd" id="3_ppyta"]
 
+[sub_resource type="Resource" id="Resource_ppyta"]
+script = ExtResource("2_6uqi0")
+position = Vector2(0.2173913, 0.03191483)
+right_tangent = -1.2136170014935002
+
+[sub_resource type="Resource" id="Resource_ykrsh"]
+script = ExtResource("2_6uqi0")
+position = Vector2(0.76086956, 0.6914893)
+
 [sub_resource type="Resource" id="Resource_6uqi0"]
 script = ExtResource("3_ppyta")
+points = Array[ExtResource("2_6uqi0")]([SubResource("Resource_ppyta"), SubResource("Resource_ykrsh")])
 metadata/_custom_type_script = "uid://c10cjby72qngf"
 
 [sub_resource type="Curve" id="Curve_ppyta"]
