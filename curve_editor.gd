@@ -41,31 +41,34 @@ var _world_to_view: Transform2D
 
 var _editor_scale: float = 1.0
 
+
+
 func _ready() -> void:
 	focus_mode = Control.FOCUS_ALL
 	clip_contents = true
-	
-	_editor_scale = EditorInterface.get_editor_scale()
-	
+
+	if Engine.is_editor_hint():
+		_editor_scale = EditorInterface.get_editor_scale()
+
 	if _curve == null:
 		_curve = Curve.new()
 		_curve.range_changed.connect(_on_curve_changed)
-		
+
 func _on_curve_changed() -> void:
 	queue_redraw()
 	if selected_index >= _curve.point_count:
 		set_selected_index(-1)
-		
+
 func get_data() -> Curve:
 	return _curve
-	
+
 func set_curve(curve: Curve):
 	_curve = curve
 	queue_redraw()
 
 
 func _get_minimum_size() -> Vector2:
-	return Vector2(64, max(35, size.x * ASPECT_RATIO) * EditorInterface.get_editor_scale())
+	return Vector2(64, max(35, size.x * ASPECT_RATIO) * _editor_scale)
 
 
 func _notification(what: int) -> void:
@@ -76,7 +79,7 @@ func _notification(what: int) -> void:
 				hovered_tangent_index = TangentIndex.NONE
 				set_selected_index(-1)
 				queue_redraw()
-				
+
 			#if selected_index != -1 and grabbing != GrabMode.NONE:
 				# FIXME: If the mouse moves out we want to clear out hover, but holding left click causes an error
 			#	grabbing = GrabMode.NONE
@@ -107,7 +110,7 @@ func _gui_input(event: InputEvent) -> void:
 		return
 
 	#var is_command_or_control_pressed: bool = false
-	
+
 	if event is InputEventKey:
 		if event.pressed and event.keycode == KEY_DELETE:
 			if selected_tangent_index != TangentIndex.NONE:
@@ -118,16 +121,16 @@ func _gui_input(event: InputEvent) -> void:
 					set_selected_index(-1)
 				else:
 					remove_point(selected_index)
-			
+
 				grabbing = GrabMode.NONE
 				hovered_index = -1
 				hovered_tangent_index = TangentIndex.NONE
-			
+
 			accept_event()
-		
+
 		if event.keycode == KEY_SHIFT or event.keycode == KEY_ALT:
 			queue_redraw()  # redraw to show the axes or constraints
-	
+
 	if event is InputEventMouseButton and event.pressed:
 		var mpos: Vector2 = event.position
 
@@ -152,38 +155,38 @@ func _gui_input(event: InputEvent) -> void:
 							_curve.remove_point(point_to_remove)
 							set_selected_index(-1)
 						else:
-							remove_point(point_to_remove) 
-							
+							remove_point(point_to_remove)
+
 						hovered_index = get_point_at(mpos)
 						grabbing = GrabMode.NONE
-		
+
 		# SELECTING OR CREATING POINTS
 		if event.button_index == MOUSE_BUTTON_LEFT:
 			if grabbing == GrabMode.NONE:
 				selected_tangent_index = get_tangent_at(mpos)
 				if selected_tangent_index == TangentIndex.NONE:
 					set_selected_index(get_point_at(mpos))
-				
+
 				queue_redraw()
-		
+
 			if selected_index != -1:
 				grabbing = GrabMode.MOVE
 				initial_grab_pos = _curve.get_point_position(selected_index)
 				initial_grab_index = selected_index
-				
+
 				if selected_index > 0:
 					initial_grab_left_tangent = _curve.get_point_left_tangent(selected_index)
 				if selected_index < _curve.point_count - 1:
 					initial_grab_right_tangent = _curve.get_point_right_tangent(selected_index)
-					
+
 			elif grabbing == GrabMode.NONE:
 				var new_pos: Vector2 = get_world_pos(mpos).clamp(Vector2(0, _curve.min_value), Vector2(1.0, _curve.max_value))
 				if snap_enabled or event.is_command_or_control_pressed():
 					new_pos.x = snappedf(new_pos.x, 1.0 / snap_count)
 					new_pos.y = snappedf(new_pos.y, 1.0 / snap_count)
-					
+
 				new_pos.x = get_offset_without_collision(selected_index, new_pos.x, mpos.x >= get_view_pos(new_pos).x)
-		
+
 				var new_idx: int = _curve.add_point(new_pos)
 				set_selected_index(new_idx)
 				grabbing = GrabMode.ADD
@@ -209,64 +212,64 @@ func _gui_input(event: InputEvent) -> void:
 			_curve.remove_point(selected_index)
 			add_point(new_pos)
 			grabbing = GrabMode.NONE
-		
+
 		queue_redraw()
-			
+
 	if event is InputEventMouseMotion:
 		var mpos: Vector2 = event.position
-		
+
 		if grabbing != GrabMode.NONE:
 			if selected_index != -1:
 				# Dragging a point
 				if selected_tangent_index == TangentIndex.NONE:
 					var new_pos: Vector2 = get_world_pos(mpos).clamp(Vector2(0.0, _curve.min_value), Vector2(1.0, _curve.max_value))
-					
+
 					if snap_enabled or event.is_command_or_control_pressed():
 						new_pos.x = snappedf(new_pos.x, 1.0 / snap_count)
 						new_pos.y = snappedf(new_pos.y - _curve.min_value, (_curve.max_value - _curve.min_value) / snap_count) + _curve.min_value
-					
+
 					if event.is_shift_pressed():
 						var initial_mpos: Vector2 = get_view_pos(initial_grab_pos)
 						if abs(mpos.x - initial_mpos.x) > abs(mpos.y - initial_mpos.y):
 							new_pos.y = initial_grab_pos.y
 						else:
 							new_pos.x = initial_grab_pos.x
-					
+
 					if event.is_alt_pressed():
 						var prev_point_offset: float = (_curve.get_point_position(selected_index - 1).x + 0.00001) if (selected_index > 0) else 0.0
 						var next_point_offset: float = (_curve.get_point_position(selected_index + 1).x - 0.00001) if (selected_index < _curve.point_count - 1) else 1.0
 						new_pos.x = clamp(new_pos.x, prev_point_offset, next_point_offset)
-						
+
 					new_pos.x = get_offset_without_collision(selected_index, new_pos.x, mpos.x >= get_view_pos(new_pos).x)
-					
+
 					var i: int = _curve.set_point_offset(selected_index, new_pos.x)
 					hovered_index = i
 					set_selected_index(i)
-					
+
 					new_pos.y = clamp(new_pos.y, _curve.min_value, _curve.max_value)
 					_curve.set_point_value(i, new_pos.y)
-					
+
 				else:
 					# Drag a tangent
 					var new_pos: Vector2 = _curve.get_point_position(selected_index)
 					var control_pos: Vector2 = get_world_pos(mpos)
-					
+
 					var dir: Vector2 = (control_pos - new_pos).normalized()
 					var tangent = dir.y / (max(dir.x, 0.00001) if dir.x > 0 else min(dir.x, -0.00001))
-					
+
 					hovered_tangent_index = selected_tangent_index
-					
+
 					if selected_tangent_index == TangentIndex.LEFT:
 						_curve.set_point_left_tangent(selected_index, tangent)
-					
+
 						if selected_index != _curve.point_count - 1  and _curve.get_point_right_mode(selected_index) != _curve.TANGENT_LINEAR:
 							_curve.set_point_right_tangent(selected_index, initial_grab_right_tangent if event.is_shift_pressed() else tangent)
 					else:
 						_curve.set_point_right_tangent(selected_index, tangent)
-						
+
 						if selected_index != 0 and _curve.get_point_left_tangent(selected_index) != _curve.TANGENT_LINEAR:
 							_curve.set_point_left_tangent(selected_index, initial_grab_left_tangent if event.is_shift_pressed() else tangent)
-					
+
 					queue_redraw()
 		else:
 			# Grab mode is none, so do hovering logic
@@ -278,7 +281,7 @@ func _gui_input(event: InputEvent) -> void:
 func update_view_transform() -> void:
 	var font: Font = get_theme_font("name", "Label")
 	var font_size: int = get_theme_font_size("font_size", "Label")
-	
+
 	var margin = font.get_height(font_size) + 2 * _editor_scale
 
 	var min_y: float = _curve.min_value
@@ -288,21 +291,21 @@ func update_view_transform() -> void:
 	var view_margin: Vector2 = Vector2(margin, margin)
 	var view_size: Vector2 = size - view_margin * 2
 	var view_scale = view_size / world_rect.size
-	
+
 	var world_trans: Transform2D
-	
+
 	world_trans = world_trans.translated_local(-world_rect.position - Vector2(0, world_rect.size.y))
 	world_trans = world_trans.scaled(Vector2(view_scale.x, -view_scale.y))
-	 
+
 	var view_trans: Transform2D
 	view_trans = view_trans.translated_local(view_margin)
-	
+
 	_world_to_view = view_trans * world_trans
 
 
 func _curve_changed() -> void:
 	queue_redraw()
-	
+
 	if selected_index >= _curve.point_count:
 		set_selected_index(-1)
 
@@ -320,20 +323,20 @@ func get_world_pos(view_pos: Vector2) -> Vector2:
 func get_point_at(pos: Vector2) -> int:
 	if _curve == null:
 		return -1
-	
+
 	var hover_rect: Rect2 = Rect2(pos, Vector2(0, 0)).grow(hover_radius)
 	var closest_idx = -1
 	var closest_dist_squared: float = hover_radius * hover_radius * 2
-	
+
 	for i in range(_curve.point_count):
 		var p: Vector2 = get_view_pos(_curve.get_point_position(i))
 		if hover_rect.has_point(p) && p.distance_squared_to(pos) < closest_dist_squared:
 			closest_dist_squared = p.distance_squared_to(pos)
 			closest_idx = i
-	
+
 	#for i in range(_curve.point_count):
 	#	var p: Vector2 = get_view_pos(_curve.get_point_position(i))
-	
+
 	return closest_idx
 
 
@@ -359,14 +362,14 @@ func get_tangent_at(pos: Vector2) -> TangentIndex:
 func get_offset_without_collision(current_index: int, offset: float, prioritize_right: bool) -> float:
 	var safe_offset: float = offset
 	var prioritizing_right: bool = prioritize_right
-	
+
 	for i in range(_curve.point_count):
 		if i == current_index:
 			continue
-			
+
 		if _curve.get_point_position(i).x > safe_offset:
 			break
-			
+
 		if _curve.get_point_position(i).x == safe_offset:
 			if prioritizing_right:
 				safe_offset += 0.00001
@@ -378,10 +381,10 @@ func get_offset_without_collision(current_index: int, offset: float, prioritize_
 				if safe_offset < 0.0:
 					safe_offset = 0.0
 					prioritizing_right = true
-			
+
 			i = -1
-			
-	
+
+
 	return safe_offset
 
 
@@ -389,33 +392,33 @@ func add_point(pos: Vector2) -> void:
 	# TODO: UndoRedo
 	var new_idx: int = _curve.add_point(pos)
 	set_selected_index(new_idx)
-	
-	
+
+
 	queue_redraw()
 
 
 func remove_point(index: int) -> void:
 	# TODO: UndoRedo
-	var cur_pos: Vector2 = _curve.get_point_position(index)
-	var old_pos: Vector2 = initial_grab_pos if grabbing == GrabMode.MOVE else cur_pos
+	# var cur_pos: Vector2 = _curve.get_point_position(index)
+	# var old_pos: Vector2 = initial_grab_pos if grabbing == GrabMode.MOVE else cur_pos
 
 	var new_selected_index: int = selected_index
-	
+
 	if new_selected_index > index:
 		new_selected_index = -1
 	elif new_selected_index == index:
 		new_selected_index = -1
-		
+
 	_curve.remove_point(index)
 	set_selected_index(new_selected_index)
-		
+
 	queue_redraw()
 
 
 func set_point_position(index: int, pos: Vector2) -> void:
 	if initial_grab_pos == pos:
 		return
-		
+
 	_curve.set_point_value(index, initial_grab_pos.y)
 	_curve.set_point_offset(index, initial_grab_pos.x)
 
@@ -436,11 +439,11 @@ func set_point_tangents(index: int, left: float, right: float) -> void:
 
 	_curve.set_point_left_tangent(index, initial_grab_left_tangent)
 	_curve.set_point_right_tangent(index, initial_grab_right_tangent)
-	
+
 	_curve.set_point_left_tangent(index, left)
 	_curve.set_point_right_tangent(index, right)
 	set_selected_index(index)
-	
+
 	# TODO: UndoRedo
 
 
@@ -450,7 +453,7 @@ func set_point_left_tangent(index: int, tangent: float) -> void:
 
 	_curve.set_point_left_tangent(index, initial_grab_left_tangent)
 	# TODO: UndoRedo
-	
+
 	_curve.set_point_left_tangent(index, tangent)
 	set_selected_index(index)
 
@@ -467,51 +470,51 @@ func set_point_right_tangent(index: int, tangent: float) -> void:
 func toggle_linear(index: int, tangent: TangentIndex) -> void:
 	if tangent == TangentIndex.NONE:
 		return
-		
+
 	var prev_mode = _curve.get_point_left_mode(index) if tangent == TangentIndex.LEFT else _curve.get_point_right_mode(index)
 	var mode = _curve.TANGENT_FREE if prev_mode == _curve.TANGENT_LINEAR else _curve.TANGENT_LINEAR
 
-	var prev_angle: float = _curve.get_point_left_tangent(index) if tangent == TangentIndex.LEFT else _curve.get_point_right_tangent(index)
-	
+	# var prev_angle: float = _curve.get_point_left_tangent(index) if tangent == TangentIndex.LEFT else _curve.get_point_right_tangent(index)
+
 	if tangent == TangentIndex.LEFT:
 		_curve.set_point_left_mode(index, mode)
 	else:
 		_curve.set_point_right_mode(index, mode)
-		
+
 	# TODO: UndoRedo
 
 
 func set_selected_index(index: int) -> void:
 	if index != selected_index:
 		selected_index = index
-	
+
 	queue_redraw()
 
 
 func _draw():
 	if _curve == null:
 		return
-	
+
 	var is_shift_pressed: bool = Input.is_key_pressed(KEY_SHIFT)
-		
+
 	update_view_transform()
-	
+
 	# Draw Style Box
 	draw_style_box(get_theme_stylebox("panel", "Tree"), Rect2(Vector2.ZERO, size))
-	
+
 	# Draw Grid
 	draw_set_transform_matrix(_world_to_view)
-	
+
 	var min_edge: Vector2 = get_world_pos(Vector2(0, size.y))
 	var max_edge: Vector2 = get_world_pos(Vector2(size.x, 0))
-	
+
 	# FIXME: Get editor theme colors, not GraphEdit, can't find how to get them
 	var grid_color_primary: Color = get_theme_color(&"mono_color", &"Editor") * Color(1, 1, 1, 0.25)
 	var grid_color: Color = get_theme_color(&"mono_color", &"Editor") * Color(1, 1, 1, 0.1)
-	
+
 	var grid_steps: Vector2 = Vector2i(4, 2)
 	var step_size: Vector2 = Vector2(1, (_curve.max_value - _curve.min_value)) / grid_steps
-	
+
 	draw_line(Vector2(min_edge.x, _curve.min_value), Vector2(max_edge.x, _curve.min_value), grid_color_primary)
 	draw_line(Vector2(max_edge.x, _curve.max_value), Vector2(min_edge.x, _curve.max_value), grid_color_primary)
 	draw_line(Vector2(0, min_edge.y), Vector2(0, max_edge.y), grid_color_primary)
@@ -524,10 +527,10 @@ func _draw():
 	for i in range(1, grid_steps.y):
 		var y = _curve.min_value + i * step_size.y
 		draw_line(Vector2(min_edge.x, y), Vector2(max_edge.x, y), grid_color)
-	
+
 	# Draw Number Markings
 	draw_set_transform_matrix(Transform2D())
-	
+
 	var font: Font = get_theme_font("font", "Label")
 	var font_size: int = get_theme_font_size("font_size", "Label")
 	var font_height: float = font.get_height(font_size)
@@ -538,12 +541,12 @@ func _draw():
 		var x = i * step_size.x;
 
 		draw_string(
-			font, 
+			font,
 			get_view_pos(Vector2(x - step_size.x / 2, _curve.min_value)) + Vector2(0, font_height - round(2 * _editor_scale)),
-			String.num(x, 2), 
+			String.num(x, 2),
 			HORIZONTAL_ALIGNMENT_CENTER,
-			get_view_pos(Vector2(step_size.x, 0)).x, 
-			font_size, 
+			get_view_pos(Vector2(step_size.x, 0)).x,
+			font_size,
 			text_color
 		)
 
@@ -558,24 +561,24 @@ func _draw():
 			font_size,
 			text_color
 		)
-	
+
 	# Draw Curve
 	draw_set_transform_matrix(Transform2D(0, get_view_pos(Vector2(0, 0))))
-	
-	var range: float = _curve.max_value - _curve.min_value	
-	var plot_scale: Vector2 = (get_view_pos(Vector2(1, _curve.max_value)) - get_view_pos(Vector2(0, _curve.min_value))) / Vector2(1, range)
+
+	var _range: float = _curve.max_value - _curve.min_value
+	var plot_scale: Vector2 = (get_view_pos(Vector2(1, _curve.max_value)) - get_view_pos(Vector2(0, _curve.min_value))) / Vector2(1, _range)
 	plot_curve_accurate(2.0, plot_scale)
-	
+
 	draw_set_transform_matrix(Transform2D())
-	
+
 	var point_color: Color = get_theme_color(&"font_color", &"Editor")
 	# Change this if you want to a different color for the hovered point
 	var hovered_point_color: Color = point_color
-	
+
 	#Draw points
 	for i in range(_curve.point_count):
 		var pos = get_view_pos(_curve.get_point_position(i))
-		
+
 		if selected_index != i:
 			draw_rect(Rect2(pos, Vector2(0, 0)).grow(point_radius), point_color)
 		if hovered_index == i and hovered_tangent_index == TangentIndex.NONE:
@@ -585,27 +588,27 @@ func _draw():
 				false,
 				round(1 * _editor_scale)
 			)
-			
+
 	# Draw selected points and tangents
 	if selected_index >= 0:
 		var point_pos: Vector2 = _curve.get_point_position(selected_index)
 		var selected_point_color = get_theme_color(&"accent_color", &"Editor")
-		
+
 		if grabbing == GrabMode.NONE || initial_grab_pos == point_pos || selected_tangent_index != TangentIndex.NONE:
 			var selected_tangent_color = get_theme_color(&"accent_color", &"Editor").darkened(0.25)
 			var tangent_color = get_theme_color(&"font_color", &"Editor").darkened(0.25)
-			
+
 			if selected_index != 0:
 				var control_pos: Vector2 = get_tangent_view_pos(selected_index, TangentIndex.LEFT)
 				var left_tangent_color: Color = selected_tangent_color if (selected_tangent_index == TangentIndex.LEFT) else tangent_color
-				
+
 				draw_line(get_view_pos(point_pos), control_pos, left_tangent_color, 0.5 * _editor_scale, true)
-				
+
 				if _curve.get_point_left_mode(selected_index) == _curve.TANGENT_FREE:
 					draw_circle(control_pos, tangent_radius, left_tangent_color)
 				else:
 					draw_rect(Rect2(control_pos, Vector2(0, 0)).grow(tangent_radius), left_tangent_color)
-				
+
 				# Hover Indicator
 				if hovered_tangent_index == TangentIndex.LEFT or (hovered_tangent_index == TangentIndex.RIGHT and !is_shift_pressed and _curve.get_point_left_mode(selected_index) != _curve.TANGENT_LINEAR):
 					draw_rect(
@@ -616,18 +619,18 @@ func _draw():
 						false,
 						round(1 * _editor_scale)
 					)
-				
+
 			if selected_index != _curve.get_point_count() - 1:
 				var control_pos = get_tangent_view_pos(selected_index, TangentIndex.RIGHT)
 				var right_tangent_color: Color = selected_tangent_color if selected_tangent_index == TangentIndex.RIGHT else tangent_color
-				
+
 				draw_line(get_view_pos(point_pos), control_pos, right_tangent_color, 0.5 * _editor_scale, true)
-				
+
 				if _curve.get_point_right_mode(selected_index) == _curve.TANGENT_FREE:
 					draw_circle(control_pos, tangent_radius, right_tangent_color)
 				else:
 					draw_rect(Rect2(control_pos, Vector2(0, 0)).grow(tangent_radius), right_tangent_color)
-					
+
 				# Hover Indicator
 				if hovered_tangent_index == TangentIndex.RIGHT or (hovered_tangent_index == TangentIndex.LEFT and !is_shift_pressed and _curve.get_point_right_mode(selected_index) != _curve.TANGENT_LINEAR):
 					draw_rect(
@@ -638,7 +641,7 @@ func _draw():
 						false,
 						round(1 * _editor_scale)
 					)
-					
+
 		draw_rect(Rect2(get_view_pos(point_pos), Vector2(0, 0)).grow(point_radius), selected_point_color)
 
 	# Draw Helper Text
@@ -647,12 +650,12 @@ func _draw():
 		text_color.a *= 0.4;
 
 		draw_multiline_string(
-			font, 
+			font,
 			Vector2(25 * _editor_scale, font_height - round(2 * _editor_scale)),
 			"Hold Shift to edit tangents individually",
 			HORIZONTAL_ALIGNMENT_CENTER,
-			width, 
-			font_size, 
+			width,
+			font_size,
 			-1,
 			text_color
 		)
@@ -662,12 +665,12 @@ func _draw():
 		text_color.a *= 0.8;
 
 		draw_string(
-			font, 
+			font,
 			Vector2(25 * _editor_scale, font_height - round(2 * _editor_scale)),
-			"(%.2f, %.2f)" % [point_pos.x, point_pos.y], 
-			HORIZONTAL_ALIGNMENT_CENTER, 
-			width, 
-			font_size, 
+			"(%.2f, %.2f)" % [point_pos.x, point_pos.y],
+			HORIZONTAL_ALIGNMENT_CENTER,
+			width,
+			font_size,
 			text_color
 		)
 	elif selected_index != -1 and selected_tangent_index != TangentIndex.NONE:
@@ -736,12 +739,12 @@ func get_tangent_view_pos(index: int, tangent: TangentIndex) -> Vector2:
 	if distance_from_point.x != 0.0:
 		fraction_inside = min(
 			fraction_inside,
-			((size.x if distance_from_point.x > 0 else 0) - point_view_pos.x) / distance_from_point.x
+			((size.x if distance_from_point.x > 0 else 0.0) - point_view_pos.x) / distance_from_point.x
 		)
 	if distance_from_point.y != 0.0:
 		fraction_inside = min(
 			fraction_inside,
-			((size.y if distance_from_point.y > 0 else 0) - point_view_pos.y) / distance_from_point.y
+			((size.y if distance_from_point.y > 0 else 0.0) - point_view_pos.y) / distance_from_point.y
 		)
 
 	if fraction_inside < 1.0 and fraction_inside > 0.5:
@@ -749,37 +752,37 @@ func get_tangent_view_pos(index: int, tangent: TangentIndex) -> Vector2:
 
 	return tangent_view_pos
 
-		
+
 func plot_curve_accurate(step: float, scaling: Vector2):
 	var line_color: Color = get_theme_color(&"font_color", &"Editor")
-	
+
 	if _curve.point_count <= 1:
 		var y: float = _curve.sample(0)
 		draw_line(Vector2(0, y) * scaling + Vector2(0.5, 0), Vector2(1.0, y) * scaling - Vector2(-1.5, 0), line_color)
 		return
-		
+
 	var first_point = _curve.get_point_position(0)
 	var last_point = _curve.get_point_position(_curve.point_count - 1)
-	
+
 	# Edge Lines
 	draw_line(Vector2(0, first_point.y) * scaling + Vector2(0.5, 0.0), first_point * scaling, line_color)
 	draw_line(Vector2(MAX_X, last_point.y) * scaling - Vector2(-1.5, 0), last_point * scaling, line_color)
-	
+
 	for i in range(1, _curve.point_count):
 		var a = _curve.get_point_position(i - 1)
 		var b = _curve.get_point_position(i)
-		
+
 		var pos = a
 		var prev_pos = a
-		
+
 		var scaled_step = step / scaling.x
 		var samples = (b.x - a.x) / scaled_step
-		
+
 		for j in range(1, samples):
 			var x: float = float(j * scaled_step)
 			pos.x = a.x + x
 			pos.y = _curve.sample(pos.x)
 			draw_line(prev_pos * scaling, pos * scaling, line_color, 1, true)
 			prev_pos = pos
-		
+
 		draw_line(prev_pos * scaling, b * scaling, line_color, 1, true)
