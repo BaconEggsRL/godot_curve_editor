@@ -2,6 +2,9 @@
 class_name BaconCurve
 extends Resource
 
+const TANGENT_FREE = Point.TangentMode.TANGENT_FREE
+const TANGENT_LINEAR = Point.TangentMode.TANGENT_LINEAR
+
 const MIN_X_RANGE: float = 0.01
 const MIN_Y_RANGE: float = 0.01
 
@@ -28,6 +31,13 @@ signal bake_resolution_changed
 
 @export_group("Points")
 @export var points:Array[Point]=[]: get = get_points, set = set_points
+var point_count:int=0: get = get_point_count, set = set_point_count
+
+
+
+func _init() -> void:
+	pass
+
 
 
 func get_points() -> Array[Point]:
@@ -37,13 +47,9 @@ func set_points(value) -> void:
 	_points = value
 
 
-func _init() -> void:
-	pass
-
 
 func get_point_count() -> int:
 	return _points.size()
-
 
 func set_point_count(p_count: int) -> void:
 	if p_count < 0:

@@ -2,7 +2,8 @@
 class_name BaconCurveEditor
 extends Control
 
-var _curve: Curve
+# var _curve: Curve
+var _curve: BaconCurve
 
 const ASPECT_RATIO: float = 6. / 13.
 const MIN_X: float = 0.0
@@ -51,7 +52,8 @@ func _ready() -> void:
 		_editor_scale = EditorInterface.get_editor_scale()
 
 	if _curve == null:
-		_curve = Curve.new()
+		# _curve = Curve.new()
+		_curve = BaconCurve.new()
 		_curve.range_changed.connect(_on_curve_changed)
 
 func _on_curve_changed() -> void:
@@ -59,10 +61,17 @@ func _on_curve_changed() -> void:
 	if selected_index >= _curve.point_count:
 		set_selected_index(-1)
 
-func get_data() -> Curve:
+#func get_data() -> Curve:
+	#return _curve
+#
+#func set_curve(curve: Curve):
+	#_curve = curve
+	#queue_redraw()
+
+func get_data() -> BaconCurve:
 	return _curve
 
-func set_curve(curve: Curve):
+func set_curve(curve: BaconCurve):
 	_curve = curve
 	queue_redraw()
 
