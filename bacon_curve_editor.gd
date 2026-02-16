@@ -1,5 +1,5 @@
 @tool
-class_name CurveEditor
+class_name BaconCurveEditor
 extends Control
 
 var _curve: Curve
