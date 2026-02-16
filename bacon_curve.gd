@@ -111,13 +111,15 @@ func add_point(p_position: Vector2, p_left_tangent: float = 0.0, p_right_tangent
 	return ret
 
 
+
 func get_index(p_offset: float) -> int:
 	# Lower-bound float binary search
 	var imin = 0
 	var imax = _points.size() - 1
 
 	while imax - imin > 1:
-		var imid = (imin + imax) / 2
+		@warning_ignore('integer_division')
+		var imid:int = (imin + imax) / 2
 		if _points[imid].position.x < p_offset:
 			imin = imid
 		else:
@@ -274,18 +276,18 @@ func update_auto_tangents(p_index: int) -> void:
 	if p_index > 0:
 		if _points[p_index - 1].right_mode == Point.TangentMode.TANGENT_FREE:
 			var v1 = (p.position - _points[p_index - 1].position).normalized()
-			var v2 = (p.position - _points[p_index - 1].position)
-			var tangent_len = v2.length()
-			var prev_len = (p.position - _points[p_index - 1].position).length() if p_index > 1 else tangent_len
-			var next_len = (_points[p_index + 1].position - p.position).length() if p_index < _points.size() - 1 else tangent_len
+			# var v2 = (p.position - _points[p_index - 1].position)
+			# var tangent_len = v2.length()
+			# var prev_len = (p.position - _points[p_index - 1].position).length() if p_index > 1 else tangent_len
+			# var next_len = (_points[p_index + 1].position - p.position).length() if p_index < _points.size() - 1 else tangent_len
 			_points[p_index - 1].right_tangent = -v1.y / v1.x if v1.x != 0 else 0
 
 	if p_index + 1 < _points.size():
 		if p.right_mode == Point.TangentMode.TANGENT_FREE:
 			var v1 = (_points[p_index + 1].position - p.position).normalized()
-			var tangent_len = (_points[p_index + 1].position - p.position).length()
-			var prev_len = (p.position - _points[p_index - 1].position).length() if p_index > 0 else tangent_len
-			var next_len = (_points[p_index + 1].position - p.position).length()
+			# var tangent_len = (_points[p_index + 1].position - p.position).length()
+			# var prev_len = (p.position - _points[p_index - 1].position).length() if p_index > 0 else tangent_len
+			# var next_len = (_points[p_index + 1].position - p.position).length()
 			p.right_tangent = v1.y / v1.x if v1.x != 0 else 0
 
 
@@ -459,8 +461,10 @@ func set_data(p_input: Array) -> void:
 	if p_input.size() % ELEMS != 0:
 		return
 
-	var old_size = _points.size()
-	var new_size = p_input.size() / ELEMS
+	var old_size:int = _points.size()
+
+	@warning_ignore('integer_division')
+	var new_size:int = p_input.size() / ELEMS
 
 	if old_size != new_size:
 		set_point_count(new_size)
