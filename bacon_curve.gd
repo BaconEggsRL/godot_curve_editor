@@ -1,4 +1,5 @@
 @tool
+@icon("uid://cgoejfwhdwmop")
 class_name BaconCurve
 extends Resource
 
