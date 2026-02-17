@@ -4,6 +4,19 @@ extends Resource
 
 @export var points: Array[Point] = []
 
+@export var min_value: float = 0.0:
+	set(value):
+		min_value = value
+		range_changed.emit()
+
+@export var max_value: float = 1.0:
+	set(value):
+		max_value = value
+		range_changed.emit()
+
+signal range_changed
+
+
 func add_point(p: Point) -> void:
 	points.append(p)
 	points.sort_custom(func(a, b): return a.position.x < b.position.x)
