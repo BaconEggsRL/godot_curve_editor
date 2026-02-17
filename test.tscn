@@ -5,17 +5,23 @@
 [ext_resource type="Script" uid="uid://c10cjby72qngf" path="res://bacon_curve.gd" id="3_ppyta"]
 [ext_resource type="Texture2D" uid="uid://d23t7b73acleh" path="res://icon.svg" id="4_ppyta"]
 
-[sub_resource type="Resource" id="Resource_ppyta"]
-script = ExtResource("2_6uqi0")
-right_tangent = 6.06808384134579
-
 [sub_resource type="Resource" id="Resource_ykrsh"]
+script = ExtResource("2_6uqi0")
+right_tangent = -1.0817467981729887
+
+[sub_resource type="Resource" id="Resource_g14j6"]
+script = ExtResource("2_6uqi0")
+position = Vector2(0.48188406, 0.52127653)
+left_tangent = -0.08044301375682181
+right_tangent = -0.08044301375682181
+
+[sub_resource type="Resource" id="Resource_vbegm"]
 script = ExtResource("2_6uqi0")
 position = Vector2(1, 1)
 
-[sub_resource type="Resource" id="Resource_g14j6"]
+[sub_resource type="Resource" id="Resource_ppyta"]
 script = ExtResource("3_ppyta")
-points = Array[ExtResource("2_6uqi0")]([SubResource("Resource_ppyta"), SubResource("Resource_ykrsh")])
+points = Array[ExtResource("2_6uqi0")]([SubResource("Resource_ykrsh"), SubResource("Resource_g14j6"), SubResource("Resource_vbegm")])
 metadata/_custom_type_script = "uid://c10cjby72qngf"
 
 [sub_resource type="Animation" id="Animation_6uqi0"]
@@ -61,7 +67,7 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_37kl0")
-bacon_curve = SubResource("Resource_g14j6")
+bacon_curve = SubResource("Resource_ppyta")
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="." unique_id=2040447065]
 libraries/ = SubResource("AnimationLibrary_ykrsh")
