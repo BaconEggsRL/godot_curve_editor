@@ -22,7 +22,7 @@ window/size/viewport_height=720
 
 [editor_plugins]
 
-enabled=PackedStringArray("res://addons/easing_curve/plugin.cfg")
+enabled=PackedStringArray("res://addons/easing_curve/plugin.cfg", "res://addons/toggle_external_editor/plugin.cfg")
 
 [physics]
 

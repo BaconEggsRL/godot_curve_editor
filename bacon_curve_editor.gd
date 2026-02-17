@@ -34,6 +34,8 @@ var initial_grab_pos: Vector2
 var initial_grab_index: int
 var initial_grab_left_tangent: float
 var initial_grab_right_tangent: float
+var initial_grab_left_handle_length: float
+var initial_grab_right_handle_length: float
 
 var snap_enabled: bool = false
 var snap_count: int = 10
@@ -55,6 +57,7 @@ func _ready() -> void:
 		# _curve = Curve.new()
 		_curve = BaconCurve.new()
 		_curve.range_changed.connect(_on_curve_changed)
+		_curve.changed.connect(_on_curve_changed)
 
 func _on_curve_changed() -> void:
 	queue_redraw()
@@ -72,7 +75,18 @@ func get_data() -> BaconCurve:
 	return _curve
 
 func set_curve(curve: BaconCurve):
+	if _curve != curve and _curve != null:
+		# Disconnect from old curve if it exists
+		if _curve.changed.is_connected(_on_curve_changed):
+			_curve.changed.disconnect(_on_curve_changed)
+
 	_curve = curve
+
+	if _curve != null:
+		# Connect to new curve
+		if not _curve.changed.is_connected(_on_curve_changed):
+			_curve.changed.connect(_on_curve_changed)
+
 	queue_redraw()
 
 
@@ -145,8 +159,7 @@ func _gui_input(event: InputEvent) -> void:
 
 		if event.button_index == MOUSE_BUTTON_RIGHT or event.button_index == MOUSE_BUTTON_MIDDLE:
 			if event.button_index == MOUSE_BUTTON_RIGHT and grabbing == GrabMode.MOVE:
-				_curve.set_point_value(selected_index, initial_grab_pos.y)
-				_curve.set_point_offset(selected_index, initial_grab_pos.x)
+				_curve.set_point_position(selected_index, initial_grab_pos, true)
 				set_selected_index(initial_grab_index)
 				hovered_index = get_point_at(mpos)
 				grabbing = GrabMode.NONE
@@ -185,8 +198,10 @@ func _gui_input(event: InputEvent) -> void:
 
 				if selected_index > 0:
 					initial_grab_left_tangent = _curve.get_point_left_tangent(selected_index)
+					initial_grab_left_handle_length = _curve.get_point_left_handle_length(selected_index)
 				if selected_index < _curve.point_count - 1:
 					initial_grab_right_tangent = _curve.get_point_right_tangent(selected_index)
+					initial_grab_right_handle_length = _curve.get_point_right_handle_length(selected_index)
 
 			elif grabbing == GrabMode.NONE:
 				var new_pos: Vector2 = get_world_pos(mpos).clamp(Vector2(0, _curve.min_value), Vector2(1.0, _curve.max_value))
@@ -196,7 +211,7 @@ func _gui_input(event: InputEvent) -> void:
 
 				new_pos.x = get_offset_without_collision(selected_index, new_pos.x, mpos.x >= get_view_pos(new_pos).x)
 
-				var new_idx: int = _curve.add_point(new_pos)
+				var new_idx: int = _curve.add_point_no_update(new_pos)
 				set_selected_index(new_idx)
 				grabbing = GrabMode.ADD
 				initial_grab_pos = new_pos
@@ -251,33 +266,52 @@ func _gui_input(event: InputEvent) -> void:
 
 					new_pos.x = get_offset_without_collision(selected_index, new_pos.x, mpos.x >= get_view_pos(new_pos).x)
 
-					var i: int = _curve.set_point_offset(selected_index, new_pos.x)
+					var i: int = _curve.set_point_position(selected_index, new_pos)
 					hovered_index = i
 					set_selected_index(i)
 
-					new_pos.y = clamp(new_pos.y, _curve.min_value, _curve.max_value)
-					_curve.set_point_value(i, new_pos.y)
-
 				else:
 					# Drag a tangent
-					var new_pos: Vector2 = _curve.get_point_position(selected_index)
+					var point_pos: Vector2 = _curve.get_point_position(selected_index)
 					var control_pos: Vector2 = get_world_pos(mpos)
 
-					var dir: Vector2 = (control_pos - new_pos).normalized()
+					# Calculate the offset vector from the point to the control
+					var offset: Vector2 = control_pos - point_pos
+					var distance: float = offset.length()
+					var dir: Vector2 = offset.normalized() if distance > 0.00001 else Vector2(1, 0)
 					var tangent = dir.y / (max(dir.x, 0.00001) if dir.x > 0 else min(dir.x, -0.00001))
+
+					# Calculate handle length as a normalized distance in view space
+					var point_view_pos: Vector2 = get_view_pos(point_pos)
+					var control_view_pos: Vector2 = mpos
+					var handle_visual_distance: float = point_view_pos.distance_to(control_view_pos)
+					var handle_length: float = handle_visual_distance / tangent_length if tangent_length > 0 else 1.0
+					handle_length = max(0.0, handle_length)  # Allow unlimited handle length
 
 					hovered_tangent_index = selected_tangent_index
 
 					if selected_tangent_index == TangentIndex.LEFT:
 						_curve.set_point_left_tangent(selected_index, tangent)
+						_curve.set_point_left_handle_length(selected_index, handle_length)
 
 						if selected_index != _curve.point_count - 1  and _curve.get_point_right_mode(selected_index) != _curve.TANGENT_LINEAR:
-							_curve.set_point_right_tangent(selected_index, initial_grab_right_tangent if event.is_shift_pressed() else tangent)
+							if event.is_shift_pressed():
+								_curve.set_point_right_tangent(selected_index, initial_grab_right_tangent)
+								_curve.set_point_right_handle_length(selected_index, initial_grab_right_handle_length)
+							else:
+								_curve.set_point_right_tangent(selected_index, tangent)
+								_curve.set_point_right_handle_length(selected_index, handle_length)
 					else:
 						_curve.set_point_right_tangent(selected_index, tangent)
+						_curve.set_point_right_handle_length(selected_index, handle_length)
 
 						if selected_index != 0 and _curve.get_point_left_tangent(selected_index) != _curve.TANGENT_LINEAR:
-							_curve.set_point_left_tangent(selected_index, initial_grab_left_tangent if event.is_shift_pressed() else tangent)
+							if event.is_shift_pressed():
+								_curve.set_point_left_tangent(selected_index, initial_grab_left_tangent)
+								_curve.set_point_left_handle_length(selected_index, initial_grab_left_handle_length)
+							else:
+								_curve.set_point_left_tangent(selected_index, tangent)
+								_curve.set_point_left_handle_length(selected_index, handle_length)
 
 					queue_redraw()
 		else:
@@ -428,14 +462,22 @@ func set_point_position(index: int, pos: Vector2) -> void:
 	if initial_grab_pos == pos:
 		return
 
-	_curve.set_point_value(index, initial_grab_pos.y)
-	_curve.set_point_offset(index, initial_grab_pos.x)
-
-	_curve.set_point_value(initial_grab_index, pos.y)
-	_curve.set_point_offset(initial_grab_index, pos.x)
+	# Update selection first so UI state reflects intended selection.
 	set_selected_index(index)
 
-	# TODO UndoRedo
+	# Capture curve locally to avoid race if the editor is freed during inspector reopen.
+	var curve = _curve
+	if curve == null:
+		return
+
+	curve.set_point_position(index, initial_grab_pos, true)
+	curve.set_point_position(initial_grab_index, pos, true)
+
+	## Notify property list only if curve is still valid
+	#if curve != null and curve.has_method("notify_property_list_changed"):
+		#curve.notify_property_list_changed()
+#
+	## TODO UndoRedo
 
 
 func set_point_tangents(index: int, left: float, right: float) -> void:
@@ -446,12 +488,21 @@ func set_point_tangents(index: int, left: float, right: float) -> void:
 		set_point_left_tangent(index, left)
 		return
 
+	# Get current handle lengths before restoring
+	var current_left_handle = _curve.get_point_left_handle_length(index)
+	var current_right_handle = _curve.get_point_right_handle_length(index)
+
 	_curve.set_point_left_tangent(index, initial_grab_left_tangent)
+	_curve.set_point_left_handle_length(index, initial_grab_left_handle_length)
 	_curve.set_point_right_tangent(index, initial_grab_right_tangent)
+	_curve.set_point_right_handle_length(index, initial_grab_right_handle_length)
 
 	_curve.set_point_left_tangent(index, left)
+	_curve.set_point_left_handle_length(index, current_left_handle)
 	_curve.set_point_right_tangent(index, right)
+	_curve.set_point_right_handle_length(index, current_right_handle)
 	set_selected_index(index)
+	_curve.notify_property_list_changed()
 
 	# TODO: UndoRedo
 
@@ -460,21 +511,33 @@ func set_point_left_tangent(index: int, tangent: float) -> void:
 	if initial_grab_left_tangent == tangent:
 		return
 
+	# Get current handle length before restoring
+	var current_handle = _curve.get_point_left_handle_length(index)
+
 	_curve.set_point_left_tangent(index, initial_grab_left_tangent)
+	_curve.set_point_left_handle_length(index, initial_grab_left_handle_length)
 	# TODO: UndoRedo
 
 	_curve.set_point_left_tangent(index, tangent)
+	_curve.set_point_left_handle_length(index, current_handle)
 	set_selected_index(index)
+	_curve.notify_property_list_changed()
 
 func set_point_right_tangent(index: int, tangent: float) -> void:
 	if initial_grab_right_tangent == tangent:
 		return
 
+	# Get current handle length before restoring
+	var current_handle = _curve.get_point_right_handle_length(index)
+
 	_curve.set_point_right_tangent(index, initial_grab_right_tangent)
+	_curve.set_point_right_handle_length(index, initial_grab_right_handle_length)
 	# TODO: UndoRedo
 
 	_curve.set_point_right_tangent(index, tangent)
+	_curve.set_point_right_handle_length(index, current_handle)
 	set_selected_index(index)
+	_curve.notify_property_list_changed()
 
 func toggle_linear(index: int, tangent: TangentIndex) -> void:
 	if tangent == TangentIndex.NONE:
@@ -730,16 +793,20 @@ func _draw():
 
 func get_tangent_view_pos(index: int, tangent: TangentIndex) -> Vector2:
 	var dir: Vector2
+	var handle_length: float
 	if tangent == TangentIndex.LEFT:
 		dir = -Vector2(1, _curve.get_point_left_tangent(index))
+		handle_length = _curve.get_point_left_handle_length(index)
 	else:
 		dir = Vector2(1, _curve.get_point_right_tangent(index))
+		handle_length = _curve.get_point_right_handle_length(index)
 
 	var point_pos: Vector2 = _curve.get_point_position(index)
 	var point_view_pos: Vector2 = get_view_pos(point_pos)
 	var control_view_pos: Vector2 = get_view_pos(point_pos + dir)
 
-	var distance_from_point: Vector2 = tangent_length * (control_view_pos - point_view_pos).normalized()
+	# Use handle_length to scale the visual distance
+	var distance_from_point: Vector2 = tangent_length * handle_length * (control_view_pos - point_view_pos).normalized()
 	var tangent_view_pos: Vector2 = point_view_pos + distance_from_point
 
 	# Since the tangent is long, it might slip outside of the area of the editor for points close to the domain/range boundaries.

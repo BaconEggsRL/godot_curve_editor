@@ -46,6 +46,11 @@ func get_points() -> Array[Point]:
 
 func set_points(value) -> void:
 	_points = value
+	# Reconnect signals to all points
+	for point in _points:
+		if point != null and not point.changed.is_connected(_on_point_changed):
+			point.changed.connect(_on_point_changed)
+	emit_changed()
 
 
 
@@ -61,10 +66,17 @@ func set_point_count(p_count: int) -> void:
 		return
 
 	if old_size > p_count:
+		# Disconnect signals from points being removed
+		for i in range(p_count, old_size):
+			if _points[i].changed.is_connected(_on_point_changed):
+				_points[i].changed.disconnect(_on_point_changed)
 		_points.resize(p_count)
 	else:
+		# Connect signals to new points
 		while _points.size() < p_count:
-			_points.append(Point.new())
+			var new_point = Point.new()
+			new_point.changed.connect(_on_point_changed)
+			_points.append(new_point)
 
 	notify_property_list_changed()
 
@@ -72,6 +84,7 @@ func set_point_count(p_count: int) -> void:
 func _add_point(p_position: Vector2, p_left_tangent: float = 0.0, p_right_tangent: float = 0.0,
 	p_left_mode: Point.TangentMode = Point.TangentMode.TANGENT_FREE,
 	p_right_mode: Point.TangentMode = Point.TangentMode.TANGENT_FREE,
+	p_left_handle_length: float = 1.0, p_right_handle_length: float = 1.0,
 	p_mark_dirty: bool = true) -> int:
 	# Add a point and preserve order
 
@@ -82,7 +95,9 @@ func _add_point(p_position: Vector2, p_left_tangent: float = 0.0, p_right_tangen
 	var ret = -1
 
 	if _points.is_empty():
-		_points.append(Point.new(p_position, p_left_tangent, p_right_tangent, p_left_mode, p_right_mode))
+		_points.append(Point.new(p_position, p_left_tangent, p_right_tangent, p_left_mode, p_right_mode, p_left_handle_length, p_right_handle_length))
+		_points[0].update_control_points()
+		_points[0].changed.connect(_on_point_changed)
 		ret = 0
 	else:
 		# Find the correct position to insert to maintain sorted order by x coordinate
@@ -92,7 +107,9 @@ func _add_point(p_position: Vector2, p_left_tangent: float = 0.0, p_right_tangen
 				insert_idx = i
 				break
 
-		_points.insert(insert_idx, Point.new(p_position, p_left_tangent, p_right_tangent, p_left_mode, p_right_mode))
+		_points.insert(insert_idx, Point.new(p_position, p_left_tangent, p_right_tangent, p_left_mode, p_right_mode, p_left_handle_length, p_right_handle_length))
+		_points[insert_idx].update_control_points()
+		_points[insert_idx].changed.connect(_on_point_changed)
 		ret = insert_idx
 
 	update_auto_tangents(ret)
@@ -103,12 +120,27 @@ func _add_point(p_position: Vector2, p_left_tangent: float = 0.0, p_right_tangen
 	return ret
 
 
+func _on_point_changed() -> void:
+	# Called when any point is modified (e.g., via inspector)
+	# Don't notify property list here - it's too expensive during continuous updates
+	# Property list will be notified at the end of interactive edits
+	emit_changed()
+
+
 func add_point(p_position: Vector2, p_left_tangent: float = 0.0, p_right_tangent: float = 0.0,
 	p_left_mode: Point.TangentMode = Point.TangentMode.TANGENT_FREE,
 	p_right_mode: Point.TangentMode = Point.TangentMode.TANGENT_FREE) -> int:
 	var ret = _add_point(p_position, p_left_tangent, p_right_tangent, p_left_mode, p_right_mode)
 	notify_property_list_changed()
 	return ret
+
+
+func add_point_no_update(p_position: Vector2, p_left_tangent: float = 0.0, p_right_tangent: float = 0.0,
+		p_left_mode: Point.TangentMode = Point.TangentMode.TANGENT_FREE,
+		p_right_mode: Point.TangentMode = Point.TangentMode.TANGENT_FREE) -> int:
+	# Add a point but do not notify the property list or emit heavy updates.
+	# Useful for interactive insertion where the Inspector must not rebuild.
+	return _add_point(p_position, p_left_tangent, p_right_tangent, p_left_mode, p_right_mode, 1.0, 1.0, false)
 
 
 
@@ -151,6 +183,7 @@ func set_point_left_tangent(p_index: int, p_tangent: float) -> void:
 
 	_points[p_index].left_tangent = p_tangent
 	_points[p_index].left_mode = Point.TangentMode.TANGENT_FREE
+	_points[p_index].update_control_points()
 	mark_dirty()
 
 
@@ -160,6 +193,7 @@ func set_point_right_tangent(p_index: int, p_tangent: float) -> void:
 
 	_points[p_index].right_tangent = p_tangent
 	_points[p_index].right_mode = Point.TangentMode.TANGENT_FREE
+	_points[p_index].update_control_points()
 	mark_dirty()
 
 
@@ -207,10 +241,71 @@ func get_point_right_mode(p_index: int) -> Point.TangentMode:
 	return _points[p_index].right_mode
 
 
+func set_point_left_handle_length(p_index: int, p_length: float) -> void:
+	if p_index < 0 or p_index >= _points.size():
+		return
+
+	_points[p_index].left_handle_length = max(0.0, p_length)
+	_points[p_index].update_control_points()
+	mark_dirty()
+
+
+func set_point_right_handle_length(p_index: int, p_length: float) -> void:
+	if p_index < 0 or p_index >= _points.size():
+		return
+
+	_points[p_index].right_handle_length = max(0.0, p_length)
+	_points[p_index].update_control_points()
+	mark_dirty()
+
+
+func get_point_left_handle_length(p_index: int) -> float:
+	if p_index < 0 or p_index >= _points.size():
+		return 1.0
+	return _points[p_index].left_handle_length
+
+
+func get_point_right_handle_length(p_index: int) -> float:
+	if p_index < 0 or p_index >= _points.size():
+		return 1.0
+	return _points[p_index].right_handle_length
+
+
+func get_point_left_control_point(p_index: int) -> Vector2:
+	if p_index < 0 or p_index >= _points.size():
+		return Vector2.ZERO
+	return _points[p_index].left_control_point
+
+
+func set_point_left_control_point(p_index: int, p_control_point: Vector2) -> void:
+	if p_index < 0 or p_index >= _points.size():
+		return
+
+	_points[p_index].update_from_control_points(p_control_point, _points[p_index].right_control_point)
+	_points[p_index].update_control_points()
+	mark_dirty()
+
+
+func get_point_right_control_point(p_index: int) -> Vector2:
+	if p_index < 0 or p_index >= _points.size():
+		return Vector2.ZERO
+	return _points[p_index].right_control_point
+
+
+func set_point_right_control_point(p_index: int, p_control_point: Vector2) -> void:
+	if p_index < 0 or p_index >= _points.size():
+		return
+
+	_points[p_index].update_from_control_points(_points[p_index].left_control_point, p_control_point)
+	_points[p_index].update_control_points()
+	mark_dirty()
+
+
 func _remove_point(p_index: int, p_mark_dirty: bool = true) -> void:
 	if p_index < 0 or p_index >= _points.size():
 		return
 
+	_points[p_index].changed.disconnect(_on_point_changed)
 	_points.remove_at(p_index)
 	if p_mark_dirty:
 		emit_changed()
@@ -225,6 +320,11 @@ func clear_points() -> void:
 	if _points.is_empty():
 		return
 
+	# Disconnect signals from all points
+	for point in _points:
+		if point.changed.is_connected(_on_point_changed):
+			point.changed.disconnect(_on_point_changed)
+
 	_points.clear()
 	mark_dirty()
 	notify_property_list_changed()
@@ -234,25 +334,55 @@ func set_point_value(p_index: int, p_position: float) -> void:
 	if p_index < 0 or p_index >= _points.size():
 		return
 
-	_points[p_index].position.y = p_position
-	update_auto_tangents(p_index)
-	mark_dirty()
+	# Delegate to unified setter (keeps backward compatibility)
+	set_point_position(p_index, Vector2(_points[p_index].position.x, p_position))
+	return
 
 
 func set_point_offset(p_index: int, p_offset: float) -> int:
 	if p_index < 0 or p_index >= _points.size():
 		return -1
 
+	# Delegate to unified setter (keeps backward compatibility)
+	return set_point_position(p_index, Vector2(p_offset, _points[p_index].position.y))
+
+
+func set_point_position(p_index: int, p_pos: Vector2, p_reopen_inspector: bool = false) -> int:
+	# Set a point's position (x and/or y). If x changes the point is reinserted to keep ordering.
+	if p_index < 0 or p_index >= _points.size():
+		return -1
+
+	# Clamp into valid ranges
+	p_pos.x = clamp(p_pos.x, _min_domain, _max_domain)
+	p_pos.y = clamp(p_pos.y, _min_value, _max_value)
+
 	var p = _points[p_index]
-	_remove_point(p_index, false)
-	var i = _add_point(Vector2(p_offset, p.position.y), p.left_tangent, p.right_tangent,
-						p.left_mode, p.right_mode, false)
-	if p_index != i:
-		# The point moved due to sorting
-		pass
-	update_auto_tangents(i)
-	mark_dirty()
-	return i
+
+	# If X changed, remove and reinsert to maintain sorted order
+	if p_pos.x != p.position.x:
+		p.position = p_pos
+
+		# Re-sort without destroying instances
+		_points.sort_custom(func(a, b):
+			return a.position.x < b.position.x
+		)
+
+		var new_idx = _points.find(p)
+
+		update_auto_tangents(new_idx)
+		p.emit_changed()
+		mark_dirty()
+
+		return new_idx
+
+	else:
+		# Only Y changed
+		_points[p_index].position.y = p_pos.y
+		_points[p_index].update_control_points()
+		update_auto_tangents(p_index)
+		_points[p_index].emit_changed()
+		mark_dirty()
+		return p_index
 
 
 func get_point_position(p_index: int) -> Vector2:
@@ -409,16 +539,23 @@ func sample_local_nocheck(p_index: int, p_local_offset: float) -> float:
 	var a = _points[p_index]
 	var b = _points[p_index + 1]
 
-	# Cubic bézier
-	# Control points are chosen at equal distances
+	# Cubic bézier with handle-based control points
 	var d = b.position.x - a.position.x
 	if is_zero_approx(d):
 		return a.position.y
 
 	p_local_offset /= d
-	d /= 3.0
-	var yac = a.position.y + d * a.right_tangent
-	var ybc = b.position.y - d * b.left_tangent
+
+	# Calculate control points based on tangent direction and handle length
+	# Right control point: moves from a in the direction of right_tangent by handle_length
+	var right_handle_dist = d * a.right_handle_length
+	var right_tangent_normalized = sqrt(1.0 + a.right_tangent * a.right_tangent)
+	var yac = a.position.y + (right_handle_dist / right_tangent_normalized) * a.right_tangent
+
+	# Left control point: moves from b in the direction of left_tangent by handle_length
+	var left_handle_dist = d * b.left_handle_length
+	var left_tangent_normalized = sqrt(1.0 + b.left_tangent * b.left_tangent)
+	var ybc = b.position.y - (left_handle_dist / left_tangent_normalized) * b.left_tangent
 
 	var y = _bezier_interpolate(a.position.y, yac, ybc, b.position.y, p_local_offset)
 
@@ -442,7 +579,7 @@ func mark_dirty() -> void:
 
 func get_data() -> Array:
 	var output = []
-	const ELEMS = 5
+	const ELEMS = 7
 	output.resize(_points.size() * ELEMS)
 
 	for j in range(_points.size()):
@@ -451,30 +588,47 @@ func get_data() -> Array:
 		output[j * ELEMS + 2] = _points[j].left_tangent
 		output[j * ELEMS + 3] = _points[j].right_tangent
 		output[j * ELEMS + 4] = _points[j].left_mode
+		output[j * ELEMS + 5] = _points[j].left_handle_length
+		output[j * ELEMS + 6] = _points[j].right_handle_length
 		# Note: right_mode is not stored, it's computed
 
 	return output
 
 
 func set_data(p_input: Array) -> void:
-	const ELEMS = 5
-	if p_input.size() % ELEMS != 0:
-		return
-
 	var old_size:int = _points.size()
 
+	# Detect format: 5 elements = old format, 7 elements = new format with handle lengths
+	var elems = 5
+	if p_input.size() > 0 and p_input.size() % 7 == 0:
+		elems = 7
+	elif p_input.size() % 5 != 0:
+		return
+
 	@warning_ignore('integer_division')
-	var new_size:int = p_input.size() / ELEMS
+	var new_size:int = p_input.size() / elems
 
 	if old_size != new_size:
 		set_point_count(new_size)
 
 	for j in range(_points.size()):
-		_points[j].position.x = p_input[j * ELEMS + 0]
-		_points[j].position.y = p_input[j * ELEMS + 1]
-		_points[j].left_tangent = p_input[j * ELEMS + 2]
-		_points[j].right_tangent = p_input[j * ELEMS + 3]
-		_points[j].left_mode = p_input[j * ELEMS + 4]
+		_points[j].position.x = p_input[j * elems + 0]
+		_points[j].position.y = p_input[j * elems + 1]
+		_points[j].left_tangent = p_input[j * elems + 2]
+		_points[j].right_tangent = p_input[j * elems + 3]
+		_points[j].left_mode = p_input[j * elems + 4]
+
+		# Handle lengths are only in new format (7 elements)
+		if elems == 7:
+			_points[j].left_handle_length = p_input[j * elems + 5]
+			_points[j].right_handle_length = p_input[j * elems + 6]
+		else:
+			# For old format, default to 1.0
+			_points[j].left_handle_length = 1.0
+			_points[j].right_handle_length = 1.0
+
+		# Update control points after loading
+		_points[j].update_control_points()
 
 	mark_dirty()
 	if old_size != new_size:
