@@ -49,7 +49,14 @@ var _world_to_view: Transform2D
 
 var _editor_scale: float = 1.0
 
+
+
+
+
 func _ready() -> void:
+	self.custom_minimum_size = Vector2(0, 150)
+	# self.set_curve(get_init_curve())
+
 	focus_mode = Control.FOCUS_ALL
 	clip_contents = true
 
@@ -60,6 +67,7 @@ func _ready() -> void:
 		_curve = BaconCurve.new()
 		_curve.range_changed.connect(_on_curve_changed)
 		_curve.changed.connect(_on_curve_changed)
+
 
 func _on_curve_changed() -> void:
 	queue_redraw()
@@ -113,6 +121,10 @@ func get_world_pos(view_pos: Vector2) -> Vector2:
 func get_point_at(pos: Vector2) -> int:
 	if _curve == null:
 		return -1
+
+	# var _points := _curve.get_points()
+	# var _curve.points.size() := _curve.get_curve.points.size()()
+
 	var closest_idx = -1
 	var closest_dist_squared: float = point_radius * point_radius * 4
 	for i in range(_curve.points.size()):
@@ -127,6 +139,10 @@ func get_point_at(pos: Vector2) -> int:
 func get_control_at(pos: Vector2) -> Array: # [index, "left" or "right"]
 	if _curve == null:
 		return [-1, ""]
+
+	# var _points := _curve.get_points()
+	# var _curve.points.size() := _curve.get_curve.points.size()()
+
 	for i in range(_curve.points.size()):
 		var p = _curve.points[i]
 		var left_view = get_view_pos(p.left_control_point)
@@ -182,6 +198,10 @@ func _draw():
 	# Reset transform for other drawing
 	draw_set_transform_matrix(Transform2D())
 
+	# var _points := _curve.get_points()
+	# var _curve.points.size() := _curve.get_curve.points.size()()
+
+
 	# Draw curve segments
 	for i in range(_curve.points.size() - 1):
 		var a = _curve.points[i]
@@ -223,6 +243,9 @@ func _bezier(p0: Vector2, p1: Vector2, p2: Vector2, p3: Vector2, t: float) -> Ve
 func _gui_input(event: InputEvent) -> void:
 	if _curve == null:
 		return
+
+	# var _points := _curve.get_points()
+	# var _curve.points.size() := _curve.get_curve.points.size()()
 
 	if event is InputEventKey and event.pressed:
 		if event.keycode == KEY_DELETE and selected_index != -1:

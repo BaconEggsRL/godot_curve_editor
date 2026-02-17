@@ -8,15 +8,16 @@ func _can_handle(object):
 
 
 func handle_bacon_curve_editor(object) -> void:
-	# Add curve editor
-	var bacon_curve_editor := BaconCurveEditor.new()
-	# Ensure the inspector allocates enough vertical space for the editor control
-	# Set a reasonable minimum height (width 0 to allow full inspector width)
-	bacon_curve_editor.custom_minimum_size = Vector2(0, 140)
-
-	# Give the editor the resource so edits operate on the actual exported data
-	bacon_curve_editor.set_curve(object)
-	add_custom_control(bacon_curve_editor)
+	if object == null:
+		return
+	if object is BaconCurve:
+		# Only set linear preset if there are no points yet
+		if object.points.size() == 0:
+			object.set_preset(BaconCurve.PRESET.LINEAR)
+		# Add curve editor
+		var bacon_curve_editor := BaconCurveEditor.new()
+		bacon_curve_editor.set_curve(object)
+		add_custom_control(bacon_curve_editor)
 
 
 func _parse_property(object, type, name, hint_type, hint_string, usage_flags, wide):

@@ -2,6 +2,7 @@ extends Control
 
 @export var bacon_curve:BaconCurve
 @export var curve:Curve
+# @export var curve:Curve
 
 @onready var node: Sprite2D = $node
 @onready var start: Marker2D = $start
