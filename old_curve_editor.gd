@@ -1,9 +1,9 @@
 @tool
-class_name BaconCurveEditor
+class_name OldCurveEditor
 extends Control
 
 # var _curve: Curve
-var _curve: BaconCurve
+var _curve: OldCurve
 
 const ASPECT_RATIO: float = 6. / 13.
 const MIN_X: float = 0.0
@@ -55,7 +55,7 @@ func _ready() -> void:
 
 	if _curve == null:
 		# _curve = Curve.new()
-		_curve = BaconCurve.new()
+		_curve = OldCurve.new()
 		_curve.range_changed.connect(_on_curve_changed)
 		_curve.changed.connect(_on_curve_changed)
 
@@ -71,10 +71,10 @@ func _on_curve_changed() -> void:
 	#_curve = curve
 	#queue_redraw()
 
-func get_data() -> BaconCurve:
+func get_data() -> OldCurve:
 	return _curve
 
-func set_curve(curve: BaconCurve):
+func set_curve(curve: OldCurve):
 	if _curve != curve and _curve != null:
 		# Disconnect from old curve if it exists
 		if _curve.changed.is_connected(_on_curve_changed):
@@ -159,7 +159,7 @@ func _gui_input(event: InputEvent) -> void:
 
 		if event.button_index == MOUSE_BUTTON_RIGHT or event.button_index == MOUSE_BUTTON_MIDDLE:
 			if event.button_index == MOUSE_BUTTON_RIGHT and grabbing == GrabMode.MOVE:
-				_curve.set_point_position(selected_index, initial_grab_pos)
+				_curve.set_point_position(selected_index, initial_grab_pos, true)
 				set_selected_index(initial_grab_index)
 				hovered_index = get_point_at(mpos)
 				grabbing = GrabMode.NONE
@@ -470,8 +470,8 @@ func set_point_position(index: int, pos: Vector2) -> void:
 	if curve == null:
 		return
 
-	curve.set_point_position(index, initial_grab_pos)
-	curve.set_point_position(initial_grab_index, pos)
+	curve.set_point_position(index, initial_grab_pos, true)
+	curve.set_point_position(initial_grab_index, pos, true)
 
 	## Notify property list only if curve is still valid
 	#if curve != null and curve.has_method("notify_property_list_changed"):

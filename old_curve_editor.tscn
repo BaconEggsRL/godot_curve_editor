@@ -1,0 +1,14 @@
+[gd_scene format=3 uid="uid://vr36bnfx0i31"]
+
+[ext_resource type="Script" uid="uid://e260se4cmlop" path="res://old_curve_editor.gd" id="1_jka5b"]
+
+[node name="old_curve_editor" type="Control" unique_id=1085908182]
+clip_contents = true
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+focus_mode = 2
+script = ExtResource("1_jka5b")
