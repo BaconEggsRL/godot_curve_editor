@@ -9,7 +9,7 @@ const ASPECT_RATIO: float = 6. / 13.
 const MIN_X: float = 0.0
 const MAX_X: float = 1.0
 
-const BASE_POINT_RADIUS = 4
+const BASE_OldPoint_RADIUS = 4
 const BASE_HOVER_RADIUS = 10
 const BASE_TANGENT_RADIUS = 3
 const BASE_TANGENT_HOVER_RADIUS = 8
@@ -18,7 +18,7 @@ const BASE_TANGENT_LENGTH = 36
 enum GrabMode { NONE, ADD, MOVE }
 enum TangentIndex { NONE = -1, LEFT = 0, RIGHT = 1 }
 
-var point_radius: int = BASE_POINT_RADIUS
+var OldPoint_radius: int = BASE_OldPoint_RADIUS
 var hover_radius: int = BASE_HOVER_RADIUS
 var tangent_radius: int = BASE_TANGENT_RADIUS
 var tangent_hover_radius: int = BASE_TANGENT_HOVER_RADIUS
@@ -61,7 +61,7 @@ func _ready() -> void:
 
 func _on_curve_changed() -> void:
 	queue_redraw()
-	if selected_index >= _curve.point_count:
+	if selected_index >= _curve.OldPoint_count:
 		set_selected_index(-1)
 
 #func get_data() -> Curve:
@@ -114,7 +114,7 @@ func _notification(what: int) -> void:
 					# "interface/touchscreen/scale_gizmo_handles")
 			var theme_scale = get_theme_default_base_scale()
 
-			point_radius = roundi(BASE_POINT_RADIUS * theme_scale * gizmo_scale)
+			OldPoint_radius = roundi(BASE_OldPoint_RADIUS * theme_scale * gizmo_scale)
 			hover_radius = roundi(BASE_HOVER_RADIUS * theme_scale * gizmo_scale)
 			tangent_radius = roundi(BASE_TANGENT_RADIUS * theme_scale * gizmo_scale)
 			tangent_hover_radius = roundi(BASE_TANGENT_HOVER_RADIUS * theme_scale * gizmo_scale)
@@ -140,10 +140,10 @@ func _gui_input(event: InputEvent) -> void:
 				toggle_linear(selected_index, selected_tangent_index)
 			elif selected_index != -1:
 				if grabbing == GrabMode.ADD:
-					remove_point(selected_index)
+					remove_OldPoint(selected_index)
 					set_selected_index(-1)
 				else:
-					remove_point(selected_index)
+					remove_OldPoint(selected_index)
 
 				grabbing = GrabMode.NONE
 				hovered_index = -1
@@ -159,49 +159,49 @@ func _gui_input(event: InputEvent) -> void:
 
 		if event.button_index == MOUSE_BUTTON_RIGHT or event.button_index == MOUSE_BUTTON_MIDDLE:
 			if event.button_index == MOUSE_BUTTON_RIGHT and grabbing == GrabMode.MOVE:
-				_curve.set_point_position(selected_index, initial_grab_pos, true)
+				_curve.set_OldPoint_position(selected_index, initial_grab_pos, true)
 				set_selected_index(initial_grab_index)
-				hovered_index = get_point_at(mpos)
+				hovered_index = get_OldPoint_at(mpos)
 				grabbing = GrabMode.NONE
 			else:
-				# Remove a point or make a tangent linear
+				# Remove a OldPoint or make a tangent linear
 				selected_tangent_index = get_tangent_at(mpos)
 				if selected_tangent_index != TangentIndex.NONE:
 					toggle_linear(selected_index, selected_tangent_index)
 				else:
-					var point_to_remove: int = get_point_at(mpos)
-					if point_to_remove == -1:
+					var OldPoint_to_remove: int = get_OldPoint_at(mpos)
+					if OldPoint_to_remove == -1:
 						set_selected_index(-1)
 					else:
 						if grabbing == GrabMode.ADD:
-							_curve.remove_point(point_to_remove)
+							_curve.remove_OldPoint(OldPoint_to_remove)
 							set_selected_index(-1)
 						else:
-							remove_point(point_to_remove)
+							remove_OldPoint(OldPoint_to_remove)
 
-						hovered_index = get_point_at(mpos)
+						hovered_index = get_OldPoint_at(mpos)
 						grabbing = GrabMode.NONE
 
-		# SELECTING OR CREATING POINTS
+		# SELECTING OR CREATING OldPointS
 		if event.button_index == MOUSE_BUTTON_LEFT:
 			if grabbing == GrabMode.NONE:
 				selected_tangent_index = get_tangent_at(mpos)
 				if selected_tangent_index == TangentIndex.NONE:
-					set_selected_index(get_point_at(mpos))
+					set_selected_index(get_OldPoint_at(mpos))
 
 				queue_redraw()
 
 			if selected_index != -1:
 				grabbing = GrabMode.MOVE
-				initial_grab_pos = _curve.get_point_position(selected_index)
+				initial_grab_pos = _curve.get_OldPoint_position(selected_index)
 				initial_grab_index = selected_index
 
 				if selected_index > 0:
-					initial_grab_left_tangent = _curve.get_point_left_tangent(selected_index)
-					initial_grab_left_handle_length = _curve.get_point_left_handle_length(selected_index)
-				if selected_index < _curve.point_count - 1:
-					initial_grab_right_tangent = _curve.get_point_right_tangent(selected_index)
-					initial_grab_right_handle_length = _curve.get_point_right_handle_length(selected_index)
+					initial_grab_left_tangent = _curve.get_OldPoint_left_tangent(selected_index)
+					initial_grab_left_handle_length = _curve.get_OldPoint_left_handle_length(selected_index)
+				if selected_index < _curve.OldPoint_count - 1:
+					initial_grab_right_tangent = _curve.get_OldPoint_right_tangent(selected_index)
+					initial_grab_right_handle_length = _curve.get_OldPoint_right_handle_length(selected_index)
 
 			elif grabbing == GrabMode.NONE:
 				var new_pos: Vector2 = get_world_pos(mpos).clamp(Vector2(0, _curve.min_value), Vector2(1.0, _curve.max_value))
@@ -211,7 +211,7 @@ func _gui_input(event: InputEvent) -> void:
 
 				new_pos.x = get_offset_without_collision(selected_index, new_pos.x, mpos.x >= get_view_pos(new_pos).x)
 
-				var new_idx: int = _curve.add_point_no_update(new_pos)
+				var new_idx: int = _curve.add_OldPoint_no_update(new_pos)
 				set_selected_index(new_idx)
 				grabbing = GrabMode.ADD
 				initial_grab_pos = new_pos
@@ -221,20 +221,20 @@ func _gui_input(event: InputEvent) -> void:
 		if selected_tangent_index != TangentIndex.NONE:
 			# Finish moving the tangent control
 			if selected_index == 0:
-				set_point_right_tangent(selected_index, _curve.get_point_right_tangent(selected_index))
-			elif selected_index == _curve.point_count - 1:
-				set_point_left_tangent(selected_index, _curve.get_point_left_tangent(selected_index))
+				set_OldPoint_right_tangent(selected_index, _curve.get_OldPoint_right_tangent(selected_index))
+			elif selected_index == _curve.OldPoint_count - 1:
+				set_OldPoint_left_tangent(selected_index, _curve.get_OldPoint_left_tangent(selected_index))
 			else:
-				set_point_tangents(selected_index, _curve.get_point_left_tangent(selected_index), _curve.get_point_right_tangent(selected_index))
+				set_OldPoint_tangents(selected_index, _curve.get_OldPoint_left_tangent(selected_index), _curve.get_OldPoint_right_tangent(selected_index))
 			grabbing = GrabMode.NONE
 		elif grabbing == GrabMode.MOVE:
-			set_point_position(selected_index, _curve.get_point_position(selected_index))
+			set_OldPoint_position(selected_index, _curve.get_OldPoint_position(selected_index))
 			grabbing = GrabMode.NONE
 		elif grabbing == GrabMode.ADD:
-			# Finish inserting the new point, remove the temporary point
-			var new_pos: Vector2 = _curve.get_point_position(selected_index)
-			_curve.remove_point(selected_index)
-			add_point(new_pos)
+			# Finish inserting the new OldPoint, remove the temporary OldPoint
+			var new_pos: Vector2 = _curve.get_OldPoint_position(selected_index)
+			_curve.remove_OldPoint(selected_index)
+			add_OldPoint(new_pos)
 			grabbing = GrabMode.NONE
 
 		queue_redraw()
@@ -244,7 +244,7 @@ func _gui_input(event: InputEvent) -> void:
 
 		if grabbing != GrabMode.NONE:
 			if selected_index != -1:
-				# Dragging a point
+				# Dragging a OldPoint
 				if selected_tangent_index == TangentIndex.NONE:
 					var new_pos: Vector2 = get_world_pos(mpos).clamp(Vector2(0.0, _curve.min_value), Vector2(1.0, _curve.max_value))
 
@@ -260,63 +260,63 @@ func _gui_input(event: InputEvent) -> void:
 							new_pos.x = initial_grab_pos.x
 
 					if event.is_alt_pressed():
-						var prev_point_offset: float = (_curve.get_point_position(selected_index - 1).x + 0.00001) if (selected_index > 0) else 0.0
-						var next_point_offset: float = (_curve.get_point_position(selected_index + 1).x - 0.00001) if (selected_index < _curve.point_count - 1) else 1.0
-						new_pos.x = clamp(new_pos.x, prev_point_offset, next_point_offset)
+						var prev_OldPoint_offset: float = (_curve.get_OldPoint_position(selected_index - 1).x + 0.00001) if (selected_index > 0) else 0.0
+						var next_OldPoint_offset: float = (_curve.get_OldPoint_position(selected_index + 1).x - 0.00001) if (selected_index < _curve.OldPoint_count - 1) else 1.0
+						new_pos.x = clamp(new_pos.x, prev_OldPoint_offset, next_OldPoint_offset)
 
 					new_pos.x = get_offset_without_collision(selected_index, new_pos.x, mpos.x >= get_view_pos(new_pos).x)
 
-					var i: int = _curve.set_point_position(selected_index, new_pos)
+					var i: int = _curve.set_OldPoint_position(selected_index, new_pos)
 					hovered_index = i
 					set_selected_index(i)
 
 				else:
 					# Drag a tangent
-					var point_pos: Vector2 = _curve.get_point_position(selected_index)
+					var OldPoint_pos: Vector2 = _curve.get_OldPoint_position(selected_index)
 					var control_pos: Vector2 = get_world_pos(mpos)
 
-					# Calculate the offset vector from the point to the control
-					var offset: Vector2 = control_pos - point_pos
+					# Calculate the offset vector from the OldPoint to the control
+					var offset: Vector2 = control_pos - OldPoint_pos
 					var distance: float = offset.length()
 					var dir: Vector2 = offset.normalized() if distance > 0.00001 else Vector2(1, 0)
 					var tangent = dir.y / (max(dir.x, 0.00001) if dir.x > 0 else min(dir.x, -0.00001))
 
 					# Calculate handle length as a normalized distance in view space
-					var point_view_pos: Vector2 = get_view_pos(point_pos)
+					var OldPoint_view_pos: Vector2 = get_view_pos(OldPoint_pos)
 					var control_view_pos: Vector2 = mpos
-					var handle_visual_distance: float = point_view_pos.distance_to(control_view_pos)
+					var handle_visual_distance: float = OldPoint_view_pos.distance_to(control_view_pos)
 					var handle_length: float = handle_visual_distance / tangent_length if tangent_length > 0 else 1.0
 					handle_length = max(0.0, handle_length)  # Allow unlimited handle length
 
 					hovered_tangent_index = selected_tangent_index
 
 					if selected_tangent_index == TangentIndex.LEFT:
-						_curve.set_point_left_tangent(selected_index, tangent)
-						_curve.set_point_left_handle_length(selected_index, handle_length)
+						_curve.set_OldPoint_left_tangent(selected_index, tangent)
+						_curve.set_OldPoint_left_handle_length(selected_index, handle_length)
 
-						if selected_index != _curve.point_count - 1  and _curve.get_point_right_mode(selected_index) != _curve.TANGENT_LINEAR:
+						if selected_index != _curve.OldPoint_count - 1  and _curve.get_OldPoint_right_mode(selected_index) != _curve.TANGENT_LINEAR:
 							if event.is_shift_pressed():
-								_curve.set_point_right_tangent(selected_index, initial_grab_right_tangent)
-								_curve.set_point_right_handle_length(selected_index, initial_grab_right_handle_length)
+								_curve.set_OldPoint_right_tangent(selected_index, initial_grab_right_tangent)
+								_curve.set_OldPoint_right_handle_length(selected_index, initial_grab_right_handle_length)
 							else:
-								_curve.set_point_right_tangent(selected_index, tangent)
-								_curve.set_point_right_handle_length(selected_index, handle_length)
+								_curve.set_OldPoint_right_tangent(selected_index, tangent)
+								_curve.set_OldPoint_right_handle_length(selected_index, handle_length)
 					else:
-						_curve.set_point_right_tangent(selected_index, tangent)
-						_curve.set_point_right_handle_length(selected_index, handle_length)
+						_curve.set_OldPoint_right_tangent(selected_index, tangent)
+						_curve.set_OldPoint_right_handle_length(selected_index, handle_length)
 
-						if selected_index != 0 and _curve.get_point_left_tangent(selected_index) != _curve.TANGENT_LINEAR:
+						if selected_index != 0 and _curve.get_OldPoint_left_tangent(selected_index) != _curve.TANGENT_LINEAR:
 							if event.is_shift_pressed():
-								_curve.set_point_left_tangent(selected_index, initial_grab_left_tangent)
-								_curve.set_point_left_handle_length(selected_index, initial_grab_left_handle_length)
+								_curve.set_OldPoint_left_tangent(selected_index, initial_grab_left_tangent)
+								_curve.set_OldPoint_left_handle_length(selected_index, initial_grab_left_handle_length)
 							else:
-								_curve.set_point_left_tangent(selected_index, tangent)
-								_curve.set_point_left_handle_length(selected_index, handle_length)
+								_curve.set_OldPoint_left_tangent(selected_index, tangent)
+								_curve.set_OldPoint_left_handle_length(selected_index, handle_length)
 
 					queue_redraw()
 		else:
 			# Grab mode is none, so do hovering logic
-			hovered_index = get_point_at(mpos)
+			hovered_index = get_OldPoint_at(mpos)
 			hovered_tangent_index = get_tangent_at(mpos)
 			queue_redraw()
 
@@ -349,7 +349,7 @@ func update_view_transform() -> void:
 func _curve_changed() -> void:
 	queue_redraw()
 
-	if selected_index >= _curve.point_count:
+	if selected_index >= _curve.OldPoint_count:
 		set_selected_index(-1)
 
 
@@ -363,7 +363,7 @@ func get_world_pos(view_pos: Vector2) -> Vector2:
 	return _world_to_view.affine_inverse() * view_pos
 
 
-func get_point_at(pos: Vector2) -> int:
+func get_OldPoint_at(pos: Vector2) -> int:
 	if _curve == null:
 		return -1
 
@@ -371,14 +371,14 @@ func get_point_at(pos: Vector2) -> int:
 	var closest_idx = -1
 	var closest_dist_squared: float = hover_radius * hover_radius * 2
 
-	for i in range(_curve.point_count):
-		var p: Vector2 = get_view_pos(_curve.get_point_position(i))
+	for i in range(_curve.OldPoint_count):
+		var p: Vector2 = get_view_pos(_curve.get_OldPoint_position(i))
 		if hover_rect.has_point(p) && p.distance_squared_to(pos) < closest_dist_squared:
 			closest_dist_squared = p.distance_squared_to(pos)
 			closest_idx = i
 
-	#for i in range(_curve.point_count):
-	#	var p: Vector2 = get_view_pos(_curve.get_point_position(i))
+	#for i in range(_curve.OldPoint_count):
+	#	var p: Vector2 = get_view_pos(_curve.get_OldPoint_position(i))
 
 	return closest_idx
 
@@ -394,7 +394,7 @@ func get_tangent_at(pos: Vector2) -> TangentIndex:
 		if hover_rect.has_point(control_pos):
 			return TangentIndex.LEFT
 
-	if selected_index != _curve.point_count - 1:
+	if selected_index != _curve.OldPoint_count - 1:
 		var control_pos: Vector2 = get_tangent_view_pos(selected_index, TangentIndex.RIGHT)
 		if hover_rect.has_point(control_pos):
 			return TangentIndex.RIGHT
@@ -406,14 +406,14 @@ func get_offset_without_collision(current_index: int, offset: float, prioritize_
 	var safe_offset: float = offset
 	var prioritizing_right: bool = prioritize_right
 
-	for i in range(_curve.point_count):
+	for i in range(_curve.OldPoint_count):
 		if i == current_index:
 			continue
 
-		if _curve.get_point_position(i).x > safe_offset:
+		if _curve.get_OldPoint_position(i).x > safe_offset:
 			break
 
-		if _curve.get_point_position(i).x == safe_offset:
+		if _curve.get_OldPoint_position(i).x == safe_offset:
 			if prioritizing_right:
 				safe_offset += 0.00001
 				if safe_offset > 1.0:
@@ -431,18 +431,18 @@ func get_offset_without_collision(current_index: int, offset: float, prioritize_
 	return safe_offset
 
 
-func add_point(pos: Vector2) -> void:
+func add_OldPoint(pos: Vector2) -> void:
 	# TODO: UndoRedo
-	var new_idx: int = _curve.add_point(pos)
+	var new_idx: int = _curve.add_OldPoint(pos)
 	set_selected_index(new_idx)
 
 
 	queue_redraw()
 
 
-func remove_point(index: int) -> void:
+func remove_OldPoint(index: int) -> void:
 	# TODO: UndoRedo
-	# var cur_pos: Vector2 = _curve.get_point_position(index)
+	# var cur_pos: Vector2 = _curve.get_OldPoint_position(index)
 	# var old_pos: Vector2 = initial_grab_pos if grabbing == GrabMode.MOVE else cur_pos
 
 	var new_selected_index: int = selected_index
@@ -452,13 +452,13 @@ func remove_point(index: int) -> void:
 	elif new_selected_index == index:
 		new_selected_index = -1
 
-	_curve.remove_point(index)
+	_curve.remove_OldPoint(index)
 	set_selected_index(new_selected_index)
 
 	queue_redraw()
 
 
-func set_point_position(index: int, pos: Vector2) -> void:
+func set_OldPoint_position(index: int, pos: Vector2) -> void:
 	if initial_grab_pos == pos:
 		return
 
@@ -470,8 +470,8 @@ func set_point_position(index: int, pos: Vector2) -> void:
 	if curve == null:
 		return
 
-	curve.set_point_position(index, initial_grab_pos, true)
-	curve.set_point_position(initial_grab_index, pos, true)
+	curve.set_OldPoint_position(index, initial_grab_pos, true)
+	curve.set_OldPoint_position(initial_grab_index, pos, true)
 
 	## Notify property list only if curve is still valid
 	#if curve != null and curve.has_method("notify_property_list_changed"):
@@ -480,62 +480,62 @@ func set_point_position(index: int, pos: Vector2) -> void:
 	## TODO UndoRedo
 
 
-func set_point_tangents(index: int, left: float, right: float) -> void:
+func set_OldPoint_tangents(index: int, left: float, right: float) -> void:
 	if initial_grab_left_tangent == left:
-		set_point_right_tangent(index, right)
+		set_OldPoint_right_tangent(index, right)
 		return
 	elif initial_grab_right_tangent == right:
-		set_point_left_tangent(index, left)
+		set_OldPoint_left_tangent(index, left)
 		return
 
 	# Get current handle lengths before restoring
-	var current_left_handle = _curve.get_point_left_handle_length(index)
-	var current_right_handle = _curve.get_point_right_handle_length(index)
+	var current_left_handle = _curve.get_OldPoint_left_handle_length(index)
+	var current_right_handle = _curve.get_OldPoint_right_handle_length(index)
 
-	_curve.set_point_left_tangent(index, initial_grab_left_tangent)
-	_curve.set_point_left_handle_length(index, initial_grab_left_handle_length)
-	_curve.set_point_right_tangent(index, initial_grab_right_tangent)
-	_curve.set_point_right_handle_length(index, initial_grab_right_handle_length)
+	_curve.set_OldPoint_left_tangent(index, initial_grab_left_tangent)
+	_curve.set_OldPoint_left_handle_length(index, initial_grab_left_handle_length)
+	_curve.set_OldPoint_right_tangent(index, initial_grab_right_tangent)
+	_curve.set_OldPoint_right_handle_length(index, initial_grab_right_handle_length)
 
-	_curve.set_point_left_tangent(index, left)
-	_curve.set_point_left_handle_length(index, current_left_handle)
-	_curve.set_point_right_tangent(index, right)
-	_curve.set_point_right_handle_length(index, current_right_handle)
+	_curve.set_OldPoint_left_tangent(index, left)
+	_curve.set_OldPoint_left_handle_length(index, current_left_handle)
+	_curve.set_OldPoint_right_tangent(index, right)
+	_curve.set_OldPoint_right_handle_length(index, current_right_handle)
 	set_selected_index(index)
 	_curve.notify_property_list_changed()
 
 	# TODO: UndoRedo
 
 
-func set_point_left_tangent(index: int, tangent: float) -> void:
+func set_OldPoint_left_tangent(index: int, tangent: float) -> void:
 	if initial_grab_left_tangent == tangent:
 		return
 
 	# Get current handle length before restoring
-	var current_handle = _curve.get_point_left_handle_length(index)
+	var current_handle = _curve.get_OldPoint_left_handle_length(index)
 
-	_curve.set_point_left_tangent(index, initial_grab_left_tangent)
-	_curve.set_point_left_handle_length(index, initial_grab_left_handle_length)
+	_curve.set_OldPoint_left_tangent(index, initial_grab_left_tangent)
+	_curve.set_OldPoint_left_handle_length(index, initial_grab_left_handle_length)
 	# TODO: UndoRedo
 
-	_curve.set_point_left_tangent(index, tangent)
-	_curve.set_point_left_handle_length(index, current_handle)
+	_curve.set_OldPoint_left_tangent(index, tangent)
+	_curve.set_OldPoint_left_handle_length(index, current_handle)
 	set_selected_index(index)
 	_curve.notify_property_list_changed()
 
-func set_point_right_tangent(index: int, tangent: float) -> void:
+func set_OldPoint_right_tangent(index: int, tangent: float) -> void:
 	if initial_grab_right_tangent == tangent:
 		return
 
 	# Get current handle length before restoring
-	var current_handle = _curve.get_point_right_handle_length(index)
+	var current_handle = _curve.get_OldPoint_right_handle_length(index)
 
-	_curve.set_point_right_tangent(index, initial_grab_right_tangent)
-	_curve.set_point_right_handle_length(index, initial_grab_right_handle_length)
+	_curve.set_OldPoint_right_tangent(index, initial_grab_right_tangent)
+	_curve.set_OldPoint_right_handle_length(index, initial_grab_right_handle_length)
 	# TODO: UndoRedo
 
-	_curve.set_point_right_tangent(index, tangent)
-	_curve.set_point_right_handle_length(index, current_handle)
+	_curve.set_OldPoint_right_tangent(index, tangent)
+	_curve.set_OldPoint_right_handle_length(index, current_handle)
 	set_selected_index(index)
 	_curve.notify_property_list_changed()
 
@@ -543,15 +543,15 @@ func toggle_linear(index: int, tangent: TangentIndex) -> void:
 	if tangent == TangentIndex.NONE:
 		return
 
-	var prev_mode = _curve.get_point_left_mode(index) if tangent == TangentIndex.LEFT else _curve.get_point_right_mode(index)
+	var prev_mode = _curve.get_OldPoint_left_mode(index) if tangent == TangentIndex.LEFT else _curve.get_OldPoint_right_mode(index)
 	var mode = _curve.TANGENT_FREE if prev_mode == _curve.TANGENT_LINEAR else _curve.TANGENT_LINEAR
 
-	# var prev_angle: float = _curve.get_point_left_tangent(index) if tangent == TangentIndex.LEFT else _curve.get_point_right_tangent(index)
+	# var prev_angle: float = _curve.get_OldPoint_left_tangent(index) if tangent == TangentIndex.LEFT else _curve.get_OldPoint_right_tangent(index)
 
 	if tangent == TangentIndex.LEFT:
-		_curve.set_point_left_mode(index, mode)
+		_curve.set_OldPoint_left_mode(index, mode)
 	else:
-		_curve.set_point_right_mode(index, mode)
+		_curve.set_OldPoint_right_mode(index, mode)
 
 	# TODO: UndoRedo
 
@@ -643,30 +643,30 @@ func _draw():
 
 	draw_set_transform_matrix(Transform2D())
 
-	var point_color: Color = get_theme_color(&"font_color", &"Editor")
-	# Change this if you want to a different color for the hovered point
-	var hovered_point_color: Color = point_color
+	var OldPoint_color: Color = get_theme_color(&"font_color", &"Editor")
+	# Change this if you want to a different color for the hovered OldPoint
+	var hovered_OldPoint_color: Color = OldPoint_color
 
-	#Draw points
-	for i in range(_curve.point_count):
-		var pos = get_view_pos(_curve.get_point_position(i))
+	#Draw OldPoints
+	for i in range(_curve.OldPoint_count):
+		var pos = get_view_pos(_curve.get_OldPoint_position(i))
 
 		if selected_index != i:
-			draw_rect(Rect2(pos, Vector2(0, 0)).grow(point_radius), point_color)
+			draw_rect(Rect2(pos, Vector2(0, 0)).grow(OldPoint_radius), OldPoint_color)
 		if hovered_index == i and hovered_tangent_index == TangentIndex.NONE:
 			draw_rect(
 				Rect2(pos, Vector2(0, 0)).grow(hover_radius - round(3 * _editor_scale)),
-				hovered_point_color,
+				hovered_OldPoint_color,
 				false,
 				round(1 * _editor_scale)
 			)
 
-	# Draw selected points and tangents
+	# Draw selected OldPoints and tangents
 	if selected_index >= 0:
-		var point_pos: Vector2 = _curve.get_point_position(selected_index)
-		var selected_point_color = get_theme_color(&"accent_color", &"Editor")
+		var OldPoint_pos: Vector2 = _curve.get_OldPoint_position(selected_index)
+		var selected_OldPoint_color = get_theme_color(&"accent_color", &"Editor")
 
-		if grabbing == GrabMode.NONE || initial_grab_pos == point_pos || selected_tangent_index != TangentIndex.NONE:
+		if grabbing == GrabMode.NONE || initial_grab_pos == OldPoint_pos || selected_tangent_index != TangentIndex.NONE:
 			var selected_tangent_color = get_theme_color(&"accent_color", &"Editor").darkened(0.25)
 			var tangent_color = get_theme_color(&"font_color", &"Editor").darkened(0.25)
 
@@ -674,15 +674,15 @@ func _draw():
 				var control_pos: Vector2 = get_tangent_view_pos(selected_index, TangentIndex.LEFT)
 				var left_tangent_color: Color = selected_tangent_color if (selected_tangent_index == TangentIndex.LEFT) else tangent_color
 
-				draw_line(get_view_pos(point_pos), control_pos, left_tangent_color, 0.5 * _editor_scale, true)
+				draw_line(get_view_pos(OldPoint_pos), control_pos, left_tangent_color, 0.5 * _editor_scale, true)
 
-				if _curve.get_point_left_mode(selected_index) == _curve.TANGENT_FREE:
+				if _curve.get_OldPoint_left_mode(selected_index) == _curve.TANGENT_FREE:
 					draw_circle(control_pos, tangent_radius, left_tangent_color)
 				else:
 					draw_rect(Rect2(control_pos, Vector2(0, 0)).grow(tangent_radius), left_tangent_color)
 
 				# Hover Indicator
-				if hovered_tangent_index == TangentIndex.LEFT or (hovered_tangent_index == TangentIndex.RIGHT and !is_shift_pressed and _curve.get_point_left_mode(selected_index) != _curve.TANGENT_LINEAR):
+				if hovered_tangent_index == TangentIndex.LEFT or (hovered_tangent_index == TangentIndex.RIGHT and !is_shift_pressed and _curve.get_OldPoint_left_mode(selected_index) != _curve.TANGENT_LINEAR):
 					draw_rect(
 						Rect2(
 							control_pos,
@@ -692,19 +692,19 @@ func _draw():
 						round(1 * _editor_scale)
 					)
 
-			if selected_index != _curve.get_point_count() - 1:
+			if selected_index != _curve.get_OldPoint_count() - 1:
 				var control_pos = get_tangent_view_pos(selected_index, TangentIndex.RIGHT)
 				var right_tangent_color: Color = selected_tangent_color if selected_tangent_index == TangentIndex.RIGHT else tangent_color
 
-				draw_line(get_view_pos(point_pos), control_pos, right_tangent_color, 0.5 * _editor_scale, true)
+				draw_line(get_view_pos(OldPoint_pos), control_pos, right_tangent_color, 0.5 * _editor_scale, true)
 
-				if _curve.get_point_right_mode(selected_index) == _curve.TANGENT_FREE:
+				if _curve.get_OldPoint_right_mode(selected_index) == _curve.TANGENT_FREE:
 					draw_circle(control_pos, tangent_radius, right_tangent_color)
 				else:
 					draw_rect(Rect2(control_pos, Vector2(0, 0)).grow(tangent_radius), right_tangent_color)
 
 				# Hover Indicator
-				if hovered_tangent_index == TangentIndex.RIGHT or (hovered_tangent_index == TangentIndex.LEFT and !is_shift_pressed and _curve.get_point_right_mode(selected_index) != _curve.TANGENT_LINEAR):
+				if hovered_tangent_index == TangentIndex.RIGHT or (hovered_tangent_index == TangentIndex.LEFT and !is_shift_pressed and _curve.get_OldPoint_right_mode(selected_index) != _curve.TANGENT_LINEAR):
 					draw_rect(
 						Rect2(
 							control_pos,
@@ -714,10 +714,10 @@ func _draw():
 						round(1 * _editor_scale)
 					)
 
-		draw_rect(Rect2(get_view_pos(point_pos), Vector2(0, 0)).grow(point_radius), selected_point_color)
+		draw_rect(Rect2(get_view_pos(OldPoint_pos), Vector2(0, 0)).grow(OldPoint_radius), selected_OldPoint_color)
 
 	# Draw Helper Text
-	if selected_index > 0 and selected_index < _curve.point_count - 1 and selected_tangent_index == TangentIndex.NONE and hovered_tangent_index != TangentIndex.NONE and !is_shift_pressed:
+	if selected_index > 0 and selected_index < _curve.OldPoint_count - 1 and selected_tangent_index == TangentIndex.NONE and hovered_tangent_index != TangentIndex.NONE and !is_shift_pressed:
 		var width: float = size.x - 50 * _editor_scale
 		text_color.a *= 0.4;
 
@@ -732,14 +732,14 @@ func _draw():
 			text_color
 		)
 	elif selected_index != -1 and selected_tangent_index == TangentIndex.NONE:
-		var point_pos: Vector2 = _curve.get_point_position(selected_index)
+		var OldPoint_pos: Vector2 = _curve.get_OldPoint_position(selected_index)
 		var width: float = size.x - 50 * _editor_scale
 		text_color.a *= 0.8;
 
 		draw_string(
 			font,
 			Vector2(25 * _editor_scale, font_height - round(2 * _editor_scale)),
-			"(%.2f, %.2f)" % [point_pos.x, point_pos.y],
+			"(%.2f, %.2f)" % [OldPoint_pos.x, OldPoint_pos.y],
 			HORIZONTAL_ALIGNMENT_CENTER,
 			width,
 			font_size,
@@ -748,7 +748,7 @@ func _draw():
 	elif selected_index != -1 and selected_tangent_index != TangentIndex.NONE:
 		var width: float = size.x - 50 * _editor_scale
 		text_color.a *= 0.8
-		var theta = rad_to_deg(atan(-1 * _curve.get_point_left_tangent(selected_index) if selected_tangent_index == TangentIndex.LEFT else _curve.get_point_right_tangent(selected_index)))
+		var theta = rad_to_deg(atan(-1 * _curve.get_OldPoint_left_tangent(selected_index) if selected_tangent_index == TangentIndex.LEFT else _curve.get_OldPoint_right_tangent(selected_index)))
 
 		draw_string(
 			font,
@@ -764,18 +764,18 @@ func _draw():
 	draw_set_transform_matrix(_world_to_view);
 
 	if Input.is_key_pressed(KEY_ALT) && grabbing != GrabMode.NONE and selected_tangent_index == TangentIndex.NONE:
-		var prev_point_offset: float = _curve.get_point_position(selected_index - 1).x if selected_index > 0 else 0.0
-		var next_point_offset: float = _curve.get_point_position(selected_index + 1).x if selected_index < _curve.get_point_count() - 1 else 1.0
+		var prev_OldPoint_offset: float = _curve.get_OldPoint_position(selected_index - 1).x if selected_index > 0 else 0.0
+		var next_OldPoint_offset: float = _curve.get_OldPoint_position(selected_index + 1).x if selected_index < _curve.get_OldPoint_count() - 1 else 1.0
 
 		draw_line(
-			Vector2(prev_point_offset, _curve.min_value),
-			Vector2(prev_point_offset, _curve.max_value),
-			Color(point_color, 0.6)
+			Vector2(prev_OldPoint_offset, _curve.min_value),
+			Vector2(prev_OldPoint_offset, _curve.max_value),
+			Color(OldPoint_color, 0.6)
 		)
 		draw_line(
-			Vector2(next_point_offset, _curve.min_value),
-			Vector2(next_point_offset, _curve.max_value),
-			Color(point_color, 0.6)
+			Vector2(next_OldPoint_offset, _curve.min_value),
+			Vector2(next_OldPoint_offset, _curve.max_value),
+			Color(OldPoint_color, 0.6)
 		)
 
 	if is_shift_pressed and grabbing != GrabMode.NONE and selected_tangent_index == TangentIndex.NONE:
@@ -795,36 +795,36 @@ func get_tangent_view_pos(index: int, tangent: TangentIndex) -> Vector2:
 	var dir: Vector2
 	var handle_length: float
 	if tangent == TangentIndex.LEFT:
-		dir = -Vector2(1, _curve.get_point_left_tangent(index))
-		handle_length = _curve.get_point_left_handle_length(index)
+		dir = -Vector2(1, _curve.get_OldPoint_left_tangent(index))
+		handle_length = _curve.get_OldPoint_left_handle_length(index)
 	else:
-		dir = Vector2(1, _curve.get_point_right_tangent(index))
-		handle_length = _curve.get_point_right_handle_length(index)
+		dir = Vector2(1, _curve.get_OldPoint_right_tangent(index))
+		handle_length = _curve.get_OldPoint_right_handle_length(index)
 
-	var point_pos: Vector2 = _curve.get_point_position(index)
-	var point_view_pos: Vector2 = get_view_pos(point_pos)
-	var control_view_pos: Vector2 = get_view_pos(point_pos + dir)
+	var OldPoint_pos: Vector2 = _curve.get_OldPoint_position(index)
+	var OldPoint_view_pos: Vector2 = get_view_pos(OldPoint_pos)
+	var control_view_pos: Vector2 = get_view_pos(OldPoint_pos + dir)
 
 	# Use handle_length to scale the visual distance
-	var distance_from_point: Vector2 = tangent_length * handle_length * (control_view_pos - point_view_pos).normalized()
-	var tangent_view_pos: Vector2 = point_view_pos + distance_from_point
+	var distance_from_OldPoint: Vector2 = tangent_length * handle_length * (control_view_pos - OldPoint_view_pos).normalized()
+	var tangent_view_pos: Vector2 = OldPoint_view_pos + distance_from_OldPoint
 
-	# Since the tangent is long, it might slip outside of the area of the editor for points close to the domain/range boundaries.
-	# The code below shrinks the tangent control by up to 50% so it always stays inside the editor for points within the bounds.
+	# Since the tangent is long, it might slip outside of the area of the editor for OldPoints close to the domain/range boundaries.
+	# The code below shrinks the tangent control by up to 50% so it always stays inside the editor for OldPoints within the bounds.
 	var fraction_inside: float = 1.0
-	if distance_from_point.x != 0.0:
+	if distance_from_OldPoint.x != 0.0:
 		fraction_inside = min(
 			fraction_inside,
-			((size.x if distance_from_point.x > 0 else 0.0) - point_view_pos.x) / distance_from_point.x
+			((size.x if distance_from_OldPoint.x > 0 else 0.0) - OldPoint_view_pos.x) / distance_from_OldPoint.x
 		)
-	if distance_from_point.y != 0.0:
+	if distance_from_OldPoint.y != 0.0:
 		fraction_inside = min(
 			fraction_inside,
-			((size.y if distance_from_point.y > 0 else 0.0) - point_view_pos.y) / distance_from_point.y
+			((size.y if distance_from_OldPoint.y > 0 else 0.0) - OldPoint_view_pos.y) / distance_from_OldPoint.y
 		)
 
 	if fraction_inside < 1.0 and fraction_inside > 0.5:
-		tangent_view_pos = point_view_pos + distance_from_point * fraction_inside
+		tangent_view_pos = OldPoint_view_pos + distance_from_OldPoint * fraction_inside
 
 	return tangent_view_pos
 
@@ -832,21 +832,21 @@ func get_tangent_view_pos(index: int, tangent: TangentIndex) -> Vector2:
 func plot_curve_accurate(step: float, scaling: Vector2):
 	var line_color: Color = get_theme_color(&"font_color", &"Editor")
 
-	if _curve.point_count <= 1:
+	if _curve.OldPoint_count <= 1:
 		var y: float = _curve.sample(0)
 		draw_line(Vector2(0, y) * scaling + Vector2(0.5, 0), Vector2(1.0, y) * scaling - Vector2(-1.5, 0), line_color)
 		return
 
-	var first_point = _curve.get_point_position(0)
-	var last_point = _curve.get_point_position(_curve.point_count - 1)
+	var first_OldPoint = _curve.get_OldPoint_position(0)
+	var last_OldPoint = _curve.get_OldPoint_position(_curve.OldPoint_count - 1)
 
 	# Edge Lines
-	draw_line(Vector2(0, first_point.y) * scaling + Vector2(0.5, 0.0), first_point * scaling, line_color)
-	draw_line(Vector2(MAX_X, last_point.y) * scaling - Vector2(-1.5, 0), last_point * scaling, line_color)
+	draw_line(Vector2(0, first_OldPoint.y) * scaling + Vector2(0.5, 0.0), first_OldPoint * scaling, line_color)
+	draw_line(Vector2(MAX_X, last_OldPoint.y) * scaling - Vector2(-1.5, 0), last_OldPoint * scaling, line_color)
 
-	for i in range(1, _curve.point_count):
-		var a = _curve.get_point_position(i - 1)
-		var b = _curve.get_point_position(i)
+	for i in range(1, _curve.OldPoint_count):
+		var a = _curve.get_OldPoint_position(i - 1)
+		var b = _curve.get_OldPoint_position(i)
 
 		var pos = a
 		var prev_pos = a

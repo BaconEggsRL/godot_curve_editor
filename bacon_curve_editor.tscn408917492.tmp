@@ -12,7 +12,3 @@ grow_horizontal = 2
 grow_vertical = 2
 focus_mode = 2
 script = ExtResource("1_etl24")
-point_radius = 4
-control_radius = null
-line_color = null
-control_line_color = null

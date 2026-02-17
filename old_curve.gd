@@ -47,9 +47,9 @@ func get_OldPoints() -> Array[OldPoint]:
 func set_OldPoints(value) -> void:
 	_OldPoints = value
 	# Reconnect signals to all OldPoints
-	for OldPoint in _OldPoints:
-		if OldPoint != null and not OldPoint.changed.is_connected(_on_OldPoint_changed):
-			OldPoint.changed.connect(_on_OldPoint_changed)
+	for point in _OldPoints:
+		if point != null and not point.changed.is_connected(_on_OldPoint_changed):
+			point.changed.connect(_on_OldPoint_changed)
 	emit_changed()
 
 
@@ -96,7 +96,7 @@ func _add_OldPoint(p_position: Vector2, p_left_tangent: float = 0.0, p_right_tan
 
 	if _OldPoints.is_empty():
 		_OldPoints.append(OldPoint.new(p_position, p_left_tangent, p_right_tangent, p_left_mode, p_right_mode, p_left_handle_length, p_right_handle_length))
-		_OldPoints[0].update_control_OldPoints()
+		_OldPoints[0].update_control_points()
 		_OldPoints[0].changed.connect(_on_OldPoint_changed)
 		ret = 0
 	else:
@@ -108,7 +108,7 @@ func _add_OldPoint(p_position: Vector2, p_left_tangent: float = 0.0, p_right_tan
 				break
 
 		_OldPoints.insert(insert_idx, OldPoint.new(p_position, p_left_tangent, p_right_tangent, p_left_mode, p_right_mode, p_left_handle_length, p_right_handle_length))
-		_OldPoints[insert_idx].update_control_OldPoints()
+		_OldPoints[insert_idx].update_control_points()
 		_OldPoints[insert_idx].changed.connect(_on_OldPoint_changed)
 		ret = insert_idx
 
@@ -183,7 +183,7 @@ func set_OldPoint_left_tangent(p_index: int, p_tangent: float) -> void:
 
 	_OldPoints[p_index].left_tangent = p_tangent
 	_OldPoints[p_index].left_mode = OldPoint.TangentMode.TANGENT_FREE
-	_OldPoints[p_index].update_control_OldPoints()
+	_OldPoints[p_index].update_control_points()
 	mark_dirty()
 
 
@@ -193,7 +193,7 @@ func set_OldPoint_right_tangent(p_index: int, p_tangent: float) -> void:
 
 	_OldPoints[p_index].right_tangent = p_tangent
 	_OldPoints[p_index].right_mode = OldPoint.TangentMode.TANGENT_FREE
-	_OldPoints[p_index].update_control_OldPoints()
+	_OldPoints[p_index].update_control_points()
 	mark_dirty()
 
 
@@ -246,7 +246,7 @@ func set_OldPoint_left_handle_length(p_index: int, p_length: float) -> void:
 		return
 
 	_OldPoints[p_index].left_handle_length = max(0.0, p_length)
-	_OldPoints[p_index].update_control_OldPoints()
+	_OldPoints[p_index].update_control_points()
 	mark_dirty()
 
 
@@ -255,7 +255,7 @@ func set_OldPoint_right_handle_length(p_index: int, p_length: float) -> void:
 		return
 
 	_OldPoints[p_index].right_handle_length = max(0.0, p_length)
-	_OldPoints[p_index].update_control_OldPoints()
+	_OldPoints[p_index].update_control_points()
 	mark_dirty()
 
 
@@ -282,7 +282,7 @@ func set_OldPoint_left_control_OldPoint(p_index: int, p_control_OldPoint: Vector
 		return
 
 	_OldPoints[p_index].update_from_control_OldPoints(p_control_OldPoint, _OldPoints[p_index].right_control_OldPoint)
-	_OldPoints[p_index].update_control_OldPoints()
+	_OldPoints[p_index].update_control_points()
 	mark_dirty()
 
 
@@ -297,7 +297,7 @@ func set_OldPoint_right_control_OldPoint(p_index: int, p_control_OldPoint: Vecto
 		return
 
 	_OldPoints[p_index].update_from_control_OldPoints(_OldPoints[p_index].left_control_OldPoint, p_control_OldPoint)
-	_OldPoints[p_index].update_control_OldPoints()
+	_OldPoints[p_index].update_control_points()
 	mark_dirty()
 
 
@@ -321,9 +321,9 @@ func clear_OldPoints() -> void:
 		return
 
 	# Disconnect signals from all OldPoints
-	for OldPoint in _OldPoints:
-		if OldPoint.changed.is_connected(_on_OldPoint_changed):
-			OldPoint.changed.disconnect(_on_OldPoint_changed)
+	for point in _OldPoints:
+		if point.changed.is_connected(_on_OldPoint_changed):
+			point.changed.disconnect(_on_OldPoint_changed)
 
 	_OldPoints.clear()
 	mark_dirty()
@@ -347,7 +347,7 @@ func set_OldPoint_offset(p_index: int, p_offset: float) -> int:
 	return set_OldPoint_position(p_index, Vector2(p_offset, _OldPoints[p_index].position.y))
 
 
-func set_OldPoint_position(p_index: int, p_pos: Vector2, p_reopen_inspector: bool = false) -> int:
+func set_OldPoint_position(p_index: int, p_pos: Vector2, _p_reopen_inspector: bool = false) -> int:
 	# Set a OldPoint's position (x and/or y). If x changes the OldPoint is reinserted to keep ordering.
 	if p_index < 0 or p_index >= _OldPoints.size():
 		return -1
@@ -378,7 +378,7 @@ func set_OldPoint_position(p_index: int, p_pos: Vector2, p_reopen_inspector: boo
 	else:
 		# Only Y changed
 		_OldPoints[p_index].position.y = p_pos.y
-		_OldPoints[p_index].update_control_OldPoints()
+		_OldPoints[p_index].update_control_points()
 		update_auto_tangents(p_index)
 		_OldPoints[p_index].emit_changed()
 		mark_dirty()
@@ -628,7 +628,7 @@ func set_data(p_input: Array) -> void:
 			_OldPoints[j].right_handle_length = 1.0
 
 		# Update control OldPoints after loading
-		_OldPoints[j].update_control_OldPoints()
+		_OldPoints[j].update_control_points()
 
 	mark_dirty()
 	if old_size != new_size:
