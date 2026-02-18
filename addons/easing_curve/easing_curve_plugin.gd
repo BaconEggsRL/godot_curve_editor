@@ -173,8 +173,26 @@ func handle_points(curve: BaconCurve) -> void:
 		var point_panel := PanelContainer.new()      # contains the point
 		point_panel.add_theme_stylebox_override("panel", X_STYLEBOX)
 
-		var point_panel_vbox := VBoxContainer.new()  # contains each property of the point
-		point_panel.add_child(point_panel_vbox)
+		#var point_panel_vbox := VBoxContainer.new()  # contains each property of the point
+		#point_panel.add_child(point_panel_vbox)
+		# Main horizontal layout
+		var point_main_hbox := HBoxContainer.new()
+		point_panel.add_child(point_main_hbox)
+
+		# VBox containing all properties
+		var point_panel_vbox := VBoxContainer.new()
+		point_panel_vbox.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		point_main_hbox.add_child(point_panel_vbox)
+
+		# Remove button (centered vertically)
+		var remove_btn := Button.new()
+		remove_btn.icon = REMOVE
+		remove_btn.flat = true
+		remove_btn.tooltip_text = "Remove Point"
+		remove_btn.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+		remove_btn.pressed.connect(_on_remove_btn_pressed.bind(point_list, i, point_panel, point))
+
+		point_main_hbox.add_child(remove_btn)
 
 		# Position
 		point_panel_vbox.add_child(
