@@ -20,6 +20,10 @@ script = ExtResource("3_g14j6")
 points = Array[ExtResource("2_ykrsh")]([SubResource("Resource_ykrsh"), SubResource("Resource_g14j6")])
 metadata/_custom_type_script = "uid://c10cjby72qngf"
 
+[sub_resource type="Curve" id="Curve_6uqi0"]
+_data = [Vector2(0, 0), 0.0, 0.0, 0, 0, Vector2(0, 0), 0.0, 0.0, 0, 0]
+point_count = 2
+
 [sub_resource type="Animation" id="Animation_6uqi0"]
 length = 0.001
 tracks/0/type = "bezier"
@@ -64,6 +68,7 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_37kl0")
 bacon_curve = SubResource("Resource_vbegm")
+curve = SubResource("Curve_6uqi0")
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="." unique_id=2040447065]
 libraries/ = SubResource("AnimationLibrary_ykrsh")

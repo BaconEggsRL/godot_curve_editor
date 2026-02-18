@@ -21,8 +21,8 @@ func _can_handle(object):
 func _on_reset_btn_pressed(i:int, default:Vector2, x_input:EditorSpinSlider, y_input:EditorSpinSlider) -> void:
 	print("p%d: reset" % i)
 	# curve.points[i].position = default
-	x_input.value = default.x
-	y_input.value = default.y
+	x_input.value = 0.0# default.x
+	y_input.value = 0.0# default.y
 
 
 func _on_remove_btn_pressed(point_list:VBoxContainer, i:int, point_panel:PanelContainer, point:Point) -> void:
@@ -74,13 +74,15 @@ func _create_vector2_property(
 
 	# Row container
 	var property_hbox := HBoxContainer.new()
-	property_hbox.size_flags_horizontal = Control.SIZE_FILL
+	# property_hbox.size_flags_horizontal = Control.SIZE_FILL
+	property_hbox.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	property_vbox.add_child(property_hbox)
 
 	# Property label (Position / Left Control / Right Control)
 	var property_label := Label.new()
 	property_label.text = label_text
-	property_label.custom_minimum_size.x = 90
+	# property_label.custom_minimum_size.x = 150
+	property_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	property_hbox.add_child(property_label)
 
 	# Reset Button
@@ -94,6 +96,7 @@ func _create_vector2_property(
 	var value_panel := PanelContainer.new()
 	value_panel.add_theme_stylebox_override("panel", X_STYLEBOX)
 	value_panel.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	value_panel.custom_minimum_size = Vector2(100, 0)
 	property_hbox.add_child(value_panel)
 
 	var value_vbox := VBoxContainer.new()
