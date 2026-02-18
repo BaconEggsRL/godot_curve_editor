@@ -68,6 +68,68 @@ func _on_y_input_value_changed(value:float, i:int, y_input:EditorSpinSlider, res
 	#bacon_curve_editor.queue_redraw()
 
 
+func swap(a:Array, i:int, j:int) -> Array:
+	var array := a.duplicate(true)
+	var temp = array[i]
+	array[i] = array[j]
+	array[j] = temp
+	return array
+
+
+func swap_x(a:Array[Point], i:int, j:int) -> Array:
+	var array := a.duplicate(true)
+	var temp_x = array[i].position.x
+	array[i].position.x = array[j].position.x
+	array[j].position.x = temp_x
+	return array
+
+
+
+func _create_point_side_vbox(i:int, point_list:VBoxContainer, point_panel:PanelContainer, point:Point) -> VBoxContainer:
+	var side_vbox = VBoxContainer.new()
+	side_vbox.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	# side_vbox.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+
+	# Move Up Button
+	var move_up_btn = Button.new()
+	move_up_btn.icon = MOVE_UP
+	move_up_btn.flat = true
+	move_up_btn.tooltip_text = "Move Point Up"
+	move_up_btn.pressed.connect(func():
+		if i > 0:
+			# curve.points.swap(i, i-1)
+			# curve.points = swap(curve.points, i, i-1)
+			curve.points = swap_x(curve.points, i, i-1)
+			point_list.move_child(point_panel, i-1)
+			bacon_curve_editor.queue_redraw()
+	)
+	side_vbox.add_child(move_up_btn)
+
+	# TripleBar TextureRect
+	var triple_bar = TextureRect.new()
+	triple_bar.texture = TRIPLE_BAR
+	triple_bar.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	triple_bar.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	side_vbox.add_child(triple_bar)
+
+	# Move Down Button
+	var move_down_btn = Button.new()
+	move_down_btn.icon = MOVE_DOWN
+	move_down_btn.flat = true
+	move_down_btn.tooltip_text = "Move Point Down"
+	move_down_btn.pressed.connect(func():
+		if i < curve.points.size()-1:
+			# curve.points.swap(i, i+1)
+			# curve.points = swap(curve.points, i, i+1)
+			curve.points = swap_x(curve.points, i, i+1)
+			point_list.move_child(point_panel, i+1)
+			bacon_curve_editor.queue_redraw()
+	)
+	side_vbox.add_child(move_down_btn)
+
+	return side_vbox
+
+
 func _create_vector2_property(
 		point: Point,
 		i: int,
@@ -219,6 +281,10 @@ func handle_points(curve: BaconCurve) -> void:
 		# Main horizontal layout
 		var point_main_hbox := HBoxContainer.new()
 		point_panel.add_child(point_main_hbox)
+
+		# Left side VBox with Move Up / TripleBar / Move Down
+		var side_vbox := _create_point_side_vbox(i, point_list, point_panel, point)
+		point_main_hbox.add_child(side_vbox)
 
 		# VBox containing all properties
 		var point_panel_vbox := VBoxContainer.new()
