@@ -36,18 +36,30 @@ func _update_reset_btn(reset_btn:Button, value:float, default:float) -> void:
 	reset_btn.visible = !(value == default)
 
 
-func _on_x_input_value_changed(value:float, i:int, x_input:EditorSpinSlider, reset_btn:Button, default:float) -> void:
+func _on_x_input_value_changed(value:float, i:int, x_input:EditorSpinSlider, reset_btn:Button, default:float, property_name:String) -> void:
 	print("p%d x: %.3f" % [i, value])
-	curve.points[i].position.x = value
-	_update_reset_btn(reset_btn, value, default)
+	var point := curve.points[i]
+	var v: Vector2 = point.get(property_name)
+	v.x = value
+	point.set(property_name, v) # write to correct property
+	_update_reset_btn(reset_btn, value, default) # show reset if different
 	bacon_curve_editor.queue_redraw()
+	#curve.points[i].position.x = value
+	#_update_reset_btn(reset_btn, value, default)
+	#bacon_curve_editor.queue_redraw()
 
 
-func _on_y_input_value_changed(value:float, i:int, y_input:EditorSpinSlider, reset_btn:Button, default:float) -> void:
+func _on_y_input_value_changed(value:float, i:int, y_input:EditorSpinSlider, reset_btn:Button, default:float, property_name:String) -> void:
 	print("p%d y: %.3f" % [i, value])
-	curve.points[i].position.y = value
-	_update_reset_btn(reset_btn, value, default)
+	var point := curve.points[i]
+	var v: Vector2 = point.get(property_name)
+	v.y = value
+	point.set(property_name, v) # write to correct property
+	_update_reset_btn(reset_btn, value, default) # show reset if different
 	bacon_curve_editor.queue_redraw()
+	#curve.points[i].position.y = value
+	#_update_reset_btn(reset_btn, value, default)
+	#bacon_curve_editor.queue_redraw()
 
 
 func _create_vector2_property(
@@ -57,6 +69,7 @@ func _create_vector2_property(
 		label_text: String
 	) -> Control:
 
+	var position := point.position
 	var property_vbox := VBoxContainer.new()
 
 	# Row container
@@ -69,6 +82,13 @@ func _create_vector2_property(
 	property_label.text = label_text
 	property_label.custom_minimum_size.x = 90
 	property_hbox.add_child(property_label)
+
+	# Reset Button
+	var reset_btn := Button.new()
+	reset_btn.icon = RELOAD
+	reset_btn.hide()
+	# position_hbox.add_child(reset_btn)
+	property_label.add_child(reset_btn)
 
 	# Value container panel
 	var value_panel := PanelContainer.new()
@@ -94,8 +114,8 @@ func _create_vector2_property(
 	x_label.add_theme_color_override("font_color", x_color)
 
 	var x_input := EditorSpinSlider.new()
-	x_input.min_value = -1024
-	x_input.max_value = 1024
+	x_input.min_value = 0.0
+	x_input.max_value = 1.0
 	x_input.step = STEP
 	x_input.flat = true
 	x_input.hide_slider = true
@@ -103,12 +123,13 @@ func _create_vector2_property(
 	x_input.value = vec.x
 	x_input.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 
-	x_input.value_changed.connect(func(value):
-		var v: Vector2 = point.get(property_name)
-		v.x = value
-		point.set(property_name, v)
-		bacon_curve_editor.queue_redraw()
-	)
+	#x_input.value_changed.connect(func(value):
+		#var v: Vector2 = point.get(property_name)
+		#v.x = value
+		#point.set(property_name, v)
+		#bacon_curve_editor.queue_redraw()
+	#)
+	x_input.value_changed.connect(_on_x_input_value_changed.bind(i, x_input, reset_btn, position.x, property_name))
 
 	x_row.add_child(x_label)
 	x_row.add_child(x_input)
@@ -123,8 +144,12 @@ func _create_vector2_property(
 	y_label.add_theme_color_override("font_color", y_color)
 
 	var y_input := EditorSpinSlider.new()
-	y_input.min_value = -1024
-	y_input.max_value = 1024
+	if property_name == "position":
+		y_input.min_value = 0.0
+		y_input.max_value = 1.0
+	else:
+		y_input.min_value = -1024
+		y_input.max_value = 1024
 	y_input.step = STEP
 	y_input.flat = true
 	y_input.hide_slider = true
@@ -132,12 +157,15 @@ func _create_vector2_property(
 	y_input.value = vec.y
 	y_input.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 
-	y_input.value_changed.connect(func(value):
-		var v: Vector2 = point.get(property_name)
-		v.y = value
-		point.set(property_name, v)
-		bacon_curve_editor.queue_redraw()
-	)
+	#y_input.value_changed.connect(func(value):
+		#var v: Vector2 = point.get(property_name)
+		#v.y = value
+		#point.set(property_name, v)
+		#bacon_curve_editor.queue_redraw()
+	#)
+	y_input.value_changed.connect(_on_y_input_value_changed.bind(i, y_input, reset_btn, position.y, property_name))
+
+	reset_btn.pressed.connect(_on_reset_btn_pressed.bind(i, position, x_input, y_input))
 
 	y_row.add_child(y_label)
 	y_row.add_child(y_input)
