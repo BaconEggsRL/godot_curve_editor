@@ -68,32 +68,32 @@ func _process(delta: float) -> void:
 
 func _draw() -> void:
 	var font = ThemeDB.fallback_font
-	var size = 14
+	var font_size = 14
 	var y := 20
 
 	draw_string(font, Vector2(10, y),
 		"offset: %.4f" % _debug_offset,
-		HORIZONTAL_ALIGNMENT_LEFT, -1, size)
+		HORIZONTAL_ALIGNMENT_LEFT, -1, font_size)
 	y += 18
 
 	draw_string(font, Vector2(10, y),
 		"t (Newton): %.4f" % _debug_last_t,
-		HORIZONTAL_ALIGNMENT_LEFT, -1, size)
+		HORIZONTAL_ALIGNMENT_LEFT, -1, font_size)
 	y += 18
 
 	draw_string(font, Vector2(10, y),
 		"curve value (y): %.4f" % _debug_curve_value,
-		HORIZONTAL_ALIGNMENT_LEFT, -1, size)
+		HORIZONTAL_ALIGNMENT_LEFT, -1, font_size)
 	y += 18
 
 	draw_string(font, Vector2(10, y),
 		"Curve speed: %.2f px/sec" % _debug_curve_speed,
-		HORIZONTAL_ALIGNMENT_LEFT, -1, size)
+		HORIZONTAL_ALIGNMENT_LEFT, -1, font_size)
 	y += 18
 
 	draw_string(font, Vector2(10, y),
 		"Tween speed: %.2f px/sec" % _debug_tween_speed,
-		HORIZONTAL_ALIGNMENT_LEFT, -1, size)
+		HORIZONTAL_ALIGNMENT_LEFT, -1, font_size)
 
 
 
@@ -126,10 +126,10 @@ func start_tween(tween:Tween, end:Marker2D, node:Node2D, use_curve:bool) -> void
 #func tween_bacon_curve(_offset: float, _curve: BaconCurve) -> float:
 	## return _curve.sample_baked(_offset)
 	#return _curve.sample(_offset)
-func tween_bacon_curve(offset: float, curve: BaconCurve) -> float:
+func tween_bacon_curve(offset:float, _curve:BaconCurve) -> float:
 	_debug_offset = offset
-	_debug_curve_value = curve.sample(offset)
-	_debug_last_t = curve._last_t  # store t from your sample()
+	_debug_curve_value = _curve.sample(offset)
+	_debug_last_t = _curve._last_t  # store t from your sample()
 
 	return _debug_curve_value
 
