@@ -38,16 +38,19 @@ enum PRESET {
 func set_preset(preset:PRESET) -> void:
 	match preset:
 		PRESET.LINEAR:
+			points.clear()  # ensure it’s empty
 			var p0 := Point.new(Vector2(0,0))
-			# p0.position = Vector2(0,0)
-
 			var p1 = Point.new(Vector2(1,1))
-			# p1.position = Vector2(1,1)
-
 			add_point(p0)
 			add_point(p1)
 		_:
 			push_warning("Preset not found")
+
+# --- Constructor ---
+func _init():
+	if points.size() == 0:
+		set_preset(PRESET.LINEAR)
+
 
 
 func printpoints():
