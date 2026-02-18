@@ -7,6 +7,8 @@ const ADD = preload("uid://ciwi4nujiopse")
 
 
 var bacon_curve_editor:BaconCurveEditor
+var _preset_initialized := false
+
 var curve:BaconCurve
 
 const STEP = 0.001
@@ -350,8 +352,9 @@ func handle_bacon_curve_editor(object) -> void:
 		return
 	if object is BaconCurve:
 		# Only set linear preset if there are no points yet
-		if object.points.size() == 0:
+		if not _preset_initialized and object.points.size() == 0:
 			object.set_preset(BaconCurve.PRESET.LINEAR)
+			_preset_initialized = true
 		# Add curve editor
 		bacon_curve_editor = BaconCurveEditor.new()
 		bacon_curve_editor.set_curve(object)
