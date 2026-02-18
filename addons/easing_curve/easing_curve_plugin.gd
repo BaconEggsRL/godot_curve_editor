@@ -2,6 +2,8 @@
 extends EditorInspectorPlugin
 const X_STYLEBOX = preload("uid://dsapcj11t0kpu")
 const RELOAD = preload("uid://ckq8rdh87fm8m")
+const REMOVE = preload("uid://rcefrsneyc5r")
+
 
 var bacon_curve_editor:BaconCurveEditor
 var curve:BaconCurve
@@ -23,19 +25,28 @@ func _on_reset_btn_pressed(i:int, default:Vector2, x_input:EditorSpinSlider, y_i
 	y_input.value = default.y
 
 
+func _on_remove_btn_pressed(point_list:VBoxContainer, i:int, point_panel:PanelContainer, point:Point) -> void:
+	print("p%d: remove" % i)
+	curve.remove_point(point)
+	point_list.remove_child(point_panel)
+
+
+func _update_reset_btn(reset_btn:Button, value:float, default:float) -> void:
+	reset_btn.set_anchors_and_offsets_preset(Control.PRESET_CENTER_RIGHT)
+	reset_btn.visible = !(value == default)
+
+
 func _on_x_input_value_changed(value:float, i:int, x_input:EditorSpinSlider, reset_btn:Button, default:float) -> void:
 	print("p%d x: %.3f" % [i, value])
 	curve.points[i].position.x = value
-	reset_btn.visible = !(value == default)
-	# reset_btn.modulate.a = 0.0 if value == default else 1.0
+	_update_reset_btn(reset_btn, value, default)
 	bacon_curve_editor.queue_redraw()
 
 
 func _on_y_input_value_changed(value:float, i:int, y_input:EditorSpinSlider, reset_btn:Button, default:float) -> void:
 	print("p%d y: %.3f" % [i, value])
 	curve.points[i].position.y = value
-	reset_btn.visible = !(value == default)
-	# reset_btn.modulate.a = 0.0 if value == default else 1.0
+	_update_reset_btn(reset_btn, value, default)
 	bacon_curve_editor.queue_redraw()
 
 
@@ -49,14 +60,18 @@ func handle_points(curve: BaconCurve) -> void:
 
 		# Panel container for each point
 		var point_panel := PanelContainer.new()      # contains the point
+		point_panel.add_theme_stylebox_override("panel", X_STYLEBOX)
+
 		var point_panel_vbox := VBoxContainer.new()  # contains each property of the point
 		point_panel.add_child(point_panel_vbox)
-
 
 		# Position
 
 		# Label
 		var position_hbox := HBoxContainer.new()  # separates the property label and the property value
+		point_panel_vbox.add_child(position_hbox)
+
+		position_hbox.size_flags_horizontal = Control.SIZE_FILL
 		var position_label := Label.new()
 		position_label.text = "Position"
 		position_hbox.add_child(position_label)
@@ -65,7 +80,8 @@ func handle_points(curve: BaconCurve) -> void:
 		var reset_btn := Button.new()
 		reset_btn.icon = RELOAD
 		reset_btn.hide()
-		position_hbox.add_child(reset_btn)
+		# position_hbox.add_child(reset_btn)
+		position_label.add_child(reset_btn)
 
 
 		# Value
@@ -127,7 +143,14 @@ func handle_points(curve: BaconCurve) -> void:
 		xy_panel.add_child(xy_vbox)
 		position_hbox.add_child(xy_panel)
 
-		point_list.add_child(position_hbox)
+		# Remove Button
+		var remove_btn := Button.new()
+		remove_btn.icon = REMOVE
+		remove_btn.pressed.connect(_on_remove_btn_pressed.bind(point_list, i, point_panel, point))
+		position_hbox.add_child(remove_btn)
+
+
+		point_list.add_child(point_panel)
 
 
 	# Add Point button
