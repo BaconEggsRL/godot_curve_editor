@@ -114,8 +114,12 @@ func _create_vector2_property(
 	x_label.add_theme_color_override("font_color", x_color)
 
 	var x_input := EditorSpinSlider.new()
-	x_input.min_value = 0.0
-	x_input.max_value = 1.0
+	if property_name == "position":
+		x_input.min_value = 0.0
+		x_input.max_value = 1.0
+	else:
+		x_input.min_value = -1024
+		x_input.max_value = 1024
 	x_input.step = STEP
 	x_input.flat = true
 	x_input.hide_slider = true

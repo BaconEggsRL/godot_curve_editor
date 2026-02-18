@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="BaconCurve" format=3 uid="uid://cbc6akl6mcnuf"]
+
+[ext_resource type="Script" uid="uid://cxmmenoobxiyp" path="res://point.gd" id="1_xq4c7"]
+[ext_resource type="Script" uid="uid://c10cjby72qngf" path="res://bacon_curve.gd" id="2_0wvb3"]
+
+[sub_resource type="Resource" id="Resource_oh33h"]
+script = ExtResource("1_xq4c7")
+position = Vector2(0, 0.5)
+right_control_point = Vector2(0, 0.5)
+
+[sub_resource type="Resource" id="Resource_ukv3x"]
+script = ExtResource("1_xq4c7")
+position = Vector2(1, 0.5)
+left_control_point = Vector2(0, 0.5)
+
+[resource]
+script = ExtResource("2_0wvb3")
+points = Array[ExtResource("1_xq4c7")]([SubResource("Resource_oh33h"), SubResource("Resource_ukv3x")])
+metadata/_custom_type_script = "uid://c10cjby72qngf"
