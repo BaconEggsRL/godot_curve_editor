@@ -74,24 +74,70 @@ func _on_point_changed() -> void:
 	print("point changed")
 	emit_changed()
 
+
+#func sample(offset: float) -> float:
+	#if points.size() == 0:
+		#return 0.0
+	#elif points.size() == 1:
+		#return points[0].position.y
+#
+	## find the segment
+	#var i = 0
+	#for j in range(points.size() - 1):
+		#if points[j + 1].position.x > offset:
+			#i = j
+			#break
+#
+	#var a = points[i]
+	#var b = points[i + 1]
+#
+	#var t = (offset - a.position.x) / (b.position.x - a.position.x)
+	#return _bezier_interpolate(a.position.y, a.right_control_point.y, b.left_control_point.y, b.position.y, t)
+
+
 func sample(offset: float) -> float:
-	if points.size() == 0:
+	if points.size() < 2:
 		return 0.0
-	elif points.size() == 1:
-		return points[0].position.y
 
-	# find the segment
-	var i = 0
-	for j in range(points.size() - 1):
-		if points[j + 1].position.x > offset:
-			i = j
-			break
+	var a = points[0]
+	var b = points[1]
 
-	var a = points[i]
-	var b = points[i + 1]
+	# Solve for t from x
+	var t = _solve_for_t(offset, a, b)
 
-	var t = (offset - a.position.x) / (b.position.x - a.position.x)
-	return _bezier_interpolate(a.position.y, a.right_control_point.y, b.left_control_point.y, b.position.y, t)
+	# Evaluate Y at that t
+	return _bezier_interpolate(
+		a.position.y,
+		a.right_control_point.y,
+		b.left_control_point.y,
+		b.position.y,
+		t
+	)
+
+
+func _solve_for_t(x: float, a: Point, b: Point) -> float:
+	var low := 0.0
+	var high := 1.0
+	var mid := 0.0
+
+	for i in 20:
+		mid = (low + high) * 0.5
+		var estimate = _bezier_interpolate(
+			a.position.x,
+			a.right_control_point.x,
+			b.left_control_point.x,
+			b.position.x,
+			mid
+		)
+
+		if estimate < x:
+			low = mid
+		else:
+			high = mid
+
+	return mid
+
+
 
 func _bezier_interpolate(p0: float, p1: float, p2: float, p3: float, t: float) -> float:
 	var omt = 1.0 - t

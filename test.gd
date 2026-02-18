@@ -1,5 +1,12 @@
 extends Control
 
+enum TWEEN_TYPE {
+	LINEAR,
+	EASE_IN_CUBIC,
+	EASE_OUT_CUBIC
+}
+@export var tween_type := TWEEN_TYPE.LINEAR
+
 @export var bacon_curve:BaconCurve
 @export var curve:Curve
 # @export var curve:Curve
@@ -48,9 +55,15 @@ func start_tween(tween:Tween, end:Marker2D, node:Node2D, use_curve:bool) -> void
 	if bacon_curve and use_curve:
 		position_tweener.set_custom_interpolator(tween_bacon_curve.bind(bacon_curve))
 	else:
-		# position_tweener.set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_CUBIC)
-		# position_tweener.set_ease(Tween.EASE_IN).set_trans(Tween.TRANS_CUBIC)
-		position_tweener.set_ease(Tween.EASE_IN_OUT).set_trans(Tween.TRANS_LINEAR)
+		match tween_type:
+			TWEEN_TYPE.LINEAR:
+				position_tweener.set_ease(Tween.EASE_IN_OUT).set_trans(Tween.TRANS_LINEAR)
+			TWEEN_TYPE.EASE_IN_CUBIC:
+				position_tweener.set_ease(Tween.EASE_IN).set_trans(Tween.TRANS_CUBIC)
+			TWEEN_TYPE.EASE_OUT_CUBIC:
+				position_tweener.set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_CUBIC)
+
+
 
 
 func tween_bacon_curve(_offset: float, _curve: BaconCurve) -> float:

@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://qviblxegxd23"]
 
 [ext_resource type="Script" uid="uid://cjoavnop3pyl2" path="res://test.gd" id="1_37kl0"]
-[ext_resource type="Resource" uid="uid://ba6ywmai6pojy" path="res://addons/easing_curve/presets/linear_custom.tres" id="2_ppyta"]
+[ext_resource type="Resource" uid="uid://cqxnb1q4kvgl4" path="res://addons/easing_curve/presets/easeOutCubic.tres" id="2_ppyta"]
 [ext_resource type="Texture2D" uid="uid://d23t7b73acleh" path="res://icon.svg" id="4_ppyta"]
 [ext_resource type="Texture2D" uid="uid://ckq8rdh87fm8m" path="res://Reload.svg" id="4_ykrsh"]
 
@@ -48,6 +48,7 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_37kl0")
+tween_type = 2
 bacon_curve = ExtResource("2_ppyta")
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="." unique_id=2040447065]
