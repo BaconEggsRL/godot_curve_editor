@@ -9,6 +9,10 @@ const MOVE_DOWN = preload("uid://gxsiiq855i3e")
 const MOVE_UP = preload("uid://w1qm6tuhyikq")
 const TRIPLE_BAR = preload("uid://dj3cvuhldit7o")
 
+const LOCK = preload("uid://du5ohl6t613a2")
+const UNLOCK = preload("uid://dgft8eu5f5ayn")
+
+
 
 var bacon_curve_editor:BaconCurveEditor
 #var _preset_initialized := false
@@ -145,16 +149,34 @@ func _create_vector2_property(
 	# position_hbox.add_child(reset_btn)
 	property_label.add_child(reset_btn)
 
-	# Value container panel
+	# Value container panel (x/y inputs; lock_btn)
 	var value_panel := PanelContainer.new()
 	value_panel.add_theme_stylebox_override("panel", X_STYLEBOX)
 	value_panel.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	value_panel.custom_minimum_size = Vector2(100, 0)
 	property_hbox.add_child(value_panel)
 
+
+	# HBox for x/y inputs; lock_btn
+	var value_hbox := HBoxContainer.new()
+	value_hbox.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	value_panel.add_child(value_hbox)
+
+	# Left side (the X/Y stack)
 	var value_vbox := VBoxContainer.new()
+	value_vbox.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	value_vbox.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	value_vbox.add_theme_constant_override("separation", 0)
-	value_panel.add_child(value_vbox)
+	value_hbox.add_child(value_vbox)
+
+	# Right side (lock button)
+	var lock_btn := Button.new()
+	lock_btn.icon = LOCK
+	lock_btn.flat = false
+	lock_btn.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+	lock_btn.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	value_hbox.add_child(lock_btn)
+
 
 	var vec: Vector2 = point.get(property_name)
 
@@ -183,12 +205,6 @@ func _create_vector2_property(
 	x_input.value = vec.x
 	x_input.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 
-	#x_input.value_changed.connect(func(value):
-		#var v: Vector2 = point.get(property_name)
-		#v.x = value
-		#point.set(property_name, v)
-		#bacon_curve_editor.queue_redraw()
-	#)
 	x_input.value_changed.connect(_on_x_input_value_changed.bind(i, x_input, reset_btn, position.x, property_name))
 	point.input[property_name].x = x_input
 
@@ -218,12 +234,6 @@ func _create_vector2_property(
 	y_input.value = vec.y
 	y_input.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 
-	#y_input.value_changed.connect(func(value):
-		#var v: Vector2 = point.get(property_name)
-		#v.y = value
-		#point.set(property_name, v)
-		#bacon_curve_editor.queue_redraw()
-	#)
 	y_input.value_changed.connect(_on_y_input_value_changed.bind(i, y_input, reset_btn, position.y, property_name))
 	point.input[property_name].y = y_input
 
