@@ -4,6 +4,9 @@ const X_STYLEBOX = preload("uid://dsapcj11t0kpu")
 const RELOAD = preload("uid://ckq8rdh87fm8m")
 const REMOVE = preload("uid://rcefrsneyc5r")
 const ADD = preload("uid://ciwi4nujiopse")
+const MOVE_DOWN = preload("uid://gxsiiq855i3e")
+const MOVE_UP = preload("uid://w1qm6tuhyikq")
+const TRIPLE_BAR = preload("uid://dj3cvuhldit7o")
 
 
 var bacon_curve_editor:BaconCurveEditor
