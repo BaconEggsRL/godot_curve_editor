@@ -62,20 +62,32 @@ func add_point(p: Point) -> void:
 	# points.sort_custom(func(a, b): return a.position.x < b.position.x)
 	p.changed.connect(_on_point_changed)
 	emit_changed()
-	printpoints()
+	# printpoints()
 	notify_property_list_changed()
+
 
 func remove_point(p: Point) -> void:
 	print("removing point")
-	if p in points:
-		points.erase(p)
-		p.changed.disconnect(_on_point_changed)
-		emit_changed()
-		printpoints()
+	if p not in points:
+		return
+
+	points.erase(p)
+	p.changed.disconnect(_on_point_changed)
+
+	force_update()
+
 
 func _on_point_changed() -> void:
 	print("point changed")
+	force_update()
+
+
+func force_update() -> void:
+	# Force inspector update
+	points = points.duplicate(true)
 	emit_changed()
+	notify_property_list_changed()
+
 
 
 # assumes x is linear in t

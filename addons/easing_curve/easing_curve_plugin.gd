@@ -3,6 +3,7 @@ extends EditorInspectorPlugin
 const X_STYLEBOX = preload("uid://dsapcj11t0kpu")
 const RELOAD = preload("uid://ckq8rdh87fm8m")
 const REMOVE = preload("uid://rcefrsneyc5r")
+const ADD = preload("uid://ciwi4nujiopse")
 
 
 var bacon_curve_editor:BaconCurveEditor
@@ -28,7 +29,7 @@ func _on_reset_btn_pressed(i:int, default:Vector2, x_input:EditorSpinSlider, y_i
 func _on_remove_btn_pressed(point_list:VBoxContainer, i:int, point_panel:PanelContainer, point:Point) -> void:
 	print("p%d: remove" % i)
 	curve.remove_point(point)
-	point_list.remove_child(point_panel)
+	# point_list.remove_child(point_panel)
 
 
 func _update_reset_btn(reset_btn:Button, value:float, default:float) -> void:
@@ -335,6 +336,8 @@ func handle_points(curve: BaconCurve) -> void:
 
 	# Add Point button
 	var add_point_btn := Button.new()
+	add_point_btn.icon = ADD
+	add_point_btn.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
 	add_point_btn.text = "Add Point"
 	add_point_btn.pressed.connect(_on_add_point_btn_pressed)
 	point_list.add_child(add_point_btn)
