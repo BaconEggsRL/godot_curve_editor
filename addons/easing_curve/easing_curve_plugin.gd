@@ -8,12 +8,12 @@ func _can_handle(object):
 	return true
 
 
-func _on_x_input_value_changed(value:float) -> void:
-	print("x: ", value)
+func _on_x_input_value_changed(value:float, index:int) -> void:
+	print("p%d x: %.3f" % [index, value])
 
 
-func _on_y_input_value_changed(value:float) -> void:
-	print("y: ", value)
+func _on_y_input_value_changed(value:float, index:int) -> void:
+	print("p%d y: %.3f" % [index, value])
 
 
 func handle_points(curve: BaconCurve) -> void:
@@ -55,7 +55,7 @@ func handle_points(curve: BaconCurve) -> void:
 		x_input_hbox.add_child(x_input_label)
 		x_input_hbox.add_child(x_input)
 		x_input.add_theme_color_override("label_color", x_color)
-		x_input.value_changed.connect(_on_x_input_value_changed)
+		x_input.value_changed.connect(_on_x_input_value_changed.bind(i))
 		x_input.flat = true
 		x_input.step = 0.001
 		x_input.hide_slider = true
@@ -72,7 +72,7 @@ func handle_points(curve: BaconCurve) -> void:
 		y_input_hbox.add_child(y_input_label)
 		y_input_hbox.add_child(y_input)
 		y_input.add_theme_color_override("label_color", y_color)
-		y_input.value_changed.connect(_on_y_input_value_changed)
+		y_input.value_changed.connect(_on_y_input_value_changed.bind(i))
 		y_input.flat = true
 		y_input.step = 0.001
 		y_input.hide_slider = true
