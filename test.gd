@@ -48,8 +48,9 @@ func start_tween(tween:Tween, end:Marker2D, node:Node2D, use_curve:bool) -> void
 	if bacon_curve and use_curve:
 		position_tweener.set_custom_interpolator(tween_bacon_curve.bind(bacon_curve))
 	else:
-		position_tweener.set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_CUBIC)
-		# position_tweener.set_ease(Tween.EASE_IN_OUT).set_trans(Tween.TRANS_LINEAR)
+		# position_tweener.set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_CUBIC)
+		# position_tweener.set_ease(Tween.EASE_IN).set_trans(Tween.TRANS_CUBIC)
+		position_tweener.set_ease(Tween.EASE_IN_OUT).set_trans(Tween.TRANS_LINEAR)
 
 
 func tween_bacon_curve(_offset: float, _curve: BaconCurve) -> float:

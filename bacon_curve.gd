@@ -35,11 +35,11 @@ enum PRESET {
 func set_preset(preset:PRESET) -> void:
 	match preset:
 		PRESET.LINEAR:
-			var p0 := Point.new()
-			p0.position = Vector2(0,0)
+			var p0 := Point.new(Vector2(0,0))
+			# p0.position = Vector2(0,0)
 
-			var p1 = Point.new()
-			p1.position = Vector2(1,1)
+			var p1 = Point.new(Vector2(1,1))
+			# p1.position = Vector2(1,1)
 
 			add_point(p0)
 			add_point(p1)
@@ -56,7 +56,7 @@ func printpoints():
 func add_point(p: Point) -> void:
 	print("adding point")
 	points.append(p)
-	points.sort_custom(func(a, b): return a.position.x < b.position.x)
+	# points.sort_custom(func(a, b): return a.position.x < b.position.x)
 	p.changed.connect(_on_point_changed)
 	emit_changed()
 	printpoints()
