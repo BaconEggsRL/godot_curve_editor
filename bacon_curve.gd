@@ -62,7 +62,7 @@ func printpoints():
 func add_point(p: Point) -> void:
 	print("adding point")
 	points.append(p)
-	# points.sort_custom(func(a, b): return a.position.x < b.position.x)
+	points.sort_custom(func(a, b): return a.position.x < b.position.x)
 	p.changed.connect(_on_point_changed)
 	emit_changed()
 	# printpoints()
