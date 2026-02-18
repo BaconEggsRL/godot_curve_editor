@@ -34,7 +34,6 @@ func _on_reset_btn_pressed(i:int, default:Vector2, x_input:EditorSpinSlider, y_i
 func _on_remove_btn_pressed(point_list:VBoxContainer, i:int, point_panel:PanelContainer, point:Point) -> void:
 	print("p%d: remove" % i)
 	curve.remove_point(point)
-	# point_list.remove_child(point_panel)
 
 
 func _update_reset_btn(reset_btn:Button, value:float, default:float) -> void:
@@ -50,9 +49,6 @@ func _on_x_input_value_changed(value:float, i:int, x_input:EditorSpinSlider, res
 	point.set(property_name, v) # write to correct property
 	_update_reset_btn(reset_btn, value, default) # show reset if different
 	bacon_curve_editor.queue_redraw()
-	#curve.points[i].position.x = value
-	#_update_reset_btn(reset_btn, value, default)
-	#bacon_curve_editor.queue_redraw()
 
 
 func _on_y_input_value_changed(value:float, i:int, y_input:EditorSpinSlider, reset_btn:Button, default:float, property_name:String) -> void:
@@ -63,28 +59,9 @@ func _on_y_input_value_changed(value:float, i:int, y_input:EditorSpinSlider, res
 	point.set(property_name, v) # write to correct property
 	_update_reset_btn(reset_btn, value, default) # show reset if different
 	bacon_curve_editor.queue_redraw()
-	#curve.points[i].position.y = value
-	#_update_reset_btn(reset_btn, value, default)
-	#bacon_curve_editor.queue_redraw()
 
 
-#func swap(a:Array, i:int, j:int) -> Array:
-	#var array := a.duplicate(true)
-	#var temp = array[i]
-	#array[i] = array[j]
-	#array[j] = temp
-	#return array
-#
-#
-#func swap_x(a:Array[Point], i:int, j:int) -> Array:
-	#var array := a.duplicate(true)
-	#var temp_x = array[i].position.x
-	#array[i].position.x = array[j].position.x
-	#array[j].position.x = temp_x
-	#return array
-
-
-
+# remember bind() arguments are at the end
 func _create_point_side_vbox(i:int, point_list:VBoxContainer, point_panel:PanelContainer, point:Point) -> VBoxContainer:
 	var side_vbox = VBoxContainer.new()
 	side_vbox.size_flags_vertical = Control.SIZE_SHRINK_CENTER
@@ -97,21 +74,29 @@ func _create_point_side_vbox(i:int, point_list:VBoxContainer, point_panel:PanelC
 	move_up_btn.tooltip_text = "Move Point Up"
 	move_up_btn.pressed.connect(func():
 		if i > 0:
-			# curve.points.swap(i, i-1)
-			# curve.points = swap(curve.points, i, i-1)
-			# curve.points = swap_x(curve.points, i, i-1)
-			# point_list.move_child(point_panel, i-1)
 			curve.swap_points(i, i-1)
 			bacon_curve_editor.queue_redraw()
 	)
 	side_vbox.add_child(move_up_btn)
 
-	# TripleBar TextureRect
-	var triple_bar = TextureRect.new()
+
+
+	# TripleBar TextureRect (drag handle)
+	var triple_bar = DragHandle.new()
 	triple_bar.texture = TRIPLE_BAR
 	triple_bar.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 	triple_bar.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	triple_bar.set_focus_mode(Control.FOCUS_ALL)
+
+	triple_bar.index = i
+	triple_bar.point_panel = point_panel
+	triple_bar.point_list = point_list
+	triple_bar.curve = curve
+	triple_bar.bacon_editor = bacon_curve_editor
+
 	side_vbox.add_child(triple_bar)
+
+
 
 	# Move Down Button
 	var move_down_btn = Button.new()
@@ -120,10 +105,6 @@ func _create_point_side_vbox(i:int, point_list:VBoxContainer, point_panel:PanelC
 	move_down_btn.tooltip_text = "Move Point Down"
 	move_down_btn.pressed.connect(func():
 		if i < curve.points.size()-1:
-			# curve.points.swap(i, i+1)
-			# curve.points = swap(curve.points, i, i+1)
-			# curve.points = swap_x(curve.points, i, i+1)
-			# point_list.move_child(point_panel, i+1)
 			curve.swap_points(i, i+1)
 			bacon_curve_editor.queue_redraw()
 	)
