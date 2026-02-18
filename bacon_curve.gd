@@ -59,14 +59,37 @@ func printpoints():
 		print(i, ": ", p.position, " L:", p.left_control_point, " R:", p.right_control_point)
 
 
+func sort_points() -> void:
+	points.sort_custom(func(a, b): return a.position.x < b.position.x)
+	force_update()
+
+
+# Swap two points, either by Point references or by indices
+func swap_points(a, b) -> void:
+
+	if a is int and b is int:
+		var i = a
+		var j = b
+		swap_points(points[i], points[j])
+
+	elif a is Point and b is Point:
+		var p0 = a
+		var p1 = b
+		var temp_x = p0.position.x
+		p0.position.x = p1.position.x
+		p1.position.x = temp_x
+		sort_points()
+
+	else:
+		push_warning("Could not swap due to type mismatch")
+
+
+
 func add_point(p: Point) -> void:
 	print("adding point")
 	points.append(p)
-	points.sort_custom(func(a, b): return a.position.x < b.position.x)
 	p.changed.connect(_on_point_changed)
-	emit_changed()
-	# printpoints()
-	notify_property_list_changed()
+	sort_points()
 
 
 func remove_point(p: Point) -> void:
@@ -88,9 +111,12 @@ func _on_point_changed() -> void:
 func force_update() -> void:
 	# Force inspector update
 	points = points.duplicate(true)
+	notify_changed()
+
+
+func notify_changed() -> void:
 	emit_changed()
 	notify_property_list_changed()
-
 
 
 func sample(offset: float) -> float:

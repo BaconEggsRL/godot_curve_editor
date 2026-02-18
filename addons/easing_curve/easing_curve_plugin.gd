@@ -68,20 +68,20 @@ func _on_y_input_value_changed(value:float, i:int, y_input:EditorSpinSlider, res
 	#bacon_curve_editor.queue_redraw()
 
 
-func swap(a:Array, i:int, j:int) -> Array:
-	var array := a.duplicate(true)
-	var temp = array[i]
-	array[i] = array[j]
-	array[j] = temp
-	return array
-
-
-func swap_x(a:Array[Point], i:int, j:int) -> Array:
-	var array := a.duplicate(true)
-	var temp_x = array[i].position.x
-	array[i].position.x = array[j].position.x
-	array[j].position.x = temp_x
-	return array
+#func swap(a:Array, i:int, j:int) -> Array:
+	#var array := a.duplicate(true)
+	#var temp = array[i]
+	#array[i] = array[j]
+	#array[j] = temp
+	#return array
+#
+#
+#func swap_x(a:Array[Point], i:int, j:int) -> Array:
+	#var array := a.duplicate(true)
+	#var temp_x = array[i].position.x
+	#array[i].position.x = array[j].position.x
+	#array[j].position.x = temp_x
+	#return array
 
 
 
@@ -99,8 +99,9 @@ func _create_point_side_vbox(i:int, point_list:VBoxContainer, point_panel:PanelC
 		if i > 0:
 			# curve.points.swap(i, i-1)
 			# curve.points = swap(curve.points, i, i-1)
-			curve.points = swap_x(curve.points, i, i-1)
-			point_list.move_child(point_panel, i-1)
+			# curve.points = swap_x(curve.points, i, i-1)
+			# point_list.move_child(point_panel, i-1)
+			curve.swap_points(i, i-1)
 			bacon_curve_editor.queue_redraw()
 	)
 	side_vbox.add_child(move_up_btn)
@@ -121,8 +122,9 @@ func _create_point_side_vbox(i:int, point_list:VBoxContainer, point_panel:PanelC
 		if i < curve.points.size()-1:
 			# curve.points.swap(i, i+1)
 			# curve.points = swap(curve.points, i, i+1)
-			curve.points = swap_x(curve.points, i, i+1)
-			point_list.move_child(point_panel, i+1)
+			# curve.points = swap_x(curve.points, i, i+1)
+			# point_list.move_child(point_panel, i+1)
+			curve.swap_points(i, i+1)
 			bacon_curve_editor.queue_redraw()
 	)
 	side_vbox.add_child(move_down_btn)
