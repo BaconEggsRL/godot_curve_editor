@@ -214,13 +214,29 @@ func _draw():
 		var pos_view = get_view_pos(p.position)
 		var color = Color(1, 0.5, 0) if i == selected_index else Color(1, 0, 0)
 		draw_circle(pos_view, point_radius, color)
-		if i == selected_index or i == hovered_index:
-			var left_view = get_view_pos(p.left_control_point)
-			var right_view = get_view_pos(p.right_control_point)
-			draw_circle(left_view, control_radius, Color(0, 1, 0))
-			draw_circle(right_view, control_radius, Color(0, 0, 1))
-			draw_line(pos_view, left_view, CONTROL_LINE_COLOR)
-			draw_line(pos_view, right_view, CONTROL_LINE_COLOR)
+
+		# Draw control points
+		var left_view = get_view_pos(p.left_control_point)
+		var right_view = get_view_pos(p.right_control_point)
+
+		# Slightly dim when not selected/hovered
+		var alpha := 1.0 if (i == selected_index or i == hovered_index) else 0.5
+		var left_color := Color(0, 1, 0, alpha)
+		var right_color := Color(0, 0, 1, alpha)
+		var line_color := Color(CONTROL_LINE_COLOR.r, CONTROL_LINE_COLOR.g, CONTROL_LINE_COLOR.b, alpha)
+
+		draw_line(pos_view, left_view, line_color)
+		draw_line(pos_view, right_view, line_color)
+		draw_circle(left_view, control_radius, left_color)
+		draw_circle(right_view, control_radius, right_color)
+
+		#if i == selected_index or i == hovered_index:
+			#var left_view = get_view_pos(p.left_control_point)
+			#var right_view = get_view_pos(p.right_control_point)
+			#draw_circle(left_view, control_radius, Color(0, 1, 0))
+			#draw_circle(right_view, control_radius, Color(0, 0, 1))
+			#draw_line(pos_view, left_view, CONTROL_LINE_COLOR)
+			#draw_line(pos_view, right_view, CONTROL_LINE_COLOR)
 
 
 func _draw_bezier_segment(a: Point, b: Point) -> void:
