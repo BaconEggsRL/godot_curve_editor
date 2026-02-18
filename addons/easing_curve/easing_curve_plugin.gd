@@ -24,8 +24,8 @@ func _can_handle(object):
 	return true
 
 
-func _on_reset_btn_pressed(i:int, default:Vector2, x_input:EditorSpinSlider, y_input:EditorSpinSlider) -> void:
-	print("p%d: reset" % i)
+func _on_reset_btn_pressed(i:int, default:Vector2, x_input:EditorSpinSlider, y_input:EditorSpinSlider, property_name:String) -> void:
+	print("p%d %s: reset" % [i, property_name])
 	# curve.points[i].position = default
 	x_input.value = 0.0# default.x
 	y_input.value = 0.0# default.y
@@ -38,11 +38,12 @@ func _on_remove_btn_pressed(point_list:VBoxContainer, i:int, point_panel:PanelCo
 
 func _update_reset_btn(reset_btn:Button, value:float, default:float) -> void:
 	reset_btn.set_anchors_and_offsets_preset(Control.PRESET_CENTER_RIGHT)
-	reset_btn.visible = !(value == default)
+	# reset_btn.visible = !(value == default)
+	reset_btn.visible = !(value == 0.0)
 
 
 func _on_x_input_value_changed(value:float, i:int, x_input:EditorSpinSlider, reset_btn:Button, default:float, property_name:String) -> void:
-	print("p%d x: %.3f" % [i, value])
+	# print("p%d x: %.3f" % [i, value])
 	var point := curve.points[i]
 	var v: Vector2 = point.get(property_name)
 	v.x = value
@@ -52,7 +53,7 @@ func _on_x_input_value_changed(value:float, i:int, x_input:EditorSpinSlider, res
 
 
 func _on_y_input_value_changed(value:float, i:int, y_input:EditorSpinSlider, reset_btn:Button, default:float, property_name:String) -> void:
-	print("p%d y: %.3f" % [i, value])
+	# print("p%d y: %.3f" % [i, value])
 	var point := curve.points[i]
 	var v: Vector2 = point.get(property_name)
 	v.y = value
@@ -223,7 +224,7 @@ func _create_vector2_property(
 	#)
 	y_input.value_changed.connect(_on_y_input_value_changed.bind(i, y_input, reset_btn, position.y, property_name))
 
-	reset_btn.pressed.connect(_on_reset_btn_pressed.bind(i, position, x_input, y_input))
+	reset_btn.pressed.connect(_on_reset_btn_pressed.bind(i, position, x_input, y_input, property_name))
 
 	y_row.add_child(y_label)
 	y_row.add_child(y_input)
