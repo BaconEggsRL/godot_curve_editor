@@ -138,107 +138,388 @@ func get_point_at(pos: Vector2) -> int:
 			closest_idx = i
 	return closest_idx if closest_dist_squared < point_radius * point_radius else -1
 
+
+
+#func get_control_at(pos: Vector2) -> Array: # [index, "left" or "right"]
+	#if _curve == null:
+		#return [-1, ""]
+#
+	## var _points := _curve.get_points()
+	## var _curve.points.size() := _curve.get_curve.points.size()()
+#
+	#for i in range(_curve.points.size()):
+		#var p = _curve.points[i]
+		#var left_view = get_view_pos(p.left_control_point)
+		#if left_view.distance_squared_to(pos) < control_radius * control_radius:
+			#return [i, "left"]
+		#var right_view = get_view_pos(p.right_control_point)
+		#if right_view.distance_squared_to(pos) < control_radius * control_radius:
+			#return [i, "right"]
+	#return [-1, ""]
+
+
+# =========================
+# CONTROL POINT FILTERING
+# =========================
+
+# Only allow valid control points
 func get_control_at(pos: Vector2) -> Array: # [index, "left" or "right"]
 	if _curve == null:
 		return [-1, ""]
 
-	# var _points := _curve.get_points()
-	# var _curve.points.size() := _curve.get_curve.points.size()()
-
 	for i in range(_curve.points.size()):
 		var p = _curve.points[i]
-		var left_view = get_view_pos(p.left_control_point)
-		if left_view.distance_squared_to(pos) < control_radius * control_radius:
-			return [i, "left"]
-		var right_view = get_view_pos(p.right_control_point)
-		if right_view.distance_squared_to(pos) < control_radius * control_radius:
-			return [i, "right"]
+
+		# Left control only if not first point
+		if i != 0:
+			var left_view = get_view_pos(p.left_control_point)
+			if left_view.distance_squared_to(pos) < control_radius * control_radius:
+				return [i, "left"]
+
+		# Right control only if not last point
+		if i != _curve.points.size() - 1:
+			var right_view = get_view_pos(p.right_control_point)
+			if right_view.distance_squared_to(pos) < control_radius * control_radius:
+				return [i, "right"]
+
 	return [-1, ""]
 
+
+
+#func _draw():
+	#if _curve == null:
+		#print("Curve is null, returning")
+		#return
+#
+	## print("Drawing curve editor, curve has ", _curve.points.size(), " points")
+	#update_view_transform()
+#
+	## Draw Style Box
+	#var style_box = get_theme_stylebox("panel", "Tree")
+	#if style_box == null:
+		## Fallback if theme stylebox not found
+		#draw_rect(Rect2(Vector2.ZERO, size), Color(0.1, 0.1, 0.1, 0.8))
+	#else:
+		#draw_style_box(style_box, Rect2(Vector2.ZERO, size))
+#
+	## Draw Grid
+	#draw_set_transform_matrix(_world_to_view)
+#
+	#var min_edge: Vector2 = get_world_pos(Vector2(0, size.y))
+	#var max_edge: Vector2 = get_world_pos(Vector2(size.x, 0))
+#
+	## FIXME: Get editor theme colors, not GraphEdit, can't find how to get them
+	#var grid_color_primary: Color = Color(0.3, 0.3, 0.3, 0.8)  # Temporary hardcoded color
+	#var grid_color: Color = Color(0.2, 0.2, 0.2, 0.3)  # Temporary hardcoded color
+#
+	#var grid_steps: Vector2 = Vector2i(4, 2)
+	#var step_size: Vector2 = Vector2(1, (_curve.max_value - _curve.min_value)) / grid_steps
+#
+	#draw_line(Vector2(min_edge.x, _curve.min_value), Vector2(max_edge.x, _curve.min_value), grid_color_primary)
+	#draw_line(Vector2(max_edge.x, _curve.max_value), Vector2(min_edge.x, _curve.max_value), grid_color_primary)
+	#draw_line(Vector2(0, min_edge.y), Vector2(0, max_edge.y), grid_color_primary)
+	#draw_line(Vector2(1, max_edge.y), Vector2(1, min_edge.y), grid_color_primary)
+#
+	#for i in range(1, grid_steps.x):
+		#var x = i * step_size.x
+		#draw_line(Vector2(x, min_edge.y), Vector2(x, max_edge.y), grid_color)
+#
+	#for i in range(1, grid_steps.y):
+		#var y = _curve.min_value + i * step_size.y
+		#draw_line(Vector2(min_edge.x, y), Vector2(max_edge.x, y), grid_color)
+#
+	## Reset transform for other drawing
+	#draw_set_transform_matrix(Transform2D())
+#
+	## var _points := _curve.get_points()
+	## var _curve.points.size() := _curve.get_curve.points.size()()
+#
+#
+	## Draw curve segments
+	#for i in range(_curve.points.size() - 1):
+		#var a = _curve.points[i]
+		#var b = _curve.points[i + 1]
+		#_draw_bezier_segment(a, b)
+#
+	## Draw points and control points
+	#for i in range(_curve.points.size()):
+		#var p = _curve.points[i]
+		#var pos_view = get_view_pos(p.position)
+		#var color = Color(1, 0.5, 0) if i == selected_index else Color(1, 0, 0)
+		#draw_circle(pos_view, point_radius, color)
+#
+		## Draw control points
+		#var left_view = get_view_pos(p.left_control_point)
+		#var right_view = get_view_pos(p.right_control_point)
+#
+		## Slightly dim when not selected/hovered
+		#var alpha := 1.0 if (i == selected_index or i == hovered_index) else 0.5
+		#var left_color := Color(0, 1, 0, alpha)
+		#var right_color := Color(0, 0, 1, alpha)
+		#var line_color := Color(CONTROL_LINE_COLOR.r, CONTROL_LINE_COLOR.g, CONTROL_LINE_COLOR.b, alpha)
+#
+		#draw_line(pos_view, left_view, line_color)
+		#draw_line(pos_view, right_view, line_color)
+		#draw_circle(left_view, control_radius, left_color)
+		#draw_circle(right_view, control_radius, right_color)
+#
+		##if i == selected_index or i == hovered_index:
+			##var left_view = get_view_pos(p.left_control_point)
+			##var right_view = get_view_pos(p.right_control_point)
+			##draw_circle(left_view, control_radius, Color(0, 1, 0))
+			##draw_circle(right_view, control_radius, Color(0, 0, 1))
+			##draw_line(pos_view, left_view, CONTROL_LINE_COLOR)
+			##draw_line(pos_view, right_view, CONTROL_LINE_COLOR)
+
+
+# =========================
+# DRAWING POINTS & CONTROLS
+# =========================
 func _draw():
 	if _curve == null:
-		print("Curve is null, returning")
 		return
 
-	# print("Drawing curve editor, curve has ", _curve.points.size(), " points")
 	update_view_transform()
 
-	# Draw Style Box
+	# --- Draw background panel ---
 	var style_box = get_theme_stylebox("panel", "Tree")
-	if style_box == null:
-		# Fallback if theme stylebox not found
-		draw_rect(Rect2(Vector2.ZERO, size), Color(0.1, 0.1, 0.1, 0.8))
-	else:
+	if style_box:
 		draw_style_box(style_box, Rect2(Vector2.ZERO, size))
+	else:
+		draw_rect(Rect2(Vector2.ZERO, size), Color(0.1, 0.1, 0.1, 0.8))
 
-	# Draw Grid
+	# --- Draw Grid ---
 	draw_set_transform_matrix(_world_to_view)
-
 	var min_edge: Vector2 = get_world_pos(Vector2(0, size.y))
 	var max_edge: Vector2 = get_world_pos(Vector2(size.x, 0))
 
-	# FIXME: Get editor theme colors, not GraphEdit, can't find how to get them
-	var grid_color_primary: Color = Color(0.3, 0.3, 0.3, 0.8)  # Temporary hardcoded color
-	var grid_color: Color = Color(0.2, 0.2, 0.2, 0.3)  # Temporary hardcoded color
+	var grid_color_primary: Color = Color(0.3, 0.3, 0.3, 0.8)
+	var grid_color: Color = Color(0.2, 0.2, 0.2, 0.3)
 
 	var grid_steps: Vector2 = Vector2i(4, 2)
 	var step_size: Vector2 = Vector2(1, (_curve.max_value - _curve.min_value)) / grid_steps
 
+	# Primary borders
 	draw_line(Vector2(min_edge.x, _curve.min_value), Vector2(max_edge.x, _curve.min_value), grid_color_primary)
 	draw_line(Vector2(max_edge.x, _curve.max_value), Vector2(min_edge.x, _curve.max_value), grid_color_primary)
 	draw_line(Vector2(0, min_edge.y), Vector2(0, max_edge.y), grid_color_primary)
 	draw_line(Vector2(1, max_edge.y), Vector2(1, min_edge.y), grid_color_primary)
 
+	# Internal grid
 	for i in range(1, grid_steps.x):
 		var x = i * step_size.x
 		draw_line(Vector2(x, min_edge.y), Vector2(x, max_edge.y), grid_color)
-
 	for i in range(1, grid_steps.y):
 		var y = _curve.min_value + i * step_size.y
 		draw_line(Vector2(min_edge.x, y), Vector2(max_edge.x, y), grid_color)
 
-	# Reset transform for other drawing
-	draw_set_transform_matrix(Transform2D())
+	draw_set_transform_matrix(Transform2D()) # Reset transform
 
-	# var _points := _curve.get_points()
-	# var _curve.points.size() := _curve.get_curve.points.size()()
-
-
-	# Draw curve segments
+	# --- Draw curve segments ---
 	for i in range(_curve.points.size() - 1):
 		var a = _curve.points[i]
 		var b = _curve.points[i + 1]
 		_draw_bezier_segment(a, b)
 
-	# Draw points and control points
+	# --- Draw points and control points ---
 	for i in range(_curve.points.size()):
 		var p = _curve.points[i]
 		var pos_view = get_view_pos(p.position)
-		var color = Color(1, 0.5, 0) if i == selected_index else Color(1, 0, 0)
-		draw_circle(pos_view, point_radius, color)
+		var is_selected = (i == selected_index)
+		var is_hovered = (i == hovered_index)
 
-		# Draw control points
-		var left_view = get_view_pos(p.left_control_point)
-		var right_view = get_view_pos(p.right_control_point)
+		# Draw main point
+		draw_circle(pos_view, point_radius, Color(1, 0.5, 0) if is_selected else Color(1, 0, 0))
 
-		# Slightly dim when not selected/hovered
-		var alpha := 1.0 if (i == selected_index or i == hovered_index) else 0.5
-		var left_color := Color(0, 1, 0, alpha)
-		var right_color := Color(0, 0, 1, alpha)
-		var line_color := Color(CONTROL_LINE_COLOR.r, CONTROL_LINE_COLOR.g, CONTROL_LINE_COLOR.b, alpha)
+		var alpha = 1.0 if (is_selected or is_hovered) else 0.5
 
-		draw_line(pos_view, left_view, line_color)
-		draw_line(pos_view, right_view, line_color)
-		draw_circle(left_view, control_radius, left_color)
-		draw_circle(right_view, control_radius, right_color)
+		# Draw left control only if not first point
+		if i != 0:
+			var left_view = get_view_pos(p.left_control_point)
+			draw_line(pos_view, left_view, Color(CONTROL_LINE_COLOR.r, CONTROL_LINE_COLOR.g, CONTROL_LINE_COLOR.b, alpha))
+			draw_circle(left_view, control_radius, Color(0, 1, 0, alpha))
 
-		#if i == selected_index or i == hovered_index:
-			#var left_view = get_view_pos(p.left_control_point)
-			#var right_view = get_view_pos(p.right_control_point)
-			#draw_circle(left_view, control_radius, Color(0, 1, 0))
-			#draw_circle(right_view, control_radius, Color(0, 0, 1))
-			#draw_line(pos_view, left_view, CONTROL_LINE_COLOR)
-			#draw_line(pos_view, right_view, CONTROL_LINE_COLOR)
+		# Draw right control only if not last point
+		if i != _curve.points.size() - 1:
+			var right_view = get_view_pos(p.right_control_point)
+			draw_line(pos_view, right_view, Color(CONTROL_LINE_COLOR.r, CONTROL_LINE_COLOR.g, CONTROL_LINE_COLOR.b, alpha))
+			draw_circle(right_view, control_radius, Color(0, 0, 1, alpha))
+
+
+
+
+
+
+#func _gui_input(event: InputEvent) -> void:
+	#if _curve == null:
+		#return
+#
+	## var _points := _curve.get_points()
+	## var _curve.points.size() := _curve.get_curve.points.size()()
+#
+	#if event is InputEventKey and event.pressed:
+		#if event.keycode == KEY_DELETE and selected_index != -1:
+			#_curve.remove_point(_curve.points[selected_index])
+			#selected_index = -1
+			#queue_redraw()
+			#return
+#
+	#if event is InputEventMouseButton:
+		#if event.button_index == MOUSE_BUTTON_LEFT:
+			#if event.pressed:
+				#var world_pos = get_world_pos(event.position)
+				## Check for clicking control points first
+				#var control = get_control_at(event.position)
+				#if control[0] != -1:
+					#dragging_point = control[0]
+					#dragging_control = control[1]
+					#selected_index = control[0]
+					#queue_redraw()
+					#return
+				## Then points
+				#var point_idx = get_point_at(event.position)
+				#if point_idx != -1:
+					#dragging_point = point_idx
+					#dragging_control = ""
+					#selected_index = point_idx
+					#queue_redraw()
+					#return
+				## If not clicked on anything, add a new point
+				#var new_point = Point.new()
+				#var clamped_pos = world_pos.clamp(Vector2(0, _curve.min_value), Vector2(1.0, _curve.max_value))
+				#new_point.position = clamped_pos
+				#new_point.left_control_point = clamped_pos + Vector2(-0.1, 0)
+				#new_point.right_control_point = clamped_pos + Vector2(0.1, 0)
+				#_curve.add_point(new_point)
+				#selected_index = _curve.points.find(new_point)
+			#else:
+				#dragging_point = -1
+				#dragging_control = ""
+		#elif event.button_index == MOUSE_BUTTON_RIGHT and event.pressed:
+			## Check for right-clicking on points to remove
+			#var point_idx = get_point_at(event.position)
+			#if point_idx != -1:
+				#_curve.remove_point(_curve.points[point_idx])
+				#if selected_index == point_idx:
+					#selected_index = -1
+				#elif selected_index > point_idx:
+					#selected_index -= 1
+				#queue_redraw()
+				#return
+#
+	#elif event is InputEventMouseMotion:
+		#var new_hovered = get_point_at(event.position)
+		#if new_hovered != hovered_index:
+			#hovered_index = new_hovered
+			#queue_redraw()
+		#if dragging_point != -1:
+			#var world_pos = get_world_pos(event.position)
+			## var p = _curve.points[dragging_point].duplicate(true)
+			#var p = _curve.points[dragging_point]
+			#if dragging_control == "left":
+				#p.left_control_point = world_pos
+			#elif dragging_control == "right":
+				#p.right_control_point = world_pos
+			#else:
+				## Drag point and move its controls accordingly
+				#var clamped_pos = world_pos.clamp(Vector2(0, _curve.min_value), Vector2(1.0, _curve.max_value))
+				#var delta = clamped_pos - p.position
+				#p.position = clamped_pos
+				#p.left_control_point += delta
+				#p.right_control_point += delta
+#
+				## _curve.set_point(dragging_point, p)
+				## _curve.points[dragging_point] = p
+#
+				#point_changed.emit(dragging_point, p)
+				#queue_redraw()
+
+
+# =========================
+# GUI INPUT (DRAGGING)
+# =========================
+func _gui_input(event: InputEvent) -> void:
+	if _curve == null:
+		return
+
+	# =========================
+	# MOUSE MOTION (drag points/controls)
+	# =========================
+	if event is InputEventMouseMotion:
+		if dragging_point != -1:
+			var p = _curve.points[dragging_point]
+			var world_pos = get_world_pos(event.position)
+
+			match dragging_control:
+				"left":
+					if dragging_point != 0: # ignore left control for first point
+						p.left_control_point = world_pos
+				"right":
+					if dragging_point != _curve.points.size() - 1: # ignore right control for last point
+						p.right_control_point = world_pos
+				"": # dragging main point
+					var clamped_pos = world_pos.clamp(Vector2(0, _curve.min_value), Vector2(1.0, _curve.max_value))
+					var delta = clamped_pos - p.position
+					p.position = clamped_pos
+					p.left_control_point += delta
+					p.right_control_point += delta
+
+			point_changed.emit(dragging_point, p)
+			queue_redraw()
+
+	# =========================
+	# MOUSE BUTTONS
+	# =========================
+	if event is InputEventMouseButton:
+		# --- LEFT CLICK ---
+		if event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
+			var control = get_control_at(event.position)
+			if control[0] != -1:
+				dragging_point = control[0]
+				dragging_control = control[1]
+				selected_index = control[0]
+				queue_redraw()
+				return
+
+			var point_idx = get_point_at(event.position)
+			if point_idx != -1:
+				dragging_point = point_idx
+				dragging_control = ""
+				selected_index = point_idx
+				queue_redraw()
+				return
+
+			# Otherwise add new point
+			var new_point = Point.new()
+			var world_pos = get_world_pos(event.position)
+			var clamped_pos = world_pos.clamp(Vector2(0, _curve.min_value), Vector2(1.0, _curve.max_value))
+			new_point.position = clamped_pos
+			new_point.left_control_point = clamped_pos + Vector2(-0.1, 0)
+			new_point.right_control_point = clamped_pos + Vector2(0.1, 0)
+			_curve.add_point(new_point)
+			selected_index = _curve.points.find(new_point)
+
+		# --- RIGHT CLICK ---
+		elif event.pressed and event.button_index == MOUSE_BUTTON_RIGHT:
+			var point_idx = get_point_at(event.position)
+			if point_idx != -1:
+				_curve.remove_point(_curve.points[point_idx])
+				if selected_index == point_idx:
+					selected_index = -1
+				elif selected_index > point_idx:
+					selected_index -= 1
+				queue_redraw()
+				return
+
+		# Reset dragging state when mouse button released
+		elif not event.pressed:
+			dragging_point = -1
+			dragging_control = ""
+
+
+
+
+
 
 
 func _draw_bezier_segment(a: Point, b: Point) -> void:
@@ -255,89 +536,3 @@ func _draw_bezier_segment(a: Point, b: Point) -> void:
 func _bezier(p0: Vector2, p1: Vector2, p2: Vector2, p3: Vector2, t: float) -> Vector2:
 	var omt = 1.0 - t
 	return omt*omt*omt*p0 + 3*omt*omt*t*p1 + 3*omt*t*t*p2 + t*t*t*p3
-
-
-
-func _gui_input(event: InputEvent) -> void:
-	if _curve == null:
-		return
-
-	# var _points := _curve.get_points()
-	# var _curve.points.size() := _curve.get_curve.points.size()()
-
-	if event is InputEventKey and event.pressed:
-		if event.keycode == KEY_DELETE and selected_index != -1:
-			_curve.remove_point(_curve.points[selected_index])
-			selected_index = -1
-			queue_redraw()
-			return
-
-	if event is InputEventMouseButton:
-		if event.button_index == MOUSE_BUTTON_LEFT:
-			if event.pressed:
-				var world_pos = get_world_pos(event.position)
-				# Check for clicking control points first
-				var control = get_control_at(event.position)
-				if control[0] != -1:
-					dragging_point = control[0]
-					dragging_control = control[1]
-					selected_index = control[0]
-					queue_redraw()
-					return
-				# Then points
-				var point_idx = get_point_at(event.position)
-				if point_idx != -1:
-					dragging_point = point_idx
-					dragging_control = ""
-					selected_index = point_idx
-					queue_redraw()
-					return
-				# If not clicked on anything, add a new point
-				var new_point = Point.new()
-				var clamped_pos = world_pos.clamp(Vector2(0, _curve.min_value), Vector2(1.0, _curve.max_value))
-				new_point.position = clamped_pos
-				new_point.left_control_point = clamped_pos + Vector2(-0.1, 0)
-				new_point.right_control_point = clamped_pos + Vector2(0.1, 0)
-				_curve.add_point(new_point)
-				selected_index = _curve.points.find(new_point)
-			else:
-				dragging_point = -1
-				dragging_control = ""
-		elif event.button_index == MOUSE_BUTTON_RIGHT and event.pressed:
-			# Check for right-clicking on points to remove
-			var point_idx = get_point_at(event.position)
-			if point_idx != -1:
-				_curve.remove_point(_curve.points[point_idx])
-				if selected_index == point_idx:
-					selected_index = -1
-				elif selected_index > point_idx:
-					selected_index -= 1
-				queue_redraw()
-				return
-
-	elif event is InputEventMouseMotion:
-		var new_hovered = get_point_at(event.position)
-		if new_hovered != hovered_index:
-			hovered_index = new_hovered
-			queue_redraw()
-		if dragging_point != -1:
-			var world_pos = get_world_pos(event.position)
-			# var p = _curve.points[dragging_point].duplicate(true)
-			var p = _curve.points[dragging_point]
-			if dragging_control == "left":
-				p.left_control_point = world_pos
-			elif dragging_control == "right":
-				p.right_control_point = world_pos
-			else:
-				# Drag point and move its controls accordingly
-				var clamped_pos = world_pos.clamp(Vector2(0, _curve.min_value), Vector2(1.0, _curve.max_value))
-				var delta = clamped_pos - p.position
-				p.position = clamped_pos
-				p.left_control_point += delta
-				p.right_control_point += delta
-
-				# _curve.set_point(dragging_point, p)
-				# _curve.points[dragging_point] = p
-
-				point_changed.emit(dragging_point, p)
-				queue_redraw()
