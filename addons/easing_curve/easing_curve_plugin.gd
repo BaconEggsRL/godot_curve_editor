@@ -42,7 +42,7 @@ func handle_points(curve: BaconCurve) -> void:
 		position_hbox.add_child(position_label)
 
 		# Value
-		var position = Vector2.ZERO
+		var position = point.position
 		var x_color := EditorInterface.get_editor_theme().get_color("property_color_x", "Editor")
 		var y_color := EditorInterface.get_editor_theme().get_color("property_color_y", "Editor")
 
