@@ -35,11 +35,16 @@ var tween_tween:Tween
 
 
 
+func kill_tweens() -> void:
+	if curve_tween: curve_tween.kill()
+	if tween_tween: tween_tween.kill()
+
 func reset_positions() -> void:
 	curve_node.position = curve_start.position
 	tween_node.position = tween_start.position
 
 func reset_and_start() -> void:
+	kill_tweens()
 	reset_positions()
 	start_tween(curve_tween, curve_end, curve_node, true)
 	start_tween(tween_tween, tween_end, tween_node, false)
@@ -97,18 +102,23 @@ func _draw() -> void:
 
 
 
-func start_tween(tween:Tween, end:Marker2D, node:Node2D, use_curve:bool) -> void:
-
-	# POSITION
-	var position_tweener:PropertyTweener
+func start_tween(tween_ref: Tween, end: Marker2D, node: Node2D, use_curve: bool) -> void:
 	var target := end.position
 	var duration := 2.0
 
-	if tween: tween.kill()
-	tween = create_tween()
+	# Kill existing tween
+	if tween_ref:
+		tween_ref.kill()
 
-	position_tweener = tween.tween_property(node, "position", target, duration)
-	# position_tweener.set_ease(mouse_entered_ease_type).set_trans(mouse_entered_transition_type)
+	# Create new tween and store it in the member variable
+	var new_tween = create_tween()
+	if tween_ref == curve_tween:
+		curve_tween = new_tween
+	elif tween_ref == tween_tween:
+		tween_tween = new_tween
+
+	var position_tweener = new_tween.tween_property(node, "position", target, duration)
+
 	if bacon_curve and use_curve:
 		position_tweener.set_custom_interpolator(tween_bacon_curve.bind(bacon_curve))
 	else:
@@ -119,6 +129,7 @@ func start_tween(tween:Tween, end:Marker2D, node:Node2D, use_curve:bool) -> void
 				position_tweener.set_ease(Tween.EASE_IN).set_trans(Tween.TRANS_CUBIC)
 			TWEEN_TYPE.EASE_OUT_CUBIC:
 				position_tweener.set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_CUBIC)
+
 
 
 
