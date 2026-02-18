@@ -8,38 +8,43 @@ extends Resource
 @export var right_control_point: Vector2 = Vector2.ZERO: set = set_right_control_point
 
 
-var position_x_input:EditorSpinSlider
-var position_y_input:EditorSpinSlider
-
-var left_control_point_x_input:EditorSpinSlider
-var left_control_point_y_input:EditorSpinSlider
-
-var right_control_point_x_input:EditorSpinSlider
-var right_control_point_y_input:EditorSpinSlider
-
-var sliders = {
+var input = {
 	"position":
-		{"x": position_x_input, "y": position_y_input},
+		{"x": null, "y": null},
 	"left_control_point":
-		{"x": left_control_point_x_input, "y": left_control_point_y_input},
+		{"x": null, "y": null},
 	"right_control_point":
-		{"x": right_control_point_x_input, "y": right_control_point_y_input}
+		{"x": null, "y": null}
 }
 
 
 
 
 func set_position(value) -> void:
-	if position_x_input:
-		position_x_input.value = value.x
-	if position_y_input:
-		position_y_input.value = value.y
+	var x_input = input["position"].x
+	var y_input = input["position"].y
+	if x_input:
+		x_input.value = value.x
+	if y_input:
+		y_input.value = value.y
 	position = value
 
 func set_left_control_point(value) -> void:
+	var x_input = input["left_control_point"].x
+	var y_input = input["left_control_point"].y
+	if x_input:
+		x_input.value = value.x
+	if y_input:
+		y_input.value = value.y
 	left_control_point = value
 
 func set_right_control_point(value) -> void:
+	var x_input = input["right_control_point"].x
+	var y_input = input["right_control_point"].y
+	if x_input:
+		x_input.value = value.x
+	if y_input:
+		y_input.value = value.y
 	right_control_point = value
 
 

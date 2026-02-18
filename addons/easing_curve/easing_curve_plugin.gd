@@ -190,6 +190,7 @@ func _create_vector2_property(
 		#bacon_curve_editor.queue_redraw()
 	#)
 	x_input.value_changed.connect(_on_x_input_value_changed.bind(i, x_input, reset_btn, position.x, property_name))
+	point.input[property_name].x = x_input
 
 	x_row.add_child(x_label)
 	x_row.add_child(x_input)
@@ -224,6 +225,7 @@ func _create_vector2_property(
 		#bacon_curve_editor.queue_redraw()
 	#)
 	y_input.value_changed.connect(_on_y_input_value_changed.bind(i, y_input, reset_btn, position.y, property_name))
+	point.input[property_name].y = y_input
 
 	reset_btn.pressed.connect(_on_reset_btn_pressed.bind(i, position, x_input, y_input, property_name))
 
@@ -330,7 +332,7 @@ func _on_curve_editor_point_changed(i: int, new_point: Point) -> void:
 	# Update the editor UI if needed
 	bacon_curve_editor.queue_redraw()
 
-	print("Point %d changed: %s" % [i, str(point.position)])
+	# print("Point %d changed: %s" % [i, str(point.position)])
 
 
 
