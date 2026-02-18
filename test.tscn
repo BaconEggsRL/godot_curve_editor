@@ -6,13 +6,26 @@
 [ext_resource type="Texture2D" uid="uid://d23t7b73acleh" path="res://icon.svg" id="4_ppyta"]
 [ext_resource type="Texture2D" uid="uid://ckq8rdh87fm8m" path="res://icons/Reload.svg" id="4_ykrsh"]
 
+[sub_resource type="Resource" id="Resource_ykrsh"]
+script = ExtResource("2_ykrsh")
+position = Vector2(0.101227, 0.7112676)
+left_control_point = Vector2(0.101227, 0.7112676)
+right_control_point = Vector2(0.23619632, 0.11971831)
+
+[sub_resource type="Resource" id="Resource_g14j6"]
+script = ExtResource("2_ykrsh")
+position = Vector2(0.88957065, 0.8661972)
+left_control_point = Vector2(0.8619633, 0.29577464)
+right_control_point = Vector2(0.88957065, 0.8661972)
+
 [sub_resource type="Resource" id="Resource_vbegm"]
 script = ExtResource("3_g14j6")
+points = Array[ExtResource("2_ykrsh")]([SubResource("Resource_ykrsh"), SubResource("Resource_g14j6")])
 metadata/_custom_type_script = "uid://c10cjby72qngf"
 
 [sub_resource type="Curve" id="Curve_ehkex"]
-_data = [Vector2(0.42708337, 0.6671409), 0.0, 0.0, 0, 0, Vector2(0.6458334, 0.85206264), 1.4524758, 0.0, 0, 0]
-point_count = 2
+_data = [Vector2(0.40625, 0.78734004), 0.0, -0.28030252, 0, 0, Vector2(0.7118056, 0.24182087), 0.36311918, 0.36311918, 0, 0, Vector2(0.8472222, 0.5654339), 0.0, 0.0, 0, 0]
+point_count = 3
 
 [sub_resource type="Animation" id="Animation_6uqi0"]
 length = 0.001
