@@ -1,18 +1,18 @@
-[gd_resource type="Resource" script_class="BaconCurve" format=3 uid="uid://pvyum4fcqyf4"]
+[gd_resource type="Resource" script_class="BaconCurve" format=3 uid="uid://bf4624t5hot7b"]
 
-[ext_resource type="Script" uid="uid://cxmmenoobxiyp" path="res://point.gd" id="1_8ifrs"]
-[ext_resource type="Script" uid="uid://c10cjby72qngf" path="res://bacon_curve.gd" id="2_37vsc"]
+[ext_resource type="Script" uid="uid://cxmmenoobxiyp" path="res://point.gd" id="1_4xnam"]
+[ext_resource type="Script" uid="uid://c10cjby72qngf" path="res://bacon_curve.gd" id="2_dfgab"]
 
-[sub_resource type="Resource" id="Resource_ykrsh"]
-script = ExtResource("1_8ifrs")
+[sub_resource type="Resource" id="Resource_4xnam"]
+script = ExtResource("1_4xnam")
 
-[sub_resource type="Resource" id="Resource_g14j6"]
-script = ExtResource("1_8ifrs")
+[sub_resource type="Resource" id="Resource_dfgab"]
+script = ExtResource("1_4xnam")
 position = Vector2(1, 1)
 left_control_point = Vector2(1, 1)
 right_control_point = Vector2(1, 1)
 
 [resource]
-script = ExtResource("2_37vsc")
-points = Array[ExtResource("1_8ifrs")]([SubResource("Resource_ykrsh"), SubResource("Resource_g14j6")])
+script = ExtResource("2_dfgab")
+points = Array[ExtResource("1_4xnam")]([SubResource("Resource_4xnam"), SubResource("Resource_dfgab")])
 metadata/_custom_type_script = "uid://c10cjby72qngf"

@@ -48,7 +48,7 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_37kl0")
-tween_type = 2
+tween_type = 1
 bacon_curve = ExtResource("2_ppyta")
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="." unique_id=2040447065]

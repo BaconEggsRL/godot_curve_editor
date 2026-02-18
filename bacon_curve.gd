@@ -3,6 +3,9 @@ class_name BaconCurve
 extends Resource
 
 
+var _last_t := 0.0
+
+
 @export var bacon_curve_editor:bool
 
 @export var points: Array[Point] = []
@@ -151,6 +154,7 @@ func sample(offset: float) -> float:
 
 	# Solve t from X using Newton–Raphson
 	var t = _solve_for_t(offset, a, b)
+	_last_t = t  # store for debug
 
 	# Evaluate Y at that t
 	return _bezier_interpolate(

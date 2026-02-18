@@ -1,5 +1,15 @@
 extends Control
 
+var _debug_prev_curve_pos: Vector2
+var _debug_prev_tween_pos: Vector2
+var _debug_curve_speed: float = 0.0
+var _debug_tween_speed: float = 0.0
+
+var _debug_offset: float = 0.0
+var _debug_curve_value: float = 0.0
+var _debug_last_t: float = 0.0
+
+
 enum TWEEN_TYPE {
 	LINEAR,
 	EASE_IN_CUBIC,
@@ -39,6 +49,53 @@ func _ready() -> void:
 	reset_and_start()
 
 
+func _process(delta: float) -> void:
+	# Curve-driven node speed
+	if _debug_prev_curve_pos != Vector2.ZERO:
+		var d = curve_node.global_position.distance_to(_debug_prev_curve_pos)
+		_debug_curve_speed = d / delta
+
+	# Built-in tween node speed
+	if _debug_prev_tween_pos != Vector2.ZERO:
+		var d2 = tween_node.global_position.distance_to(_debug_prev_tween_pos)
+		_debug_tween_speed = d2 / delta
+
+	_debug_prev_curve_pos = curve_node.global_position
+	_debug_prev_tween_pos = tween_node.global_position
+
+	queue_redraw()
+
+
+func _draw() -> void:
+	var font = ThemeDB.fallback_font
+	var size = 14
+	var y := 20
+
+	draw_string(font, Vector2(10, y),
+		"offset: %.4f" % _debug_offset,
+		HORIZONTAL_ALIGNMENT_LEFT, -1, size)
+	y += 18
+
+	draw_string(font, Vector2(10, y),
+		"t (Newton): %.4f" % _debug_last_t,
+		HORIZONTAL_ALIGNMENT_LEFT, -1, size)
+	y += 18
+
+	draw_string(font, Vector2(10, y),
+		"curve value (y): %.4f" % _debug_curve_value,
+		HORIZONTAL_ALIGNMENT_LEFT, -1, size)
+	y += 18
+
+	draw_string(font, Vector2(10, y),
+		"Curve speed: %.2f px/sec" % _debug_curve_speed,
+		HORIZONTAL_ALIGNMENT_LEFT, -1, size)
+	y += 18
+
+	draw_string(font, Vector2(10, y),
+		"Tween speed: %.2f px/sec" % _debug_tween_speed,
+		HORIZONTAL_ALIGNMENT_LEFT, -1, size)
+
+
 
 func start_tween(tween:Tween, end:Marker2D, node:Node2D, use_curve:bool) -> void:
 
@@ -66,9 +123,16 @@ func start_tween(tween:Tween, end:Marker2D, node:Node2D, use_curve:bool) -> void
 
 
 
-func tween_bacon_curve(_offset: float, _curve: BaconCurve) -> float:
-	# return _curve.sample_baked(_offset)
-	return _curve.sample(_offset)
+#func tween_bacon_curve(_offset: float, _curve: BaconCurve) -> float:
+	## return _curve.sample_baked(_offset)
+	#return _curve.sample(_offset)
+func tween_bacon_curve(offset: float, curve: BaconCurve) -> float:
+	_debug_offset = offset
+	_debug_curve_value = curve.sample(offset)
+	_debug_last_t = curve._last_t  # store t from your sample()
+
+	return _debug_curve_value
+
 
 
 func _on_restart_pressed() -> void:
