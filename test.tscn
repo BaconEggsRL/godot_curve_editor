@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://qviblxegxd23"]
 
 [ext_resource type="Script" uid="uid://cjoavnop3pyl2" path="res://test.gd" id="1_37kl0"]
-[ext_resource type="Resource" uid="uid://cqxnb1q4kvgl4" path="res://addons/easing_curve/presets/easeOutCubic.tres" id="2_ppyta"]
+[ext_resource type="Resource" uid="uid://bp5hcyeo8sxpm" path="res://addons/easing_curve/presets/easeInCubic.tres" id="2_ppyta"]
 [ext_resource type="Texture2D" uid="uid://d23t7b73acleh" path="res://icon.svg" id="4_ppyta"]
 [ext_resource type="Texture2D" uid="uid://ckq8rdh87fm8m" path="res://Reload.svg" id="4_ykrsh"]
 

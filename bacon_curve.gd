@@ -75,6 +75,7 @@ func _on_point_changed() -> void:
 	emit_changed()
 
 
+# assumes x is linear in t
 #func sample(offset: float) -> float:
 	#if points.size() == 0:
 		#return 0.0
@@ -95,14 +96,60 @@ func _on_point_changed() -> void:
 	#return _bezier_interpolate(a.position.y, a.right_control_point.y, b.left_control_point.y, b.position.y, t)
 
 
+#func sample(offset: float) -> float:
+	#if points.size() < 2:
+		#return 0.0
+#
+	#var a = points[0]
+	#var b = points[1]
+#
+	## Solve for t from x
+	#var t = _solve_for_t(offset, a, b)
+#
+	## Evaluate Y at that t
+	#return _bezier_interpolate(
+		#a.position.y,
+		#a.right_control_point.y,
+		#b.left_control_point.y,
+		#b.position.y,
+		#t
+	#)
+
+
+# binary search
+#func _solve_for_t(x: float, a: Point, b: Point) -> float:
+	#var low := 0.0
+	#var high := 1.0
+	#var mid := 0.0
+#
+	#for i in 20:
+		#mid = (low + high) * 0.5
+		#var estimate = _bezier_interpolate(
+			#a.position.x,
+			#a.right_control_point.x,
+			#b.left_control_point.x,
+			#b.position.x,
+			#mid
+		#)
+#
+		#if estimate < x:
+			#low = mid
+		#else:
+			#high = mid
+#
+	#return mid
+
+
 func sample(offset: float) -> float:
 	if points.size() < 2:
 		return 0.0
 
+	offset = clamp(offset, 0.0, 1.0)
+
 	var a = points[0]
 	var b = points[1]
 
-	# Solve for t from x
+	# Solve t from X using Newton–Raphson
 	var t = _solve_for_t(offset, a, b)
 
 	# Evaluate Y at that t
@@ -115,28 +162,41 @@ func sample(offset: float) -> float:
 	)
 
 
+# Newton-Raphson solver
 func _solve_for_t(x: float, a: Point, b: Point) -> float:
-	var low := 0.0
-	var high := 1.0
-	var mid := 0.0
+	var t := x  # good initial guess
 
-	for i in 20:
-		mid = (low + high) * 0.5
-		var estimate = _bezier_interpolate(
+	for i in 5: # usually converges in 3–4 iterations
+		var x_est = _bezier_interpolate(
 			a.position.x,
 			a.right_control_point.x,
 			b.left_control_point.x,
 			b.position.x,
-			mid
+			t
 		)
 
-		if estimate < x:
-			low = mid
-		else:
-			high = mid
+		var dx = _bezier_derivative(
+			a.position.x,
+			a.right_control_point.x,
+			b.left_control_point.x,
+			b.position.x,
+			t
+		)
 
-	return mid
+		if abs(dx) < 0.000001:
+			break
 
+		t -= (x_est - x) / dx
+		t = clamp(t, 0.0, 1.0)
+
+	return t
+
+
+func _bezier_derivative(p0: float, p1: float, p2: float, p3: float, t: float) -> float:
+	var omt = 1.0 - t
+	return 3.0 * omt * omt * (p1 - p0) \
+		+ 6.0 * omt * t * (p2 - p1) \
+		+ 3.0 * t * t * (p3 - p2)
 
 
 func _bezier_interpolate(p0: float, p1: float, p2: float, p3: float, t: float) -> float:
