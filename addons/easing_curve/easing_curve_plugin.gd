@@ -2,6 +2,9 @@
 @tool
 extends EditorInspectorPlugin
 const X_STYLEBOX = preload("uid://dsapcj11t0kpu")
+const BTN_NORMAL = preload("uid://c6hb75fm8lwht")
+
+
 const RELOAD = preload("uid://ckq8rdh87fm8m")
 const REMOVE = preload("uid://rcefrsneyc5r")
 const ADD = preload("uid://ciwi4nujiopse")
@@ -172,9 +175,29 @@ func _create_vector2_property(
 	# Right side (lock button)
 	var lock_btn := Button.new()
 	lock_btn.icon = LOCK
-	lock_btn.flat = false
+	lock_btn.flat = true
+	lock_btn.toggle_mode = true
 	lock_btn.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
 	lock_btn.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+
+	var normal_color := lock_btn.get_theme_color("icon_normal_color")
+	# var pressed_color := Color("#57a0ff")
+	var pressed_color := Color.WHITE
+	lock_btn.add_theme_color_override("icon_pressed_color", pressed_color)
+	lock_btn.add_theme_color_override("icon_hover_pressed_color", pressed_color)
+
+	# lock_btn.add_theme_color_override("icon_hover_color", Color.WHITE)
+	# lock_btn.add_theme_stylebox_override("pressed", BTN_NORMAL)
+
+	var toggled_on := lock_btn.button_pressed
+	lock_btn.icon = LOCK if toggled_on else UNLOCK
+	lock_btn.modulate.a = 1.0 if toggled_on else 0.5
+
+	lock_btn.toggled.connect(func(toggled_on:bool):
+		lock_btn.icon = LOCK if toggled_on else UNLOCK
+		lock_btn.modulate.a = 1.0 if toggled_on else 0.5
+	)
+
 	value_hbox.add_child(lock_btn)
 
 
