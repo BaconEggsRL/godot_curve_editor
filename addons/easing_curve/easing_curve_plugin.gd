@@ -47,6 +47,7 @@ func handle_points(curve: BaconCurve) -> void:
 		var y_color := EditorInterface.get_editor_theme().get_color("property_color_y", "Editor")
 
 		var x_input_hbox = HBoxContainer.new()
+		x_input_hbox.add_theme_constant_override("separation", -8)
 		var x_input_label = Label.new()
 		x_input_label.add_theme_color_override("font_color", x_color)
 		x_input_label.text = "x"
@@ -63,6 +64,7 @@ func handle_points(curve: BaconCurve) -> void:
 		x_input.custom_minimum_size = Vector2(100,25)
 
 		var y_input_hbox = HBoxContainer.new()
+		y_input_hbox.add_theme_constant_override("separation", -8)
 		var y_input_label = Label.new()
 		y_input_label.text = "y"
 		y_input_label.add_theme_color_override("font_color", y_color)
