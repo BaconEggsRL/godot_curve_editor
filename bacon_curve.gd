@@ -108,6 +108,12 @@ func _on_point_changed() -> void:
 	force_update()
 
 
+func set_point(i, p) -> void:
+	points[i] = p
+	# emit_changed()
+	# force_update()
+
+
 func force_update() -> void:
 	# Force inspector update
 	points = points.duplicate(true)

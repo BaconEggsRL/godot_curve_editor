@@ -1,4 +1,5 @@
 # easing_curve_plugin.gd
+@tool
 extends EditorInspectorPlugin
 const X_STYLEBOX = preload("uid://dsapcj11t0kpu")
 const RELOAD = preload("uid://ckq8rdh87fm8m")
@@ -235,15 +236,6 @@ func _create_vector2_property(
 
 func _on_add_point_btn_pressed() -> void:
 	var p := Point.new()
-
-	# choose your default position (example: 0,0 or something smarter)
-	# p.position = Vector2.ZERO
-
-	# set control points to match position
-	# p.left_control_point = p.position
-	# p.right_control_point = p.position
-
-	# curve.points.append(p)
 	curve.add_point(p)
 	curve.notify_property_list_changed()
 
@@ -260,8 +252,6 @@ func handle_points(curve: BaconCurve) -> void:
 		var point_panel := PanelContainer.new()      # contains the point
 		point_panel.add_theme_stylebox_override("panel", X_STYLEBOX)
 
-		#var point_panel_vbox := VBoxContainer.new()  # contains each property of the point
-		#point_panel.add_child(point_panel_vbox)
 		# Main horizontal layout
 		var point_main_hbox := HBoxContainer.new()
 		point_panel.add_child(point_main_hbox)
@@ -290,103 +280,21 @@ func handle_points(curve: BaconCurve) -> void:
 			_create_vector2_property(point, i, "position", "Position")
 		)
 
-		# Left Control Point
-		point_panel_vbox.add_child(
-			_create_vector2_property(point, i, "left_control_point", "Left Control")
-		)
+		# Control Points
+		var point_count = curve.points.size()
 
-		# Right Control Point
-		point_panel_vbox.add_child(
-			_create_vector2_property(point, i, "right_control_point", "Right Control")
-		)
+		if point_count > 1:
+			if i != 0: # not the first point -> add left control
+				point_panel_vbox.add_child(
+					_create_vector2_property(point, i, "left_control_point", "Left Control")
+				)
+			if i != point_count - 1: # not the last point -> add right control
+				point_panel_vbox.add_child(
+					_create_vector2_property(point, i, "right_control_point", "Right Control")
+				)
 
 		# IMPORTANT: add panel to list
 		point_list.add_child(point_panel)
-		## Position
-#
-		## Label
-		#var position_hbox := HBoxContainer.new()  # separates the property label and the property value
-		#point_panel_vbox.add_child(position_hbox)
-#
-		#position_hbox.size_flags_horizontal = Control.SIZE_FILL
-		#var position_label := Label.new()
-		#position_label.text = "Position"
-		#position_hbox.add_child(position_label)
-#
-		## Reset Button
-		#var reset_btn := Button.new()
-		#reset_btn.icon = RELOAD
-		#reset_btn.hide()
-		## position_hbox.add_child(reset_btn)
-		#position_label.add_child(reset_btn)
-#
-#
-		## Value
-#
-		#var x_color := EditorInterface.get_editor_theme().get_color("property_color_x", "Editor")
-		#var y_color := EditorInterface.get_editor_theme().get_color("property_color_y", "Editor")
-#
-		#var x_input_hbox := HBoxContainer.new()
-		#x_input_hbox.add_theme_constant_override("separation", -8)
-		#var x_input_label = Label.new()
-		#x_input_label.add_theme_color_override("font_color", x_color)
-		#x_input_label.text = "x"
-		#var x_input := EditorSpinSlider.new()
-		#x_input_hbox.add_child(x_input_label)
-		#x_input_hbox.add_child(x_input)
-		#x_input.min_value = 0.0
-		#x_input.max_value = 1.0
-		#x_input.add_theme_color_override("label_color", x_color)
-#
-		#x_input.value_changed.connect(_on_x_input_value_changed.bind(i, x_input, reset_btn, position.x))
-		#x_input.value = position.x
-#
-		#x_input.flat = true
-		#x_input.step = STEP
-		#x_input.hide_slider = true
-		#x_input.label = ""
-		#x_input.custom_minimum_size = Vector2(100,25)
-#
-		#var y_input_hbox := HBoxContainer.new()
-		#y_input_hbox.add_theme_constant_override("separation", -8)
-		#var y_input_label := Label.new()
-		#y_input_label.text = "y"
-		#y_input_label.add_theme_color_override("font_color", y_color)
-		#var y_input = EditorSpinSlider.new()
-		#y_input_hbox.add_child(y_input_label)
-		#y_input_hbox.add_child(y_input)
-		#y_input.min_value = -1024
-		#y_input.max_value = 1024
-		#y_input.add_theme_color_override("label_color", y_color)
-#
-		#y_input.value_changed.connect(_on_y_input_value_changed.bind(i, y_input, reset_btn, position.y))
-		#y_input.value = position.y
-#
-		#y_input.flat = true
-		#y_input.step = STEP
-		#y_input.hide_slider = true
-		#y_input.label = ""
-		#y_input.custom_minimum_size = Vector2(100,25)
-#
-		#reset_btn.pressed.connect(_on_reset_btn_pressed.bind(i, position, x_input, y_input))
-#
-		#var xy_vbox := VBoxContainer.new()
-		#xy_vbox.add_theme_constant_override("separation", 0)
-		#xy_vbox.add_child(x_input_hbox)
-		#xy_vbox.add_child(y_input_hbox)
-#
-		#var xy_panel := PanelContainer.new()
-		#xy_panel.add_theme_stylebox_override("panel", X_STYLEBOX)
-		#xy_panel.add_child(xy_vbox)
-		#position_hbox.add_child(xy_panel)
-#
-		## Remove Button
-		#var remove_btn := Button.new()
-		#remove_btn.icon = REMOVE
-		#remove_btn.pressed.connect(_on_remove_btn_pressed.bind(point_list, i, point_panel, point))
-		#position_hbox.add_child(remove_btn)
-#
-		#point_list.add_child(point_panel)
 
 
 	# Add Point button
@@ -400,6 +308,32 @@ func handle_points(curve: BaconCurve) -> void:
 	add_custom_control(point_list)
 
 
+
+func _on_curve_editor_point_changed(i: int, new_point: Point) -> void:
+	# Update the point in the BaconCurve resource
+	var point := curve.points[i]
+
+	# Copy the new_point values into the existing point
+	point.position = new_point.position
+	# point.left_control_point = new_point.left_control_point
+	# point.right_control_point = new_point.right_control_point
+
+	# Notify the BaconCurve that it changed (so the Inspector updates)
+	# curve.emit_changed()
+
+	# Force Inspector UI to update the spinboxes
+	# curve.notify_property_list_changed()
+	# point.emit_changed()
+	# point.notify_property_list_changed()
+
+
+	# Update the editor UI if needed
+	bacon_curve_editor.queue_redraw()
+
+	print("Point %d changed: %s" % [i, str(point.position)])
+
+
+
 func handle_bacon_curve_editor(object) -> void:
 	if object == null:
 		return
@@ -407,6 +341,7 @@ func handle_bacon_curve_editor(object) -> void:
 		# Add curve editor
 		bacon_curve_editor = BaconCurveEditor.new()
 		bacon_curve_editor.set_curve(object)
+		bacon_curve_editor.point_changed.connect(_on_curve_editor_point_changed)
 		curve = object
 		add_custom_control(bacon_curve_editor)
 

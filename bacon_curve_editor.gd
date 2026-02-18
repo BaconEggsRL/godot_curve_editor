@@ -2,6 +2,8 @@
 class_name BaconCurveEditor
 extends Control
 
+signal point_changed
+
 var _curve: BaconCurve
 
 const ASPECT_RATIO: float = 6. / 13.
@@ -320,6 +322,7 @@ func _gui_input(event: InputEvent) -> void:
 			queue_redraw()
 		if dragging_point != -1:
 			var world_pos = get_world_pos(event.position)
+			# var p = _curve.points[dragging_point].duplicate(true)
 			var p = _curve.points[dragging_point]
 			if dragging_control == "left":
 				p.left_control_point = world_pos
@@ -332,4 +335,9 @@ func _gui_input(event: InputEvent) -> void:
 				p.position = clamped_pos
 				p.left_control_point += delta
 				p.right_control_point += delta
-			queue_redraw()
+
+				# _curve.set_point(dragging_point, p)
+				# _curve.points[dragging_point] = p
+
+				point_changed.emit(dragging_point, p)
+				queue_redraw()

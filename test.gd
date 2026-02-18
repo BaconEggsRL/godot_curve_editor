@@ -1,3 +1,4 @@
+@tool
 extends Control
 
 var _debug_prev_curve_pos: Vector2
@@ -51,7 +52,8 @@ func reset_and_start() -> void:
 
 
 func _ready() -> void:
-	reset_and_start()
+	if not Engine.is_editor_hint():
+		reset_and_start()
 
 
 func _process(delta: float) -> void:
