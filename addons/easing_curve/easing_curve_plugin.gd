@@ -149,7 +149,6 @@ func handle_points(curve: BaconCurve) -> void:
 		remove_btn.pressed.connect(_on_remove_btn_pressed.bind(point_list, i, point_panel, point))
 		position_hbox.add_child(remove_btn)
 
-
 		point_list.add_child(point_panel)
 
 
