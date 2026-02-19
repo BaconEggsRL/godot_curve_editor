@@ -98,7 +98,15 @@ func _update_preset() -> void:
 			add_point(Point.new(Vector2(0,0.5)))
 			add_point(Point.new(Vector2(1,0.5)))
 		PRESET.IN_CUBIC, PRESET.OUT_CUBIC, PRESET.IN_OUT_CUBIC, PRESET.OUT_IN_CUBIC:
-			cubic_bezier(.33, 1, .68, 1)
+			match preset:
+				PRESET.IN_CUBIC:
+					cubic_bezier(.32, 0, .67, 0)
+				PRESET.OUT_CUBIC:
+					cubic_bezier(.33, 1, .68, 1)
+				PRESET.IN_OUT_CUBIC:
+					cubic_bezier(.65, 0, .35, 1)
+				PRESET.OUT_IN_CUBIC:
+					cubic_bezier(.35, 1, .65, 0)
 		_:
 			push_warning("Preset not found")
 
