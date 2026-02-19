@@ -504,13 +504,13 @@ func handle_bacon_curve_editor(object) -> void:
 		# Toolbar setup
 		var ease_dict = _create_option_with_reset(
 			["In", "Out", "In Out", "Out In"],
-			object.ease,
+			object.ease_type,
 		    "Ease"
 		)
 
 		var trans_dict = _create_option_with_reset(
 			["Linear", "Constant", "Cubic"],
-			object.trans,
+			object.trans_type,
 			"Trans",
 			_update_ease_disabled
 		)

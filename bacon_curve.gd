@@ -44,15 +44,15 @@ enum PRESET { LINEAR, CONSTANT, IN_CUBIC, OUT_CUBIC, IN_OUT_CUBIC, OUT_IN_CUBIC 
 		#trans = value
 		#_update_preset()
 
-var ease:EASE = EASE.IN
-var trans:TRANS = TRANS.LINEAR
+var ease_type:EASE = EASE.IN
+var trans_type:TRANS = TRANS.LINEAR
 var preset:PRESET = PRESET.LINEAR
 
 
 func get_default_for_property(i:int, property_name:String) -> Vector2:
 	var temp := BaconCurve.new()
-	temp.set_ease(ease)
-	temp.set_trans(trans)
+	temp.set_ease(ease_type)
+	temp.set_trans(trans_type)
 	temp._update_preset()
 	return temp.points[i].get(property_name)
 
@@ -67,22 +67,22 @@ func cubic_bezier(x0, y0, x1, y1) -> void:
 
 
 func set_ease(_ease:EASE) -> void:
-	ease = _ease
+	ease_type = _ease
 	_update_preset()
 
 func set_trans(_trans:TRANS) -> void:
-	trans = _trans
+	trans_type = _trans
 	_update_preset()
 
 func _update_preset() -> void:
 	# Determine the correct PRESET based on ease + trans
-	match trans:
+	match trans_type:
 		TRANS.LINEAR:
 			preset = PRESET.LINEAR
 		TRANS.CONSTANT:
 			preset = PRESET.CONSTANT
 		TRANS.CUBIC:
-			match ease:
+			match ease_type:
 				EASE.IN: preset = PRESET.IN_CUBIC
 				EASE.OUT: preset = PRESET.OUT_CUBIC
 				EASE.IN_OUT: preset = PRESET.IN_OUT_CUBIC
