@@ -167,6 +167,8 @@ func _create_vector2_property(
 
 	# Left side (the X/Y stack)
 	var value_vbox := VBoxContainer.new()
+	var x_input := EditorSpinSlider.new()
+	var y_input := EditorSpinSlider.new()
 	value_vbox.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	value_vbox.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	value_vbox.add_theme_constant_override("separation", 0)
@@ -196,6 +198,10 @@ func _create_vector2_property(
 	lock_btn.toggled.connect(func(toggled_on:bool):
 		lock_btn.icon = LOCK if toggled_on else UNLOCK
 		lock_btn.modulate.a = 1.0 if toggled_on else 0.5
+		# 🔒 Disable editing when locked
+		x_input.read_only = toggled_on
+		y_input.read_only = toggled_on
+		print(x_input.read_only)
 	)
 
 	value_hbox.add_child(lock_btn)
@@ -214,7 +220,7 @@ func _create_vector2_property(
 	x_label.text = "x"
 	x_label.add_theme_color_override("font_color", x_color)
 
-	var x_input := EditorSpinSlider.new()
+
 	if property_name == "position":
 		x_input.min_value = 0.0
 		x_input.max_value = 1.0
@@ -243,7 +249,7 @@ func _create_vector2_property(
 	y_label.text = "y"
 	y_label.add_theme_color_override("font_color", y_color)
 
-	var y_input := EditorSpinSlider.new()
+
 	if property_name == "position":
 		y_input.min_value = 0.0
 		y_input.max_value = 1.0
