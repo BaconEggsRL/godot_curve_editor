@@ -36,11 +36,24 @@ func _can_handle(object):
 	return true
 
 
-func _on_reset_btn_pressed(i:int, default:Vector2, x_input:EditorSpinSlider, y_input:EditorSpinSlider, property_name:String) -> void:
-	# print("p%d %s: reset" % [i, property_name])
-	# curve.points[i].position = default
-	x_input.value = 0.0# default.x
-	y_input.value = 0.0# default.y
+#func _on_reset_btn_pressed(i:int, default:Vector2, x_input:EditorSpinSlider, y_input:EditorSpinSlider, property_name:String) -> void:
+	## print("p%d %s: reset" % [i, property_name])
+	## curve.points[i].position = default
+	#x_input.value = 0.0# default.x
+	#y_input.value = 0.0# default.y
+func _on_reset_btn_pressed(
+	i:int,
+	_default:Vector2,
+	x_input:EditorSpinSlider,
+	y_input:EditorSpinSlider,
+	property_name:String
+) -> void:
+
+	var new_default := curve.get_default_for_property(i, property_name)
+
+	x_input.value = new_default.x
+	y_input.value = new_default.y
+
 
 
 func _on_remove_btn_pressed(point_list:VBoxContainer, i:int, point_panel:PanelContainer, p:Point) -> void:
@@ -406,11 +419,6 @@ func _on_curve_editor_point_changed(i: int, new_point: Point) -> void:
 	# print("Point %d changed: %s" % [i, str(point.position)])
 
 
-#func _on_trans_type_btn_pressed() -> void:
-	#print("trans type yo")
-	## _curve.set_preset(BaconCurve.PRESET.LINEAR)
-
-
 # Returns a dictionary containing the OptionButton and its Reset Button
 func _create_option_with_reset(options:Array, default_index:int, label_text:String="", on_change:Callable=func():pass) -> Dictionary:
 	var hbox = HBoxContainer.new()
@@ -462,6 +470,18 @@ func _create_option_with_reset(options:Array, default_index:int, label_text:Stri
 	return {"container": hbox, "option": option, "reset_btn": reset_btn}
 
 
+#func _on_trans_changed(idx: int) -> void:
+	## idx corresponds to the Transition OptionButton selection
+	#match idx:
+		#0: # Linear
+			#curve.set_preset(BaconCurve.PRESET.LINEAR)
+		#1: # Constant
+			#curve.set_preset(BaconCurve.PRESET.CONSTANT)
+#
+	## Disable Ease if Linear or Constant
+	#_update_ease_disabled(idx)
+
+
 func _update_ease_disabled(_idx):
 	# Disable Ease if Linear (0) or Constant (1) is selected
 	ease_option.disabled = (trans_option.selected == 0 or trans_option.selected == 1)
@@ -478,8 +498,18 @@ func handle_bacon_curve_editor(object) -> void:
 		_toolbar.alignment = BoxContainer.ALIGNMENT_END
 
 		# Toolbar setup
-		var ease_dict = _create_option_with_reset(["In", "Out", "In Out", "Out In"], 0, "Ease")
-		var trans_dict = _create_option_with_reset(["Linear", "Constant", "Cubic"], 0, "Trans", _update_ease_disabled)
+		var ease_dict = _create_option_with_reset(
+			["In", "Out", "In Out", "Out In"],
+			object.ease,
+		    "Ease"
+		)
+
+		var trans_dict = _create_option_with_reset(
+			["Linear", "Constant", "Cubic"],
+			object.trans,
+			"Trans",
+			_update_ease_disabled
+		)
 
 		# Add the containers
 		_toolbar.add_child(ease_dict.container)
@@ -488,7 +518,6 @@ func handle_bacon_curve_editor(object) -> void:
 		# Keep references
 		ease_option = ease_dict.option
 		trans_option = trans_dict.option
-		# init Ease disabled state
 		_update_ease_disabled(trans_option.selected)
 
 		# Add toolbar
@@ -500,8 +529,19 @@ func handle_bacon_curve_editor(object) -> void:
 		bacon_curve_editor = BaconCurveEditor.new()
 		bacon_curve_editor.set_curve(object)
 		bacon_curve_editor.point_changed.connect(_on_curve_editor_point_changed)
+
 		curve = object
+
+		ease_option.item_selected.connect(curve.set_ease)
+		trans_option.item_selected.connect(curve.set_trans)
+		# curve.set_ease(ease_option.selected)
+		# curve.set_trans(trans_option.selected)
+
 		add_custom_control(bacon_curve_editor)
+
+
+
+
 
 
 

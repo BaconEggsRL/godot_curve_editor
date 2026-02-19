@@ -2,18 +2,8 @@
 class_name BaconCurve
 extends Resource
 
-const CONSTANT = preload("uid://cbc6akl6mcnuf")
-const LINEAR = preload("uid://bf4624t5hot7b")
-
-var Presets = {
-	"LINEAR": LINEAR,
-	"CONSTANT": CONSTANT
-}
-
-
 
 var _last_t := 0.0
-
 
 @export var bacon_curve_editor:bool
 
@@ -41,24 +31,85 @@ var _last_t := 0.0
 signal range_changed
 
 
-enum PRESET {
-	LINEAR
-}
-func set_preset(preset:PRESET) -> void:
+enum EASE { IN, OUT, IN_OUT, OUT_IN }
+enum TRANS { LINEAR, CONSTANT, CUBIC }
+enum PRESET { LINEAR, CONSTANT, IN_CUBIC, OUT_CUBIC, IN_OUT_CUBIC, OUT_IN_CUBIC }
+
+#var ease:EASE = EASE.IN:
+	#set(value):
+		#ease = value
+		#_update_preset()
+#var trans:TRANS = TRANS.LINEAR:
+	#set(value):
+		#trans = value
+		#_update_preset()
+
+var ease:EASE = EASE.IN
+var trans:TRANS = TRANS.LINEAR
+var preset:PRESET = PRESET.LINEAR
+
+
+func get_default_for_property(i:int, property_name:String) -> Vector2:
+	var temp := BaconCurve.new()
+	temp.set_ease(ease)
+	temp.set_trans(trans)
+	temp._update_preset()
+	return temp.points[i].get(property_name)
+
+
+func cubic_bezier(x0, y0, x1, y1) -> void:
+	var p0 := Point.new(Vector2(0,0))
+	var p1 := Point.new(Vector2(1,1))
+	p0.right_control_point = Vector2(x0, y0)
+	p1.left_control_point = Vector2(x1, y1)
+	add_point(p0)
+	add_point(p1)
+
+
+func set_ease(_ease:EASE) -> void:
+	ease = _ease
+	_update_preset()
+
+func set_trans(_trans:TRANS) -> void:
+	trans = _trans
+	_update_preset()
+
+func _update_preset() -> void:
+	# Determine the correct PRESET based on ease + trans
+	match trans:
+		TRANS.LINEAR:
+			preset = PRESET.LINEAR
+		TRANS.CONSTANT:
+			preset = PRESET.CONSTANT
+		TRANS.CUBIC:
+			match ease:
+				EASE.IN: preset = PRESET.IN_CUBIC
+				EASE.OUT: preset = PRESET.OUT_CUBIC
+				EASE.IN_OUT: preset = PRESET.IN_OUT_CUBIC
+				EASE.OUT_IN: preset = PRESET.OUT_IN_CUBIC
+
+	# Apply the preset to the points
+	points.clear()
 	match preset:
 		PRESET.LINEAR:
-			points.clear()  # ensure it’s empty
-			var p0 := Point.new(Vector2(0,0))
-			var p1 = Point.new(Vector2(1,1))
-			add_point(p0)
-			add_point(p1)
+			add_point(Point.new(Vector2(0,0)))
+			add_point(Point.new(Vector2(1,1)))
+		PRESET.CONSTANT:
+			add_point(Point.new(Vector2(0,0.5)))
+			add_point(Point.new(Vector2(1,0.5)))
+		PRESET.IN_CUBIC, PRESET.OUT_CUBIC, PRESET.IN_OUT_CUBIC, PRESET.OUT_IN_CUBIC:
+			cubic_bezier(.33, 1, .68, 1)
 		_:
 			push_warning("Preset not found")
+
+	# force_update()
+	# print("set preset: ", preset)
+
 
 # --- Constructor ---
 func _init():
 	if points.size() == 0:
-		set_preset(PRESET.LINEAR)
+		_update_preset()
 
 
 
