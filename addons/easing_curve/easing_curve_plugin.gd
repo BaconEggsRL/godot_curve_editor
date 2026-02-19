@@ -19,6 +19,8 @@ const UNLOCK = preload("uid://dgft8eu5f5ayn")
 var editor_undo_redo:EditorUndoRedoManager  # assigned from EditorPlugin
 
 var bacon_curve_editor:BaconCurveEditor
+var ease_option:OptionButton
+var trans_option:OptionButton
 #var _preset_initialized := false
 
 var curve:BaconCurve
@@ -409,57 +411,60 @@ func _on_curve_editor_point_changed(i: int, new_point: Point) -> void:
 	## _curve.set_preset(BaconCurve.PRESET.LINEAR)
 
 
-# Create an OptionButton with a reset button
-func _create_option_with_reset(options:Array, default_index:int, label_text:String="") -> HBoxContainer:
+# Returns a dictionary containing the OptionButton and its Reset Button
+func _create_option_with_reset(options:Array, default_index:int, label_text:String="", on_change:Callable=func():pass) -> Dictionary:
 	var hbox = HBoxContainer.new()
-	#hbox.add_theme_constant_override("separation", 16)
 	hbox.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+
+	# Label
+	if label_text != "":
+		var label = Label.new()
+		label.text = label_text
+		label.size_flags_horizontal = Control.SIZE_FILL
+		hbox.add_child(label)
+
+	# Inner HBox for reset + option
+	var option_and_reset = HBoxContainer.new()
+	option_and_reset.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 
 	# Reset button
 	var reset_btn = Button.new()
 	reset_btn.icon = RELOAD
 	reset_btn.flat = true
 	reset_btn.visible = false
-
-	# Label
-	if label_text:
-		var label = Label.new()
-		label.text = label_text
-		label.size_flags_horizontal = Control.SIZE_FILL
-		hbox.add_child(label)
-		# label.add_child(reset_btn)
-		# reset_btn.set_anchors_and_offsets_preset(Control.PRESET_TOP_RIGHT)
-	# else:
-		# hbox.add_child(reset_btn)
+	option_and_reset.add_child(reset_btn)
 
 	# OptionButton
-	var option_and_reset = HBoxContainer.new()
-	option_and_reset.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-
 	var option = OptionButton.new()
 	for i in range(options.size()):
 		option.add_item(options[i])
 	option.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	option.selected = default_index
-
-	option_and_reset.add_child(reset_btn)
 	option_and_reset.add_child(option)
+
 	hbox.add_child(option_and_reset)
 
 	# Show reset if value != default
-	option.item_selected.connect(_update_option_reset.bind(option, reset_btn, default_index))
-	reset_btn.pressed.connect(_on_option_reset_pressed.bind(option, reset_btn, default_index))
+	option.item_selected.connect(func(idx):
+		reset_btn.visible = (option.selected != default_index)
+		if on_change != null:
+			on_change.call(idx)
+	)
 
-	return hbox
+	# Reset button pressed
+	reset_btn.pressed.connect(func():
+		option.selected = default_index
+		reset_btn.visible = false
+		if on_change != null:
+			on_change.call(default_index)
+	)
 
-func _update_option_reset(selected:int, option:OptionButton, reset_btn:Button, default_index:int) -> void:
-	# print("selected: ", selected)
-	reset_btn.visible = (option.selected != default_index)
+	return {"container": hbox, "option": option, "reset_btn": reset_btn}
 
-func _on_option_reset_pressed(option:OptionButton, reset_btn:Button, default_index:int) -> void:
-	option.selected = default_index
-	reset_btn.visible = false
 
+func _update_ease_disabled(_idx):
+	# Disable Ease if Linear (0) or Constant (1) is selected
+	ease_option.disabled = (trans_option.selected == 0 or trans_option.selected == 1)
 
 
 func handle_bacon_curve_editor(object) -> void:
@@ -472,20 +477,25 @@ func handle_bacon_curve_editor(object) -> void:
 		_toolbar.set_anchors_and_offsets_preset(Control.PRESET_TOP_WIDE)
 		_toolbar.alignment = BoxContainer.ALIGNMENT_END
 
-		# Ease OptionButton + Reset
-		var ease_hbox:HBoxContainer = _create_option_with_reset(["In", "Out", "In Out", "Out In"], 0, "Ease")
-		_toolbar.add_child(ease_hbox)
+		# Toolbar setup
+		var ease_dict = _create_option_with_reset(["In", "Out", "In Out", "Out In"], 0, "Ease")
+		var trans_dict = _create_option_with_reset(["Linear", "Constant", "Cubic"], 0, "Trans", _update_ease_disabled)
 
-		# Transition OptionButton + Reset
-		var trans_hbox:HBoxContainer = _create_option_with_reset(["Linear", "Constant", "Cubic"], 0, "Trans")
-		_toolbar.add_child(trans_hbox)
+		# Add the containers
+		_toolbar.add_child(ease_dict.container)
+		_toolbar.add_child(trans_dict.container)
 
-		_toolbar.add_child(ease_hbox)
-		_toolbar.add_child(trans_hbox)
+		# Keep references
+		ease_option = ease_dict.option
+		trans_option = trans_dict.option
+		# init Ease disabled state
+		_update_ease_disabled(trans_option.selected)
 
+		# Add toolbar
 		add_custom_control(_toolbar)
 
 
+		########################################
 		# Add curve editor
 		bacon_curve_editor = BaconCurveEditor.new()
 		bacon_curve_editor.set_curve(object)
