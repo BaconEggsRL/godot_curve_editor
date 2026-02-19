@@ -2,6 +2,15 @@
 class_name BaconCurve
 extends Resource
 
+const CONSTANT = preload("uid://cbc6akl6mcnuf")
+const LINEAR = preload("uid://bf4624t5hot7b")
+
+var Presets = {
+	"LINEAR": LINEAR,
+	"CONSTANT": CONSTANT
+}
+
+
 
 var _last_t := 0.0
 

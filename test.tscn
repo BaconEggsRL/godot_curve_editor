@@ -4,6 +4,12 @@
 [ext_resource type="Texture2D" uid="uid://d23t7b73acleh" path="res://icon.svg" id="4_ppyta"]
 [ext_resource type="Texture2D" uid="uid://ckq8rdh87fm8m" path="res://icons/Reload.svg" id="4_ykrsh"]
 
+[sub_resource type="Curve" id="Curve_6uqi0"]
+_data = [Vector2(0.26, 0.65), 0.0, 0.0, 0, 0, Vector2(0.5, 0.5), 0.0, 0.0, 0, 0]
+point_count = 2
+metadata/_snap_enabled = true
+metadata/_snap_count = 2
+
 [sub_resource type="Animation" id="Animation_6uqi0"]
 length = 0.001
 tracks/0/type = "bezier"
@@ -47,6 +53,7 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_37kl0")
+curve = SubResource("Curve_6uqi0")
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="." unique_id=2040447065]
 libraries/ = SubResource("AnimationLibrary_ykrsh")

@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" uid="uid://db15sp87x04yi" path="res://bacon_curve_editor.gd" id="1_etl24"]
 
-[node name="bacon_curve_editor" type="Control" unique_id=1206834405]
+[node name="bacon_curve_editor" type="Control" unique_id=1503702032]
 clip_contents = true
 custom_minimum_size = Vector2(0, 150)
 layout_mode = 3
