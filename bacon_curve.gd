@@ -101,14 +101,14 @@ func swap_points(a, b) -> void:
 
 
 func add_point(p: Point) -> void:
-	print("adding point")
+	# print("adding point")
 	points.append(p)
 	p.changed.connect(_on_point_changed)
 	sort_points()
 
 
-func remove_point(p: Point) -> void:
-	print("removing point")
+func remove_point(p: Point = points[-1]) -> void:
+	# print("removing point")
 	if p not in points:
 		return
 

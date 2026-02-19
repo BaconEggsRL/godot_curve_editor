@@ -16,6 +16,7 @@ const LOCK = preload("uid://du5ohl6t613a2")
 const UNLOCK = preload("uid://dgft8eu5f5ayn")
 
 
+var editor_undo_redo:EditorUndoRedoManager  # assigned from EditorPlugin
 
 var bacon_curve_editor:BaconCurveEditor
 #var _preset_initialized := false
@@ -27,20 +28,21 @@ const STEP = 0.001
 # var points:Array[Dictionary] = []
 
 
+
 func _can_handle(object):
 	# We support all objects in this example.
 	return true
 
 
 func _on_reset_btn_pressed(i:int, default:Vector2, x_input:EditorSpinSlider, y_input:EditorSpinSlider, property_name:String) -> void:
-	print("p%d %s: reset" % [i, property_name])
+	# print("p%d %s: reset" % [i, property_name])
 	# curve.points[i].position = default
 	x_input.value = 0.0# default.x
 	y_input.value = 0.0# default.y
 
 
 func _on_remove_btn_pressed(point_list:VBoxContainer, i:int, point_panel:PanelContainer, point:Point) -> void:
-	print("p%d: remove" % i)
+	# print("p%d: remove" % i)
 	curve.remove_point(point)
 
 
@@ -280,10 +282,33 @@ func _create_vector2_property(
 	return property_vbox
 
 
-func _on_add_point_btn_pressed() -> void:
+
+func add_do_method(c:Callable) -> void:
+	var method_name := c.get_method()
+	editor_undo_redo.add_do_method(self, method_name)
+
+func add_undo_method(c:Callable) -> void:
+	var method_name := c.get_method()
+	editor_undo_redo.add_undo_method(self, method_name)
+
+
+
+func do_add_point() -> void:
 	var p := Point.new()
 	curve.add_point(p)
-	curve.notify_property_list_changed()
+	# curve.notify_property_list_changed()
+
+func undo_add_point() -> void:
+	curve.remove_point()  # removes the last point
+
+
+
+func _on_add_point_btn_pressed() -> void:
+	editor_undo_redo.create_action("Add point")
+	add_do_method(do_add_point)
+	add_undo_method(undo_add_point)
+	editor_undo_redo.commit_action()
+
 
 
 func handle_points(curve: BaconCurve) -> void:
