@@ -22,7 +22,6 @@ enum TWEEN_TYPE {
 
 @export var bacon_curve:BaconCurve
 @export var curve:Curve
-# @export var curve:Curve
 
 @onready var curve_node: Sprite2D = $curve_nodes_container/curve_node
 @onready var curve_start: Marker2D = $curve_nodes_container/curve_start

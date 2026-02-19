@@ -21,10 +21,6 @@ window/size/viewport_width=1280
 window/size/viewport_height=720
 window/size/always_on_top=true
 
-[editor_plugins]
-
-enabled=PackedStringArray("res://addons/easing_curve/plugin.cfg", "res://addons/toggle_external_editor/plugin.cfg")
-
 [physics]
 
 3d/physics_engine="Jolt Physics"
