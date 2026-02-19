@@ -76,6 +76,19 @@ func _on_y_input_value_changed(value:float, i:int, y_input:EditorSpinSlider, res
 	bacon_curve_editor.queue_redraw()
 
 
+
+func _move_point_up(i:int) -> void:
+	if i > 0:
+		curve.swap_points(i, i-1)
+		bacon_curve_editor.queue_redraw()
+
+
+func _move_point_down(i:int) -> void:
+	if i < curve.points.size()-1:
+		curve.swap_points(i, i+1)
+		bacon_curve_editor.queue_redraw()
+
+
 # remember bind() arguments are at the end
 func _create_point_side_vbox(i:int, point_list:VBoxContainer, point_panel:PanelContainer, point:Point) -> VBoxContainer:
 	var side_vbox = VBoxContainer.new()
@@ -87,13 +100,8 @@ func _create_point_side_vbox(i:int, point_list:VBoxContainer, point_panel:PanelC
 	move_up_btn.icon = MOVE_UP
 	move_up_btn.flat = true
 	move_up_btn.tooltip_text = "Move Point Up"
-	move_up_btn.pressed.connect(func():
-		if i > 0:
-			curve.swap_points(i, i-1)
-			bacon_curve_editor.queue_redraw()
-	)
+	move_up_btn.pressed.connect(_move_point_up.bind(i))
 	side_vbox.add_child(move_up_btn)
-
 
 
 	# TripleBar TextureRect (drag handle)
@@ -112,17 +120,12 @@ func _create_point_side_vbox(i:int, point_list:VBoxContainer, point_panel:PanelC
 	side_vbox.add_child(triple_bar)
 
 
-
 	# Move Down Button
 	var move_down_btn = Button.new()
 	move_down_btn.icon = MOVE_DOWN
 	move_down_btn.flat = true
 	move_down_btn.tooltip_text = "Move Point Down"
-	move_down_btn.pressed.connect(func():
-		if i < curve.points.size()-1:
-			curve.swap_points(i, i+1)
-			bacon_curve_editor.queue_redraw()
-	)
+	move_down_btn.pressed.connect(_move_point_down.bind(i))
 	side_vbox.add_child(move_down_btn)
 
 	return side_vbox
