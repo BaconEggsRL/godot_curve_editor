@@ -41,9 +41,13 @@ func _on_reset_btn_pressed(i:int, default:Vector2, x_input:EditorSpinSlider, y_i
 	y_input.value = 0.0# default.y
 
 
-func _on_remove_btn_pressed(point_list:VBoxContainer, i:int, point_panel:PanelContainer, point:Point) -> void:
+func _on_remove_btn_pressed(point_list:VBoxContainer, i:int, point_panel:PanelContainer, p:Point) -> void:
 	# print("p%d: remove" % i)
-	curve.remove_point(point)
+	# curve.remove_point(point)
+	editor_undo_redo.create_action("Remove point")
+	editor_undo_redo.add_do_method(curve, "remove_point", p)
+	editor_undo_redo.add_undo_method(curve, "add_point", p)
+	editor_undo_redo.commit_action()
 
 
 func _update_reset_btn(reset_btn:Button, value:float, default:float) -> void:
