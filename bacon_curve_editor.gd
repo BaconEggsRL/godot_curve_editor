@@ -52,37 +52,10 @@ var _world_to_view: Transform2D
 var _editor_scale: float = 1.0
 
 
-# var _toolbar: HBoxContainer
-# var _preset_btn: Button
-
-
-
-
-
-
-func _on_preset_btn_pressed() -> void:
-	print("presets yo")
-	# _curve.set_preset(BaconCurve.PRESET.LINEAR)
-
-
-
 func _ready() -> void:
 	self.custom_minimum_size = Vector2(0, 150)
 	focus_mode = Control.FOCUS_ALL
 	clip_contents = true
-
-	# Setup toolbar HBox
-	#_toolbar = HBoxContainer.new()
-	#_toolbar.set_anchors_and_offsets_preset(Control.PRESET_TOP_WIDE)
-	#_toolbar.alignment = BoxContainer.ALIGNMENT_END
-	#add_child(_toolbar)
-#
-	#_preset_btn = Button.new()
-	#_preset_btn.text = "Preset"
-	#_preset_btn.pressed.connect(_on_preset_btn_pressed)
-	#_toolbar.add_child(_preset_btn)
-
-
 
 	if Engine.is_editor_hint():
 		_editor_scale = EditorInterface.get_editor_scale()

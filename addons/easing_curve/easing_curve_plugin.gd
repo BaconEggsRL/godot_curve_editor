@@ -404,11 +404,28 @@ func _on_curve_editor_point_changed(i: int, new_point: Point) -> void:
 	# print("Point %d changed: %s" % [i, str(point.position)])
 
 
+func _on_presets_btn_pressed() -> void:
+	print("presets yo")
+	# _curve.set_preset(BaconCurve.PRESET.LINEAR)
+
 
 func handle_bacon_curve_editor(object) -> void:
 	if object == null:
 		return
 	if object is BaconCurve:
+		# Add toolbar
+		var _toolbar:HBoxContainer
+		_toolbar = HBoxContainer.new()
+		_toolbar.set_anchors_and_offsets_preset(Control.PRESET_TOP_WIDE)
+		_toolbar.alignment = BoxContainer.ALIGNMENT_END
+		var _presets_btn:Button
+		_presets_btn = Button.new()
+		_presets_btn.flat = true
+		_presets_btn.text = "Presets"
+		_presets_btn.pressed.connect(_on_presets_btn_pressed)
+		_toolbar.add_child(_presets_btn)
+		add_custom_control(_toolbar)
+
 		# Add curve editor
 		bacon_curve_editor = BaconCurveEditor.new()
 		bacon_curve_editor.set_curve(object)
