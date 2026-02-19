@@ -78,15 +78,26 @@ func _on_y_input_value_changed(value:float, i:int, y_input:EditorSpinSlider, res
 
 
 func _move_point_up(i:int) -> void:
-	if i > 0:
-		curve.swap_points(i, i-1)
-		bacon_curve_editor.queue_redraw()
+	if i > 0 == false:
+		return
+	# curve.swap_points(i, i-1)
+	# bacon_curve_editor.queue_redraw()
+	editor_undo_redo.create_action("Move point up")
+	editor_undo_redo.add_do_method(curve, "swap_points", i, i-1)
+	editor_undo_redo.add_undo_method(curve, "swap_points", i-1, i)
+	editor_undo_redo.commit_action()
 
 
 func _move_point_down(i:int) -> void:
-	if i < curve.points.size()-1:
-		curve.swap_points(i, i+1)
-		bacon_curve_editor.queue_redraw()
+	if i < curve.points.size()-1 == false:
+		return
+	# curve.swap_points(i, i+1)
+	# bacon_curve_editor.queue_redraw()
+	editor_undo_redo.create_action("Move point up")
+	editor_undo_redo.add_do_method(curve, "swap_points", i, i+1)
+	editor_undo_redo.add_undo_method(curve, "swap_points", i+1, i)
+	editor_undo_redo.commit_action()
+
 
 
 # remember bind() arguments are at the end
