@@ -191,17 +191,22 @@ func _create_vector2_property(
 	# lock_btn.add_theme_color_override("icon_hover_color", Color.WHITE)
 	# lock_btn.add_theme_stylebox_override("pressed", BTN_NORMAL)
 
+	# var toggled_on := lock_btn.button_pressed
+	var locked := point.locked[property_name]
+	lock_btn.button_pressed = locked
 	var toggled_on := lock_btn.button_pressed
+
 	lock_btn.icon = LOCK if toggled_on else UNLOCK
 	lock_btn.modulate.a = 1.0 if toggled_on else 0.5
+
 
 	lock_btn.toggled.connect(func(toggled_on:bool):
 		lock_btn.icon = LOCK if toggled_on else UNLOCK
 		lock_btn.modulate.a = 1.0 if toggled_on else 0.5
 		# 🔒 Disable editing when locked
-		x_input.read_only = toggled_on
-		y_input.read_only = toggled_on
-		print(x_input.read_only)
+		# x_input.read_only = toggled_on
+		# y_input.read_only = toggled_on
+		point.set_locked(property_name, toggled_on)
 	)
 
 	value_hbox.add_child(lock_btn)

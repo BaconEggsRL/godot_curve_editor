@@ -150,14 +150,14 @@ func get_control_at(pos: Vector2) -> Array: # [point_index, ControlIndex]
 	for i in range(_curve.points.size()):
 		var p = _curve.points[i]
 
-		# LEFT (only if not first)
-		if i != 0:
+		# LEFT (only if not first and not locked)
+		if i != 0 and not p.locked["left_control_point"]:
 			var left_view = get_view_pos(p.left_control_point)
 			if left_view.distance_squared_to(pos) < control_hover_radius * control_hover_radius:
 				return [i, ControlIndex.LEFT]
 
-		# RIGHT (only if not last)
-		if i != _curve.points.size() - 1:
+		# RIGHT (only if not last and not locked)
+		if i != _curve.points.size() - 1 and not p.locked["right_control_point"]:
 			var right_view = get_view_pos(p.right_control_point)
 			if right_view.distance_squared_to(pos) < control_hover_radius * control_hover_radius:
 				return [i, ControlIndex.RIGHT]
@@ -226,6 +226,8 @@ func _draw():
 		# Slightly dim when not selected/hovered
 		# var alpha := 1.0 if (is_selected or is_hovered) else 0.5
 		var alpha := 1.0 if (is_hovered) else 0.5
+		# var locked_position = p.locked["position"]
+		# var alpha := 0.2 if locked_position else (1.0 if is_hovered else 0.5)
 
 		# ----- Colors -----
 		var point_color = Color(1, 0.5, 0, alpha) if i == selected_index else Color(1, 0, 0, alpha)
@@ -260,6 +262,8 @@ func _draw():
 			)
 
 			var left_alpha = 1.0 if left_hovered else alpha
+			# var left_locked = p.locked["left_control_point"]
+			# var left_alpha = 0.2 if left_locked else (1.0 if left_hovered else alpha)
 			var left_radius = control_radius
 
 			var left_color = Color(0, 1, 0, left_alpha)
@@ -283,6 +287,8 @@ func _draw():
 			)
 
 			var right_alpha = 1.0 if right_hovered else alpha
+			# var right_locked = p.locked["left_control_point"]
+			# var right_alpha = 0.2 if right_locked else (1.0 if right_hovered else alpha)
 			var right_radius = control_radius
 
 			var right_color = Color(0, 0, 1, right_alpha)
@@ -318,19 +324,39 @@ func _gui_input(event: InputEvent) -> void:
 			var p = _curve.points[dragging_point]
 			var world_pos = get_world_pos(event.position)
 
+			# Block main point movement
+			if dragging_control == ControlIndex.NONE and p.locked["position"]:
+				return
+
+			# Block left control
+			if dragging_control == ControlIndex.LEFT and p.locked["left_control_point"]:
+				return
+
+			# Block right control
+			if dragging_control == ControlIndex.RIGHT and p.locked["right_control_point"]:
+				return
+
+
 			match dragging_control:
 				ControlIndex.LEFT:
 					if dragging_point != 0: # ignore left control for first point
 						p.left_control_point = world_pos
+
 				ControlIndex.RIGHT:
 					if dragging_point != _curve.points.size() - 1: # ignore right control for last point
 						p.right_control_point = world_pos
+
 				ControlIndex.NONE: # dragging main point
 					var clamped_pos = world_pos.clamp(Vector2(0, _curve.min_value), Vector2(1.0, _curve.max_value))
 					var delta = clamped_pos - p.position
 					p.position = clamped_pos
-					p.left_control_point += delta
-					p.right_control_point += delta
+					#p.left_control_point += delta
+					#p.right_control_point += delta
+					# Only move controls if they are NOT locked
+					if not p.locked["left_control_point"]:
+						p.left_control_point += delta
+					if not p.locked["right_control_point"]:
+						p.right_control_point += delta
 
 			point_changed.emit(dragging_point, p)
 			queue_redraw()
@@ -351,7 +377,7 @@ func _gui_input(event: InputEvent) -> void:
 
 			# Cursor feedback
 			if hovered_control_index != ControlIndex.NONE:
-				mouse_default_cursor_shape = Control.CURSOR_CROSS
+				mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
 			elif hovered_index != -1:
 				mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
 			else:
@@ -366,6 +392,11 @@ func _gui_input(event: InputEvent) -> void:
 		if event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
 			var control = get_control_at(event.position)
 			if control[0] != -1:
+				var p = _curve.points[control[0]]
+				if control[1] == ControlIndex.LEFT and p.locked["left_control_point"]:
+					return
+				if control[1] == ControlIndex.RIGHT and p.locked["right_control_point"]:
+					return
 				dragging_point = control[0]
 				dragging_control = control[1]
 				selected_index = control[0]
@@ -374,6 +405,9 @@ func _gui_input(event: InputEvent) -> void:
 
 			var point_idx = get_point_at(event.position)
 			if point_idx != -1:
+				var p = _curve.points[point_idx]
+				if p.locked["position"]:
+					return
 				dragging_point = point_idx
 				dragging_control = ControlIndex.NONE
 				selected_index = point_idx

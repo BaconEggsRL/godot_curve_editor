@@ -1,27 +1,12 @@
 [gd_scene format=3 uid="uid://qviblxegxd23"]
 
 [ext_resource type="Script" uid="uid://cjoavnop3pyl2" path="res://test.gd" id="1_37kl0"]
-[ext_resource type="Script" uid="uid://cxmmenoobxiyp" path="res://point.gd" id="2_ykrsh"]
-[ext_resource type="Script" uid="uid://c10cjby72qngf" path="res://bacon_curve.gd" id="3_g14j6"]
 [ext_resource type="Texture2D" uid="uid://d23t7b73acleh" path="res://icon.svg" id="4_ppyta"]
 [ext_resource type="Texture2D" uid="uid://ckq8rdh87fm8m" path="res://icons/Reload.svg" id="4_ykrsh"]
 
-[sub_resource type="Resource" id="Resource_ykrsh"]
-script = ExtResource("2_ykrsh")
-position = Vector2(0.41717795, 0.35211265)
-left_control_point = Vector2(0.41717795, 0.35211265)
-right_control_point = Vector2(0.8220868, 0.40140837)
-
-[sub_resource type="Resource" id="Resource_g14j6"]
-script = ExtResource("2_ykrsh")
-position = Vector2(1, 1)
-left_control_point = Vector2(1, 1)
-right_control_point = Vector2(1, 1)
-
-[sub_resource type="Resource" id="Resource_vbegm"]
-script = ExtResource("3_g14j6")
-points = Array[ExtResource("2_ykrsh")]([SubResource("Resource_ykrsh"), SubResource("Resource_g14j6")])
-metadata/_custom_type_script = "uid://c10cjby72qngf"
+[sub_resource type="Curve" id="Curve_6uqi0"]
+_data = [Vector2(0, 0), 0.0, 1.3250798, 0, 1, Vector2(0.5034722, 0.6671409), 0.50991195, 0.50991195, 0, 0, Vector2(1, 1), 0.67037356, 0.0, 1, 0]
+point_count = 3
 
 [sub_resource type="Animation" id="Animation_6uqi0"]
 length = 0.001
@@ -66,7 +51,7 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_37kl0")
-bacon_curve = SubResource("Resource_vbegm")
+curve = SubResource("Curve_6uqi0")
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="." unique_id=2040447065]
 libraries/ = SubResource("AnimationLibrary_ykrsh")
