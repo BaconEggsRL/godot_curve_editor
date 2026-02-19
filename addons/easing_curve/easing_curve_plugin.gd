@@ -404,9 +404,62 @@ func _on_curve_editor_point_changed(i: int, new_point: Point) -> void:
 	# print("Point %d changed: %s" % [i, str(point.position)])
 
 
-func _on_presets_btn_pressed() -> void:
-	print("presets yo")
-	# _curve.set_preset(BaconCurve.PRESET.LINEAR)
+#func _on_trans_type_btn_pressed() -> void:
+	#print("trans type yo")
+	## _curve.set_preset(BaconCurve.PRESET.LINEAR)
+
+
+# Create an OptionButton with a reset button
+func _create_option_with_reset(options:Array, default_index:int, label_text:String="") -> HBoxContainer:
+	var hbox = HBoxContainer.new()
+	#hbox.add_theme_constant_override("separation", 16)
+	hbox.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+
+	# Reset button
+	var reset_btn = Button.new()
+	reset_btn.icon = RELOAD
+	reset_btn.flat = true
+	reset_btn.visible = false
+
+	# Label
+	if label_text:
+		var label = Label.new()
+		label.text = label_text
+		label.size_flags_horizontal = Control.SIZE_FILL
+		hbox.add_child(label)
+		# label.add_child(reset_btn)
+		# reset_btn.set_anchors_and_offsets_preset(Control.PRESET_TOP_RIGHT)
+	# else:
+		# hbox.add_child(reset_btn)
+
+	# OptionButton
+	var option_and_reset = HBoxContainer.new()
+	option_and_reset.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+
+	var option = OptionButton.new()
+	for i in range(options.size()):
+		option.add_item(options[i])
+	option.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	option.selected = default_index
+
+	option_and_reset.add_child(reset_btn)
+	option_and_reset.add_child(option)
+	hbox.add_child(option_and_reset)
+
+	# Show reset if value != default
+	option.item_selected.connect(_update_option_reset.bind(option, reset_btn, default_index))
+	reset_btn.pressed.connect(_on_option_reset_pressed.bind(option, reset_btn, default_index))
+
+	return hbox
+
+func _update_option_reset(selected:int, option:OptionButton, reset_btn:Button, default_index:int) -> void:
+	# print("selected: ", selected)
+	reset_btn.visible = (option.selected != default_index)
+
+func _on_option_reset_pressed(option:OptionButton, reset_btn:Button, default_index:int) -> void:
+	option.selected = default_index
+	reset_btn.visible = false
+
 
 
 func handle_bacon_curve_editor(object) -> void:
@@ -418,13 +471,20 @@ func handle_bacon_curve_editor(object) -> void:
 		_toolbar = HBoxContainer.new()
 		_toolbar.set_anchors_and_offsets_preset(Control.PRESET_TOP_WIDE)
 		_toolbar.alignment = BoxContainer.ALIGNMENT_END
-		var _presets_btn:Button
-		_presets_btn = Button.new()
-		_presets_btn.flat = true
-		_presets_btn.text = "Presets"
-		_presets_btn.pressed.connect(_on_presets_btn_pressed)
-		_toolbar.add_child(_presets_btn)
+
+		# Ease OptionButton + Reset
+		var ease_hbox:HBoxContainer = _create_option_with_reset(["In", "Out", "In Out", "Out In"], 0, "Ease")
+		_toolbar.add_child(ease_hbox)
+
+		# Transition OptionButton + Reset
+		var trans_hbox:HBoxContainer = _create_option_with_reset(["Linear", "Constant", "Cubic"], 0, "Trans")
+		_toolbar.add_child(trans_hbox)
+
+		_toolbar.add_child(ease_hbox)
+		_toolbar.add_child(trans_hbox)
+
 		add_custom_control(_toolbar)
+
 
 		# Add curve editor
 		bacon_curve_editor = BaconCurveEditor.new()
@@ -432,6 +492,7 @@ func handle_bacon_curve_editor(object) -> void:
 		bacon_curve_editor.point_changed.connect(_on_curve_editor_point_changed)
 		curve = object
 		add_custom_control(bacon_curve_editor)
+
 
 
 func _parse_property(object, type, name, hint_type, hint_string, usage_flags, wide):
