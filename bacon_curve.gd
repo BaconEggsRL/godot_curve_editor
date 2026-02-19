@@ -4,6 +4,7 @@ extends Resource
 
 
 var _last_t := 0.0
+var _last_point_added:Array[Point] = []
 
 
 @export var bacon_curve_editor:bool
@@ -103,16 +104,18 @@ func swap_points(a, b) -> void:
 func add_point(p: Point) -> void:
 	# print("adding point")
 	points.append(p)
+	_last_point_added.append(p)
 	p.changed.connect(_on_point_changed)
 	sort_points()
 
 
-func remove_point(p: Point = points[-1]) -> void:
+func remove_point(p:Point = _last_point_added[-1]) -> void:
 	# print("removing point")
 	if p not in points:
 		return
 
 	points.erase(p)
+	_last_point_added.erase(p)
 	p.changed.disconnect(_on_point_changed)
 
 	force_update()
