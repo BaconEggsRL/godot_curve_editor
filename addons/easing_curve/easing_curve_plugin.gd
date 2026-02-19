@@ -126,7 +126,8 @@ func _create_point_side_vbox(i:int, point_list:VBoxContainer, point_panel:PanelC
 	triple_bar.point_panel = point_panel
 	triple_bar.point_list = point_list
 	triple_bar.curve = curve
-	triple_bar.bacon_editor = bacon_curve_editor
+	triple_bar.bacon_curve_editor = bacon_curve_editor
+	triple_bar.editor_undo_redo = editor_undo_redo
 
 	side_vbox.add_child(triple_bar)
 

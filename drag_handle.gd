@@ -7,7 +7,9 @@ var index: int
 var point_panel: PanelContainer
 var point_list: VBoxContainer
 var curve: BaconCurve
-var bacon_editor: BaconCurveEditor
+var bacon_curve_editor: BaconCurveEditor
+
+var editor_undo_redo: EditorUndoRedoManager
 
 
 func _ready():
@@ -43,6 +45,10 @@ func _drop_data(position: Vector2, data) -> void:
 	var from_index = data["index"]
 	var to_index = index
 	if from_index != to_index:
-		curve.swap_points(from_index, to_index)
-		point_list.move_child(point_list.get_child(from_index), to_index)
-		bacon_editor.queue_redraw()
+		# curve.swap_points(from_index, to_index)
+		# point_list.move_child(point_list.get_child(from_index), to_index)
+		# bacon_editor.queue_redraw()
+		editor_undo_redo.create_action("Move point")
+		editor_undo_redo.add_do_method(curve, "swap_points", from_index, to_index)
+		editor_undo_redo.add_undo_method(curve, "swap_points", to_index, from_index)
+		editor_undo_redo.commit_action()
