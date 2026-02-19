@@ -283,30 +283,11 @@ func _create_vector2_property(
 
 
 
-func add_do_method(c:Callable) -> void:
-	var method_name := c.get_method()
-	editor_undo_redo.add_do_method(self, method_name)
-
-func add_undo_method(c:Callable) -> void:
-	var method_name := c.get_method()
-	editor_undo_redo.add_undo_method(self, method_name)
-
-
-
-func do_add_point() -> void:
-	var p := Point.new()
-	curve.add_point(p)
-	# curve.notify_property_list_changed()
-
-func undo_add_point() -> void:
-	curve.remove_point()  # removes the last point
-
-
-
 func _on_add_point_btn_pressed() -> void:
 	editor_undo_redo.create_action("Add point")
-	add_do_method(do_add_point)
-	add_undo_method(undo_add_point)
+	var p := Point.new()
+	editor_undo_redo.add_do_method(curve, "add_point", p)
+	editor_undo_redo.add_undo_method(curve, "remove_point", p)
 	editor_undo_redo.commit_action()
 
 
