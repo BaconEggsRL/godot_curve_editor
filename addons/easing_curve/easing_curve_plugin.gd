@@ -460,7 +460,10 @@ func _create_option_with_reset(options:Array, default_index:int, label_text:Stri
 	option.item_selected.connect(func(idx):
 		reset_btn.visible = (option.selected != default_index)
 		if on_change != null:
-			on_change.call(idx)
+			if on_change.get_argument_count() == 0:
+				on_change.call()
+			else:
+				on_change.call(idx)
 	)
 
 	# Reset button pressed
@@ -468,7 +471,10 @@ func _create_option_with_reset(options:Array, default_index:int, label_text:Stri
 		option.selected = default_index
 		reset_btn.visible = false
 		if on_change != null:
-			on_change.call(default_index)
+			if on_change.get_argument_count() == 0:
+				on_change.call()
+			else:
+				on_change.call(default_index)
 	)
 
 	return {"container": hbox, "option": option, "reset_btn": reset_btn}
