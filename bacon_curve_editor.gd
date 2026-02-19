@@ -146,13 +146,13 @@ func get_control_at(pos: Vector2) -> Array: # [point_index, ControlIndex]
 		var p = _curve.points[i]
 
 		# LEFT (only if not first and not locked)
-		if i != 0 and not p.locked["left_control_point"]:
+		if i != 0: # and not p.locked["left_control_point"]:
 			var left_view = get_view_pos(p.left_control_point)
 			if left_view.distance_squared_to(pos) < control_hover_radius * control_hover_radius:
 				return [i, ControlIndex.LEFT]
 
 		# RIGHT (only if not last and not locked)
-		if i != _curve.points.size() - 1 and not p.locked["right_control_point"]:
+		if i != _curve.points.size() - 1: # and not p.locked["right_control_point"]:
 			var right_view = get_view_pos(p.right_control_point)
 			if right_view.distance_squared_to(pos) < control_hover_radius * control_hover_radius:
 				return [i, ControlIndex.RIGHT]
@@ -386,30 +386,46 @@ func _gui_input(event: InputEvent) -> void:
 		# --- LEFT CLICK ---
 		if event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
 			var control = get_control_at(event.position)
+			var point_idx = get_point_at(event.position)
+
+			# --- If we hit a control ---
 			if control[0] != -1:
 				var p = _curve.points[control[0]]
-				if control[1] == ControlIndex.LEFT and p.locked["left_control_point"]:
-					return
-				if control[1] == ControlIndex.RIGHT and p.locked["right_control_point"]:
-					return
-				dragging_point = control[0]
-				dragging_control = control[1]
+				var can_drag_control := false
+
+				match control[1]:
+					ControlIndex.LEFT:
+						can_drag_control = not p.locked["left_control_point"]
+					ControlIndex.RIGHT:
+						can_drag_control = not p.locked["right_control_point"]
+
+				# Always select the point
 				selected_index = control[0]
+
+				# Only allow dragging if the control is not locked
+				if can_drag_control:
+					dragging_point = control[0]
+					dragging_control = control[1]
+				else:
+					# Try dragging main point if under cursor
+					if point_idx != -1 and not _curve.points[point_idx].locked["position"]:
+						dragging_point = point_idx
+						dragging_control = ControlIndex.NONE
+
 				queue_redraw()
 				return
 
-			var point_idx = get_point_at(event.position)
+			# --- If we hit only a main point ---
 			if point_idx != -1:
 				var p = _curve.points[point_idx]
-				if p.locked["position"]:
-					return
-				dragging_point = point_idx
-				dragging_control = ControlIndex.NONE
+				if not p.locked["position"]:
+					dragging_point = point_idx
+					dragging_control = ControlIndex.NONE
 				selected_index = point_idx
 				queue_redraw()
 				return
 
-			# Otherwise add new point
+			# --- If we hit nothing, add a new point ---
 			var new_point = Point.new()
 			var world_pos = get_world_pos(event.position)
 			var clamped_pos = world_pos.clamp(Vector2(0, _curve.min_value), Vector2(1.0, _curve.max_value))
@@ -418,6 +434,7 @@ func _gui_input(event: InputEvent) -> void:
 			new_point.right_control_point = clamped_pos + Vector2(0.1, 0)
 			_curve.add_point(new_point)
 			selected_index = _curve.points.find(new_point)
+
 
 		# --- RIGHT CLICK ---
 		elif event.pressed and event.button_index == MOUSE_BUTTON_RIGHT:

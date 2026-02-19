@@ -6,18 +6,19 @@
 [ext_resource type="Texture2D" uid="uid://d23t7b73acleh" path="res://icon.svg" id="4_ppyta"]
 [ext_resource type="Texture2D" uid="uid://ckq8rdh87fm8m" path="res://icons/Reload.svg" id="4_ykrsh"]
 
-[sub_resource type="Resource" id="Resource_ykrsh"]
+[sub_resource type="Resource" id="Resource_vbegm"]
 script = ExtResource("2_ykrsh")
+left_control_point = Vector2(0.6984923, 1.5492957)
 
-[sub_resource type="Resource" id="Resource_g14j6"]
+[sub_resource type="Resource" id="Resource_ehkex"]
 script = ExtResource("2_ykrsh")
 position = Vector2(1, 1)
 left_control_point = Vector2(1, 1)
-right_control_point = Vector2(1, 1)
+right_control_point = Vector2(0.64572865, 0.12676054)
 
-[sub_resource type="Resource" id="Resource_vbegm"]
+[sub_resource type="Resource" id="Resource_xersf"]
 script = ExtResource("3_g14j6")
-points = Array[ExtResource("2_ykrsh")]([SubResource("Resource_ykrsh"), SubResource("Resource_g14j6")])
+points = Array[ExtResource("2_ykrsh")]([SubResource("Resource_vbegm"), SubResource("Resource_ehkex")])
 metadata/_custom_type_script = "uid://c10cjby72qngf"
 
 [sub_resource type="Animation" id="Animation_6uqi0"]
@@ -63,19 +64,19 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_37kl0")
-tween_type = 4
-bacon_curve = SubResource("Resource_vbegm")
+bacon_curve = SubResource("Resource_xersf")
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="." unique_id=2040447065]
 libraries/ = SubResource("AnimationLibrary_ykrsh")
 
 [node name="curve_nodes_container" type="Node2D" parent="." unique_id=1899049406]
+position = Vector2(0, 114.68)
 
 [node name="Label" type="Label" parent="curve_nodes_container" unique_id=417350127]
-offset_left = 268.0
-offset_top = 64.0
-offset_right = 311.0
-offset_bottom = 87.0
+offset_left = 185.0
+offset_top = 163.45
+offset_right = 228.0
+offset_bottom = 186.45
 text = "curve"
 
 [node name="curve_node" type="Sprite2D" parent="curve_nodes_container" unique_id=502456279]
@@ -89,12 +90,13 @@ position = Vector2(320, 180)
 position = Vector2(960, 180)
 
 [node name="tween_nodes_container" type="Node2D" parent="." unique_id=1472119880]
+position = Vector2(0, -95.065)
 
 [node name="Label2" type="Label" parent="tween_nodes_container" unique_id=611090884]
-offset_left = 264.0
-offset_top = 417.0
-offset_right = 307.0
-offset_bottom = 440.0
+offset_left = 184.0
+offset_top = 532.23
+offset_right = 232.0
+offset_bottom = 555.23
 text = "tween"
 
 [node name="tween_node" type="Sprite2D" parent="tween_nodes_container" unique_id=54676297]
