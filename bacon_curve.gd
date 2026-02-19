@@ -64,6 +64,20 @@ func sort_points() -> void:
 	force_update()
 
 
+func swap_properties(p0:Point, p1:Point) -> void:
+	var temp_position_x = p0.position.x
+	p0.position.x = p1.position.x
+	p1.position.x = temp_position_x
+
+	var temp_lcp_x = p0.left_control_point.x
+	p0.left_control_point.x = p1.left_control_point.x
+	p1.left_control_point.x = temp_lcp_x
+
+	var temp_rcp_x = p0.right_control_point.x
+	p0.right_control_point.x = p1.right_control_point.x
+	p1.right_control_point.x = temp_rcp_x
+
+
 # Swap two points, either by Point references or by indices
 func swap_points(a, b) -> void:
 
@@ -73,11 +87,12 @@ func swap_points(a, b) -> void:
 		swap_points(points[i], points[j])
 
 	elif a is Point and b is Point:
-		var p0 = a
-		var p1 = b
-		var temp_x = p0.position.x
-		p0.position.x = p1.position.x
-		p1.position.x = temp_x
+		# var p0 = a
+		# var p1 = b
+		#var temp_x = p0.position.x
+		#p0.position.x = p1.position.x
+		#p1.position.x = temp_x
+		swap_properties(a, b)
 		sort_points()
 
 	else:
