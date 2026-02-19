@@ -36,23 +36,33 @@ func _can_handle(object):
 	return true
 
 
-#func _on_reset_btn_pressed(i:int, default:Vector2, x_input:EditorSpinSlider, y_input:EditorSpinSlider, property_name:String) -> void:
-	## print("p%d %s: reset" % [i, property_name])
-	## curve.points[i].position = default
-	#x_input.value = 0.0# default.x
-	#y_input.value = 0.0# default.y
+
+#func _update_reset_btn(reset_btn:Button, value:float, default:float) -> void:
+	#reset_btn.set_anchors_and_offsets_preset(Control.PRESET_CENTER_RIGHT)
+	## reset_btn.visible = !(value == default)
+	#reset_btn.visible = !(value == 0.0)
+func _update_reset_btn(reset_btn: Button, value: float, default: float) -> void:
+	reset_btn.set_anchors_and_offsets_preset(Control.PRESET_CENTER_RIGHT)
+	# reset_btn.visible = !(value == default)
+	# Use is_equal_approx for float safety
+	reset_btn.visible = !is_equal_approx(value, default)
+
+
 func _on_reset_btn_pressed(
 	i:int,
 	_default:Vector2,
 	x_input:EditorSpinSlider,
 	y_input:EditorSpinSlider,
-	property_name:String
+	property_name:String,
+	reset_btn:Button
 ) -> void:
 
 	var new_default := curve.get_default_for_property(i, property_name)
 
 	x_input.value = new_default.x
 	y_input.value = new_default.y
+
+	reset_btn.visible = false
 
 
 
@@ -63,12 +73,6 @@ func _on_remove_btn_pressed(point_list:VBoxContainer, i:int, point_panel:PanelCo
 	editor_undo_redo.add_do_method(curve, "remove_point", p)
 	editor_undo_redo.add_undo_method(curve, "add_point", p)
 	editor_undo_redo.commit_action()
-
-
-func _update_reset_btn(reset_btn:Button, value:float, default:float) -> void:
-	reset_btn.set_anchors_and_offsets_preset(Control.PRESET_CENTER_RIGHT)
-	# reset_btn.visible = !(value == default)
-	reset_btn.visible = !(value == 0.0)
 
 
 func _on_x_input_value_changed(value:float, i:int, x_input:EditorSpinSlider, reset_btn:Button, default:float, property_name:String) -> void:
@@ -307,7 +311,7 @@ func _create_vector2_property(
 	y_input.value_changed.connect(_on_y_input_value_changed.bind(i, y_input, reset_btn, position.y, property_name))
 	point.input[property_name].y = y_input
 
-	reset_btn.pressed.connect(_on_reset_btn_pressed.bind(i, position, x_input, y_input, property_name))
+	reset_btn.pressed.connect(_on_reset_btn_pressed.bind(i, position, x_input, y_input, property_name, reset_btn))
 
 	y_row.add_child(y_label)
 	y_row.add_child(y_input)
@@ -534,12 +538,8 @@ func handle_bacon_curve_editor(object) -> void:
 
 		ease_option.item_selected.connect(curve.set_ease)
 		trans_option.item_selected.connect(curve.set_trans)
-		# curve.set_ease(ease_option.selected)
-		# curve.set_trans(trans_option.selected)
 
 		add_custom_control(bacon_curve_editor)
-
-
 
 
 
