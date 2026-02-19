@@ -1,4 +1,4 @@
-@tool
+# @tool
 extends Control
 
 var _debug_prev_curve_pos: Vector2
