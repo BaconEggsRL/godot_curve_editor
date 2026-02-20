@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://vr36bnfx0i31"]
 
-[ext_resource type="Script" uid="uid://e260se4cmlop" path="res://old_curve_editor.gd" id="1_jka5b"]
+[ext_resource type="Script" uid="uid://e260se4cmlop" path="res://addons/easing_curve/_archive/old_curve_editor.gd" id="1_jka5b"]
 
 [node name="old_curve_editor" type="Control" unique_id=1085908182]
 clip_contents = true

@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://dgft8eu5f5ayn"
-path="res://.godot/imported/Unlock.svg-49fb5a812d9da58f09967fda9cd07169.ctex"
+uid="uid://cgoejfwhdwmop"
+path="res://.godot/imported/Curve.svg-fa043f4b1b9ceafcd49d008b32ed48dc.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://icons/Unlock.svg"
-dest_files=["res://.godot/imported/Unlock.svg-49fb5a812d9da58f09967fda9cd07169.ctex"]
+source_file="res://addons/easing_curve/icons/Curve.svg"
+dest_files=["res://.godot/imported/Curve.svg-fa043f4b1b9ceafcd49d008b32ed48dc.ctex"]
 
 [params]
 

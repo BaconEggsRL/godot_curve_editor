@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://bo1q0sc7jelyx"
-path="res://.godot/imported/Instance.svg-d4c22855e5385d42707fc16206cca3f4.ctex"
+uid="uid://w1qm6tuhyikq"
+path="res://.godot/imported/MoveUp.svg-052a07b6f2e17b8dc356025d86d72ad0.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://icons/Instance.svg"
-dest_files=["res://.godot/imported/Instance.svg-d4c22855e5385d42707fc16206cca3f4.ctex"]
+source_file="res://addons/easing_curve/icons/MoveUp.svg"
+dest_files=["res://.godot/imported/MoveUp.svg-052a07b6f2e17b8dc356025d86d72ad0.ctex"]
 
 [params]
 

@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://bd0qh78msruov"]
 
-[ext_resource type="Script" uid="uid://dmx3tetijwh22" path="res://export_array_test.gd" id="1_s53tr"]
+[ext_resource type="Script" uid="uid://dmx3tetijwh22" path="res://addons/easing_curve/test/export_array_test.gd" id="1_s53tr"]
 
 [sub_resource type="Animation" id="Animation_s53tr"]
 resource_name = "new_animation"

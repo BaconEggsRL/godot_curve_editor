@@ -1,7 +1,7 @@
 [gd_resource type="Resource" script_class="BaconCurve" format=3 uid="uid://cqxnb1q4kvgl4"]
 
-[ext_resource type="Script" uid="uid://cxmmenoobxiyp" path="res://point.gd" id="1_2wsbp"]
-[ext_resource type="Script" uid="uid://c10cjby72qngf" path="res://bacon_curve.gd" id="2_hxjjy"]
+[ext_resource type="Script" uid="uid://cxmmenoobxiyp" path="res://addons/easing_curve/scripts/point.gd" id="1_2wsbp"]
+[ext_resource type="Script" uid="uid://c10cjby72qngf" path="res://addons/easing_curve/scripts/bacon_curve.gd" id="2_hxjjy"]
 
 [sub_resource type="Resource" id="Resource_ppyta"]
 script = ExtResource("1_2wsbp")

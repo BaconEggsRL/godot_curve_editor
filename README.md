@@ -10,4 +10,3 @@ Example, using it in a graph editor tool script.
 There's a couple of kinks to work out, but I'm publishing this here until I can get some time to clean it up and publish it as a proper addon.
 
 Please submit an issue or publish a PR if you find anything that needs fixing.
-

@@ -1,6 +1,8 @@
 @tool
+@icon("uid://cgoejfwhdwmop")
 class_name BaconCurve
 extends Resource
+
 
 
 var _last_t := 0.0

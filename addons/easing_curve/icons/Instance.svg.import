@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://dj3cvuhldit7o"
-path="res://.godot/imported/TripleBar.svg-92f6c8f9b7a6f296f164388dc664c8ad.ctex"
+uid="uid://bo1q0sc7jelyx"
+path="res://.godot/imported/Instance.svg-5516835d91eb76d8382c9bc7a7f1cfa4.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://icons/TripleBar.svg"
-dest_files=["res://.godot/imported/TripleBar.svg-92f6c8f9b7a6f296f164388dc664c8ad.ctex"]
+source_file="res://addons/easing_curve/icons/Instance.svg"
+dest_files=["res://.godot/imported/Instance.svg-5516835d91eb76d8382c9bc7a7f1cfa4.ctex"]
 
 [params]
 
