@@ -2,11 +2,14 @@
 extends Node
 
 # Label / Prefix
-@export_group("Property Array/item_")
+@export_group("Points/point_")
 # Define properties.
-@export var id: int = 1
-@export var tag: String = "Tagless"
-@export_enum("Single", "Dual", "Infinite") var wield: int
+@export var position := Vector2(0,0)
+@export var left_control_point := Vector2(0,0)
+@export_enum("Free", "Linear", "Balanced", "Mirrored") var left_mode: int
+@export var right_control_point := Vector2(0,0)
+@export_enum("Free", "Linear", "Balanced", "Mirrored") var right_mode: int
+
 # End of properties.
 @export_group("")
 
