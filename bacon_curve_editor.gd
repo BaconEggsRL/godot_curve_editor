@@ -215,7 +215,7 @@ func _draw():
 		var p = _curve.points[i]
 		var pos_view = get_view_pos(p.position)
 
-		var is_selected = (i == selected_index)
+		# var is_selected = (i == selected_index)
 		var is_hovered = (i == hovered_index)
 
 		# Slightly dim when not selected/hovered
@@ -228,7 +228,7 @@ func _draw():
 		var point_color = Color(1, 0.5, 0, alpha) if i == selected_index else Color(1, 0, 0, alpha)
 		# var left_color := Color(0, 1, 0, alpha)
 		# var right_color := Color(0, 0, 1, alpha)
-		var line_color := Color(CONTROL_LINE_COLOR.r, CONTROL_LINE_COLOR.g, CONTROL_LINE_COLOR.b, alpha)
+		# var line_color := Color(CONTROL_LINE_COLOR.r, CONTROL_LINE_COLOR.g, CONTROL_LINE_COLOR.b, alpha)
 
 		# ----- Main Point -----
 		draw_circle(pos_view, point_radius, point_color)
