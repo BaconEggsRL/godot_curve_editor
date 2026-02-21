@@ -1,25 +1,8 @@
 [gd_scene format=3 uid="uid://qviblxegxd23"]
 
 [ext_resource type="Script" uid="uid://cjoavnop3pyl2" path="res://addons/easing_curve/test/test.gd" id="1_37kl0"]
-[ext_resource type="Script" uid="uid://cxmmenoobxiyp" path="res://addons/easing_curve/scripts/point.gd" id="2_nqoy3"]
-[ext_resource type="Script" uid="uid://c10cjby72qngf" path="res://addons/easing_curve/scripts/bacon_curve.gd" id="3_60j5k"]
 [ext_resource type="Texture2D" uid="uid://d23t7b73acleh" path="res://icon.svg" id="4_ppyta"]
 [ext_resource type="Texture2D" uid="uid://ckq8rdh87fm8m" path="res://addons/easing_curve/icons/Reload.svg" id="4_ykrsh"]
-
-[sub_resource type="Resource" id="Resource_nqoy3"]
-script = ExtResource("2_nqoy3")
-
-[sub_resource type="Resource" id="Resource_60j5k"]
-script = ExtResource("2_nqoy3")
-position = Vector2(1, 1)
-left_control_point = Vector2(1, 1)
-right_control_point = Vector2(1, 1)
-
-[sub_resource type="Resource" id="Resource_4o500"]
-script = ExtResource("3_60j5k")
-_points_section_expanded = false
-points = Array[ExtResource("2_nqoy3")]([SubResource("Resource_nqoy3"), SubResource("Resource_60j5k")])
-metadata/_custom_type_script = "uid://c10cjby72qngf"
 
 [sub_resource type="Animation" id="Animation_ehkex"]
 resource_name = "new_animation"
@@ -39,7 +22,6 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_37kl0")
 tween_type = 8
-bacon_curve = SubResource("Resource_4o500")
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="." unique_id=1681444400]
 libraries/ = SubResource("AnimationLibrary_xersf")
