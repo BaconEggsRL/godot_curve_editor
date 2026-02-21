@@ -1,3 +1,4 @@
+@tool
 class_name ZoomSliderContainer
 extends Control
 
@@ -14,7 +15,9 @@ func _ready():
 
 
 func _on_autofit_btn_pressed() -> void:
+	# print("fit")
 	slider.value = 0.5
+
 
 func _on_slider_gui_input(event: InputEvent) -> void:
 	if event is InputEventMouseButton:

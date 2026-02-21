@@ -5,8 +5,13 @@ extends Control
 signal point_changed
 
 var _zoom_y: float = 1.0   # 1.0 = default auto range
-const ZOOM_MIN := 1.0      # can't zoom out past auto range
-const ZOOM_MAX := 20.0     # how far you can zoom in
+const ZOOM_MIN := 0.1      # can't zoom out past auto range
+const ZOOM_MAX := 10.0     # how far you can zoom in
+
+var pan_offset := Vector2.ZERO
+var is_panning := false
+var last_mouse_pos := Vector2.ZERO
+
 
 var _curve: BaconCurve
 
@@ -127,11 +132,18 @@ func update_view_transform() -> void:
 
 	_world_to_view = view_trans * world_trans
 
-func get_view_pos(world_pos: Vector2) -> Vector2:
-	return _world_to_view * world_pos
 
+#func get_view_pos(world_pos: Vector2) -> Vector2:
+	#return _world_to_view * world_pos
+func get_view_pos(world_pos: Vector2) -> Vector2:
+	return (_world_to_view * world_pos) + pan_offset
+
+
+#func get_world_pos(view_pos: Vector2) -> Vector2:
+	#return _world_to_view.affine_inverse() * view_pos
 func get_world_pos(view_pos: Vector2) -> Vector2:
-	return _world_to_view.affine_inverse() * view_pos
+	return _world_to_view.affine_inverse() * (view_pos - pan_offset)
+
 
 func get_point_at(pos: Vector2) -> int:
 	if _curve == null:
@@ -327,6 +339,24 @@ func _gui_input(event: InputEvent) -> void:
 	if _curve == null:
 		return
 
+	# Middle mouse pressed → start panning
+	if event is InputEventMouseButton:
+		if event.button_index == MOUSE_BUTTON_MIDDLE:
+			if event.pressed:
+				is_panning = true
+				last_mouse_pos = event.position
+				get_viewport().set_input_as_handled()  # stop editor from stealing input
+			else:
+				is_panning = false
+				get_viewport().set_input_as_handled()
+	# Mouse motion → pan
+	elif event is InputEventMouseMotion and is_panning:
+		var delta = event.position - last_mouse_pos
+		pan_offset += delta
+		last_mouse_pos = event.position
+		queue_redraw()
+		get_viewport().set_input_as_handled()
+
 	# =========================
 	# MOUSE MOTION (drag points/controls)
 	# =========================
@@ -422,12 +452,15 @@ func _gui_input(event: InputEvent) -> void:
 	if event is InputEventMouseButton:
 		# --- Mouse Wheel Zoom ---
 		if event.pressed and event.button_index == MOUSE_BUTTON_WHEEL_UP:
-			_zoom_y = clamp(_zoom_y * 1.1, ZOOM_MIN, ZOOM_MAX)
+			# var step = 0.1
+			# var num_steps = 5
+
+			_zoom_y = clamp(_zoom_y * 1.2, ZOOM_MIN, ZOOM_MAX)
 			queue_redraw()
 			accept_event()
 			return
 		elif event.pressed and event.button_index == MOUSE_BUTTON_WHEEL_DOWN:
-			_zoom_y = clamp(_zoom_y / 1.1, ZOOM_MIN, ZOOM_MAX)
+			_zoom_y = clamp(_zoom_y / 1.2, ZOOM_MIN, ZOOM_MAX)
 			queue_redraw()
 			accept_event()
 			return
