@@ -13,10 +13,16 @@ var _debug_last_t: float = 0.0
 
 enum TWEEN_TYPE {
 	LINEAR,
+
 	EASE_IN_CUBIC,
 	EASE_OUT_CUBIC,
 	EASE_IN_OUT_CUBIC,
-	EASE_OUT_IN_CUBIC
+	EASE_OUT_IN_CUBIC,
+
+	EASE_IN_SINE,
+	EASE_OUT_SINE,
+	EASE_IN_OUT_SINE,
+	EASE_OUT_IN_SINE
 }
 @export var tween_type := TWEEN_TYPE.LINEAR
 
@@ -128,6 +134,7 @@ func start_tween(tween_ref: Tween, end: Marker2D, node: Node2D, use_curve: bool)
 		match tween_type:
 			TWEEN_TYPE.LINEAR:
 				position_tweener.set_ease(Tween.EASE_IN_OUT).set_trans(Tween.TRANS_LINEAR)
+
 			TWEEN_TYPE.EASE_IN_CUBIC:
 				position_tweener.set_ease(Tween.EASE_IN).set_trans(Tween.TRANS_CUBIC)
 			TWEEN_TYPE.EASE_OUT_CUBIC:
@@ -137,6 +144,14 @@ func start_tween(tween_ref: Tween, end: Marker2D, node: Node2D, use_curve: bool)
 			TWEEN_TYPE.EASE_OUT_IN_CUBIC:
 				position_tweener.set_ease(Tween.EASE_OUT_IN).set_trans(Tween.TRANS_CUBIC)
 
+			TWEEN_TYPE.EASE_IN_SINE:
+				position_tweener.set_ease(Tween.EASE_IN).set_trans(Tween.TRANS_SINE)
+			TWEEN_TYPE.EASE_OUT_SINE:
+				position_tweener.set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_SINE)
+			TWEEN_TYPE.EASE_IN_OUT_SINE:
+				position_tweener.set_ease(Tween.EASE_IN_OUT).set_trans(Tween.TRANS_SINE)
+			TWEEN_TYPE.EASE_OUT_IN_SINE:
+				position_tweener.set_ease(Tween.EASE_OUT_IN).set_trans(Tween.TRANS_SINE)
 
 
 

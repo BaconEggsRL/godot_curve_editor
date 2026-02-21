@@ -34,8 +34,13 @@ signal range_changed
 
 
 enum EASE { IN, OUT, IN_OUT, OUT_IN }
-enum TRANS { LINEAR, CONSTANT, CUBIC }
-enum PRESET { LINEAR, CONSTANT, IN_CUBIC, OUT_CUBIC, IN_OUT_CUBIC, OUT_IN_CUBIC }
+enum TRANS { LINEAR, CONSTANT, CUBIC, SINE }
+enum PRESET {
+	LINEAR,
+	CONSTANT,
+	IN_CUBIC, OUT_CUBIC, IN_OUT_CUBIC, OUT_IN_CUBIC,
+	IN_SINE, OUT_SINE, IN_OUT_SINE, OUT_IN_SINE,
+}
 
 #var ease:EASE = EASE.IN:
 	#set(value):
@@ -89,6 +94,12 @@ func _update_preset() -> void:
 				EASE.OUT: preset = PRESET.OUT_CUBIC
 				EASE.IN_OUT: preset = PRESET.IN_OUT_CUBIC
 				EASE.OUT_IN: preset = PRESET.OUT_IN_CUBIC
+		TRANS.SINE:
+			match ease_type:
+				EASE.IN: preset = PRESET.IN_SINE
+				EASE.OUT: preset = PRESET.OUT_SINE
+				EASE.IN_OUT: preset = PRESET.IN_OUT_SINE
+				EASE.OUT_IN: preset = PRESET.OUT_IN_SINE
 
 	# Apply the preset to the points
 	points.clear()
@@ -109,6 +120,16 @@ func _update_preset() -> void:
 					cubic_bezier(.65, 0, .35, 1)
 				PRESET.OUT_IN_CUBIC:
 					cubic_bezier(.35, 1, .65, 0)
+		PRESET.IN_SINE, PRESET.OUT_SINE, PRESET.IN_OUT_SINE, PRESET.OUT_IN_SINE:
+			match preset:
+				PRESET.IN_SINE:
+					cubic_bezier(.12, 0, .39, 0)
+				PRESET.OUT_SINE:
+					cubic_bezier(.61, 1, .88, 1)
+				PRESET.IN_OUT_SINE:
+					cubic_bezier(.37, 0, .63, 1)
+				PRESET.OUT_IN_SINE:
+					cubic_bezier(.63, 1, .37, 0)
 		_:
 			push_warning("Preset not found")
 

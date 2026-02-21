@@ -515,7 +515,7 @@ func handle_bacon_curve_editor(object) -> void:
 		)
 
 		var trans_dict = _create_option_with_reset(
-			["Linear", "Constant", "Cubic"],
+			["Linear", "Constant", "Cubic", "Sine"],
 			object.trans_type,
 			"Trans",
 			_update_ease_disabled

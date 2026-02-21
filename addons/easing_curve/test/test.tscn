@@ -8,24 +8,18 @@
 
 [sub_resource type="Resource" id="Resource_nqoy3"]
 script = ExtResource("2_nqoy3")
+right_control_point = Vector2(0.63, 1)
 
 [sub_resource type="Resource" id="Resource_60j5k"]
 script = ExtResource("2_nqoy3")
-
-[sub_resource type="Resource" id="Resource_4o500"]
-script = ExtResource("2_nqoy3")
 position = Vector2(1, 1)
-left_control_point = Vector2(1, 1)
+left_control_point = Vector2(0.37, 0)
 right_control_point = Vector2(1, 1)
 
-[sub_resource type="Resource" id="Resource_vwehw"]
+[sub_resource type="Resource" id="Resource_4o500"]
 script = ExtResource("3_60j5k")
-points = Array[ExtResource("2_nqoy3")]([SubResource("Resource_nqoy3"), SubResource("Resource_60j5k"), SubResource("Resource_4o500")])
+points = Array[ExtResource("2_nqoy3")]([SubResource("Resource_nqoy3"), SubResource("Resource_60j5k")])
 metadata/_custom_type_script = "uid://c10cjby72qngf"
-
-[sub_resource type="Curve" id="Curve_q2aj0"]
-_data = [Vector2(0.405, 0.24), 0.0, 0.0, 0, 0, Vector2(0.93, 0.24), 0.0, 0.0, 0, 0]
-point_count = 2
 
 [sub_resource type="Animation" id="Animation_ehkex"]
 resource_name = "new_animation"
@@ -44,8 +38,8 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_37kl0")
-bacon_curve = SubResource("Resource_vwehw")
-curve = SubResource("Curve_q2aj0")
+tween_type = 8
+bacon_curve = SubResource("Resource_4o500")
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="." unique_id=1681444400]
 libraries/ = SubResource("AnimationLibrary_xersf")
