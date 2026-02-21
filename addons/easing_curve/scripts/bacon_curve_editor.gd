@@ -92,8 +92,12 @@ func _notification(what: int) -> void:
 
 func update_view_transform() -> void:
 	var margin = 4 * _editor_scale
-	var min_y: float = _curve.min_value
-	var max_y: float = _curve.max_value
+
+	# var min_y: float = _curve.min_value
+	# var max_y: float = _curve.max_value
+	var auto_range = _compute_auto_y_range()
+	var min_y = auto_range.x
+	var max_y = auto_range.y
 
 	var world_rect: Rect2 = Rect2(MIN_X, min_y, MAX_X, max_y - min_y)
 	var view_margin: Vector2 = Vector2(margin, margin)
@@ -470,3 +474,46 @@ func _draw_bezier_segment(a: Point, b: Point) -> void:
 func _bezier(p0: Vector2, p1: Vector2, p2: Vector2, p3: Vector2, t: float) -> Vector2:
 	var omt = 1.0 - t
 	return omt*omt*omt*p0 + 3*omt*omt*t*p1 + 3*omt*t*t*p2 + t*t*t*p3
+
+
+
+func _compute_auto_y_range() -> Vector2:
+	if _curve == null or _curve.points.size() < 2:
+		return Vector2(0.0, 1.0)
+
+	var min_y := 0.0
+	var max_y := 1.0
+
+	var steps := 40
+
+	for i in range(_curve.points.size() - 1):
+		var a = _curve.points[i]
+		var b = _curve.points[i + 1]
+
+		for j in range(steps + 1):
+			var t = j / float(steps)
+			var pt = _bezier(
+				a.position,
+				a.right_control_point,
+				b.left_control_point,
+				b.position,
+				t
+			)
+
+			# Expand only if overshooting
+			if pt.y < min_y:
+				min_y = pt.y
+			elif pt.y > max_y:
+				max_y = pt.y
+
+	# If still inside [0,1], keep default range
+	if min_y >= 0.0 and max_y <= 1.0:
+		min_y = 0.0
+		max_y = 1.0
+
+	# Add padding
+	var padding := (max_y - min_y) * 0.1
+	min_y -= padding
+	max_y += padding
+
+	return Vector2(min_y, max_y)
