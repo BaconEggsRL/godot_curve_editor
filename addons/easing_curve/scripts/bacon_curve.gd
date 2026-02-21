@@ -47,25 +47,9 @@ signal range_changed
 
 enum EASE { IN, OUT, IN_OUT, OUT_IN }
 enum TRANS { LINEAR, CONSTANT, CUBIC, SINE }
-enum PRESET {
-	LINEAR,
-	CONSTANT,
-	IN_CUBIC, OUT_CUBIC, IN_OUT_CUBIC, OUT_IN_CUBIC,
-	IN_SINE, OUT_SINE, IN_OUT_SINE, OUT_IN_SINE,
-}
-
-#var ease:EASE = EASE.IN:
-	#set(value):
-		#ease = value
-		#_update_preset()
-#var trans:TRANS = TRANS.LINEAR:
-	#set(value):
-		#trans = value
-		#_update_preset()
 
 var ease_type:EASE = EASE.IN
 var trans_type:TRANS = TRANS.LINEAR
-var preset:PRESET = PRESET.LINEAR
 
 
 func get_default_for_property(i:int, property_name:String) -> Vector2:
@@ -89,64 +73,46 @@ func set_ease(_ease:EASE) -> void:
 	ease_type = _ease
 	_update_preset()
 
+
 func set_trans(_trans:TRANS) -> void:
 	trans_type = _trans
 	_update_preset()
 
+
 func _update_preset() -> void:
-	# Determine the correct PRESET based on ease + trans
+	points.clear()
+
 	match trans_type:
+
 		TRANS.LINEAR:
-			preset = PRESET.LINEAR
+			add_point(Point.new(Vector2(0, 0)))
+			add_point(Point.new(Vector2(1, 1)))
+
 		TRANS.CONSTANT:
-			preset = PRESET.CONSTANT
+			add_point(Point.new(Vector2(0, 0.5)))
+			add_point(Point.new(Vector2(1, 0.5)))
+
 		TRANS.CUBIC:
 			match ease_type:
-				EASE.IN: preset = PRESET.IN_CUBIC
-				EASE.OUT: preset = PRESET.OUT_CUBIC
-				EASE.IN_OUT: preset = PRESET.IN_OUT_CUBIC
-				EASE.OUT_IN: preset = PRESET.OUT_IN_CUBIC
+				EASE.IN:
+					cubic_bezier(.32, 0, .67, 0)
+				EASE.OUT:
+					cubic_bezier(.33, 1, .68, 1)
+				EASE.IN_OUT:
+					cubic_bezier(.65, 0, .35, 1)
+				EASE.OUT_IN:
+					cubic_bezier(.35, 1, .65, 0)
+
 		TRANS.SINE:
 			match ease_type:
-				EASE.IN: preset = PRESET.IN_SINE
-				EASE.OUT: preset = PRESET.OUT_SINE
-				EASE.IN_OUT: preset = PRESET.IN_OUT_SINE
-				EASE.OUT_IN: preset = PRESET.OUT_IN_SINE
-
-	# Apply the preset to the points
-	points.clear()
-	match preset:
-		PRESET.LINEAR:
-			add_point(Point.new(Vector2(0,0)))
-			add_point(Point.new(Vector2(1,1)))
-		PRESET.CONSTANT:
-			add_point(Point.new(Vector2(0,0.5)))
-			add_point(Point.new(Vector2(1,0.5)))
-		PRESET.IN_CUBIC, PRESET.OUT_CUBIC, PRESET.IN_OUT_CUBIC, PRESET.OUT_IN_CUBIC:
-			match preset:
-				PRESET.IN_CUBIC:
-					cubic_bezier(.32, 0, .67, 0)
-				PRESET.OUT_CUBIC:
-					cubic_bezier(.33, 1, .68, 1)
-				PRESET.IN_OUT_CUBIC:
-					cubic_bezier(.65, 0, .35, 1)
-				PRESET.OUT_IN_CUBIC:
-					cubic_bezier(.35, 1, .65, 0)
-		PRESET.IN_SINE, PRESET.OUT_SINE, PRESET.IN_OUT_SINE, PRESET.OUT_IN_SINE:
-			match preset:
-				PRESET.IN_SINE:
+				EASE.IN:
 					cubic_bezier(.12, 0, .39, 0)
-				PRESET.OUT_SINE:
+				EASE.OUT:
 					cubic_bezier(.61, 1, .88, 1)
-				PRESET.IN_OUT_SINE:
+				EASE.IN_OUT:
 					cubic_bezier(.37, 0, .63, 1)
-				PRESET.OUT_IN_SINE:
+				EASE.OUT_IN:
 					cubic_bezier(.63, 1, .37, 0)
-		_:
-			push_warning("Preset not found")
-
-	# force_update()
-	# print("set preset: ", preset)
 
 
 # --- Constructor ---

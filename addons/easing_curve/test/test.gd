@@ -11,31 +11,25 @@ var _debug_curve_value: float = 0.0
 var _debug_last_t: float = 0.0
 
 
-enum TWEEN_TYPE {
-	LINEAR,
-
-	EASE_IN_CUBIC,
-	EASE_OUT_CUBIC,
-	EASE_IN_OUT_CUBIC,
-	EASE_OUT_IN_CUBIC,
-
-	EASE_IN_SINE,
-	EASE_OUT_SINE,
-	EASE_IN_OUT_SINE,
-	EASE_OUT_IN_SINE
-}
-@export var tween_type := TWEEN_TYPE.LINEAR
+@export var tween_ease:Tween.EaseType = 0
+@export var tween_trans:Tween.TransitionType = 0
 
 @export var bacon_curve:BaconCurve
 @export var curve:Curve
 
-@onready var curve_node: Sprite2D = $curve_nodes_container/curve_node
-@onready var curve_start: Marker2D = $curve_nodes_container/curve_start
-@onready var curve_end: Marker2D = $curve_nodes_container/curve_end
 
-@onready var tween_node: Sprite2D = $tween_nodes_container/tween_node
-@onready var tween_start: Marker2D = $tween_nodes_container/tween_start
-@onready var tween_end: Marker2D = $tween_nodes_container/tween_end
+
+@onready var tween_nodes_container: Node2D = $nodes/tween_nodes_container
+@onready var tween_node:Sprite2D = tween_nodes_container.get_node("tween_node")
+@onready var tween_start:Marker2D = tween_nodes_container.get_node("tween_start")
+@onready var tween_end:Marker2D = tween_nodes_container.get_node("tween_end")
+
+@onready var curve_nodes_container: Node2D = $nodes/curve_nodes_container
+@onready var curve_node:Sprite2D = curve_nodes_container.get_node("curve_node")
+@onready var curve_start:Marker2D = curve_nodes_container.get_node("curve_start")
+@onready var curve_end:Marker2D = curve_nodes_container.get_node("curve_end")
+
+
 
 
 var curve_tween:Tween
@@ -131,27 +125,7 @@ func start_tween(tween_ref: Tween, end: Marker2D, node: Node2D, use_curve: bool)
 	if bacon_curve and use_curve:
 		position_tweener.set_custom_interpolator(tween_bacon_curve.bind(bacon_curve))
 	else:
-		match tween_type:
-			TWEEN_TYPE.LINEAR:
-				position_tweener.set_ease(Tween.EASE_IN_OUT).set_trans(Tween.TRANS_LINEAR)
-
-			TWEEN_TYPE.EASE_IN_CUBIC:
-				position_tweener.set_ease(Tween.EASE_IN).set_trans(Tween.TRANS_CUBIC)
-			TWEEN_TYPE.EASE_OUT_CUBIC:
-				position_tweener.set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_CUBIC)
-			TWEEN_TYPE.EASE_IN_OUT_CUBIC:
-				position_tweener.set_ease(Tween.EASE_IN_OUT).set_trans(Tween.TRANS_CUBIC)
-			TWEEN_TYPE.EASE_OUT_IN_CUBIC:
-				position_tweener.set_ease(Tween.EASE_OUT_IN).set_trans(Tween.TRANS_CUBIC)
-
-			TWEEN_TYPE.EASE_IN_SINE:
-				position_tweener.set_ease(Tween.EASE_IN).set_trans(Tween.TRANS_SINE)
-			TWEEN_TYPE.EASE_OUT_SINE:
-				position_tweener.set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_SINE)
-			TWEEN_TYPE.EASE_IN_OUT_SINE:
-				position_tweener.set_ease(Tween.EASE_IN_OUT).set_trans(Tween.TRANS_SINE)
-			TWEEN_TYPE.EASE_OUT_IN_SINE:
-				position_tweener.set_ease(Tween.EASE_OUT_IN).set_trans(Tween.TRANS_SINE)
+		position_tweener.set_ease(tween_ease as int).set_trans(tween_trans as int)
 
 
 
