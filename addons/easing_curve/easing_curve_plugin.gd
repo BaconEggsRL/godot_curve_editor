@@ -11,6 +11,8 @@ const OPEN_SANS_BOLD = preload("uid://byt4ohyep02mx")
 const INTER_24_PT_BOLD = preload("uid://cxflgjp5gmsnn")
 const INTER_18_PT_BOLD = preload("uid://bh5u5wtwnj3ah")
 
+const ZOOM_SLIDER_CONTAINER = preload("uid://r1ymwr6nae")
+
 
 
 
@@ -565,6 +567,10 @@ func handle_bacon_curve_editor(object) -> void:
 	if object == null:
 		return
 	if object is BaconCurve:
+		var curve_section := VBoxContainer.new()
+		curve_section.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		curve_section.add_theme_constant_override("separation", 0)
+
 		# Add toolbar
 		var _toolbar:HBoxContainer
 		_toolbar = HBoxContainer.new()
@@ -595,7 +601,8 @@ func handle_bacon_curve_editor(object) -> void:
 		_update_ease_disabled(trans_option.selected)
 
 		# Add toolbar
-		add_custom_control(_toolbar)
+		# add_custom_control(_toolbar)
+		curve_section.add_child(_toolbar)
 
 
 		########################################
@@ -609,7 +616,19 @@ func handle_bacon_curve_editor(object) -> void:
 		ease_option.item_selected.connect(curve.set_ease)
 		trans_option.item_selected.connect(curve.set_trans)
 
-		add_custom_control(bacon_curve_editor)
+		# add_custom_control(bacon_curve_editor)
+		curve_section.add_child(bacon_curve_editor)
+
+		########################################
+		# Add zoom slider
+		var zoom_slider_container := ZOOM_SLIDER_CONTAINER.instantiate()
+		zoom_slider_container.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+
+		curve_section.add_child(zoom_slider_container)
+
+		########################################
+		# Add all controls
+		add_custom_control(curve_section)
 
 
 
