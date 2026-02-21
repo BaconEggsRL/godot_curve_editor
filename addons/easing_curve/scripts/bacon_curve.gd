@@ -414,6 +414,8 @@ func _solve_for_t(x: float, a: Point, b: Point) -> float:
 	return t
 
 
+
+
 func _bezier_derivative(p0: float, p1: float, p2: float, p3: float, t: float) -> float:
 	var omt = 1.0 - t
 	return 3.0 * omt * omt * (p1 - p0) \
