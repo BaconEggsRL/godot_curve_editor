@@ -7,9 +7,18 @@ extends Resource
 
 var _last_t := 0.0
 
+
+@export_custom(PROPERTY_HINT_NONE, "", PROPERTY_USAGE_NO_EDITOR)
+var _points_section_expanded: bool = true
+
+
+
 @export var bacon_curve_editor:bool
 
+# @export_group("Points")
 @export var points: Array[Point] = []
+
+@export_group("")
 #func get_point_count() -> int:
 	#return points.size()
 #func get_point(index:int) -> Point:

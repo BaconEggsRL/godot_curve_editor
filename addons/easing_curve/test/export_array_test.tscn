@@ -14,7 +14,6 @@ _data = {
 [node name="export_array_test" type="Node" unique_id=591938342]
 script = ExtResource("1_s53tr")
 point_count = 2
-point_0/right_control_point = Vector2(0.06, 0)
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="." unique_id=2070723595]
 libraries/ = SubResource("AnimationLibrary_abdqr")

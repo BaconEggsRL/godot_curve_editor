@@ -330,7 +330,7 @@ func _on_add_point_btn_pressed() -> void:
 
 
 
-func handle_points(curve: BaconCurve) -> void:
+func handle_points(curve: BaconCurve) -> VBoxContainer:
 	var point_list = VBoxContainer.new()  # contains the list of points
 
 	# Show list of points
@@ -395,7 +395,46 @@ func handle_points(curve: BaconCurve) -> void:
 	add_point_btn.pressed.connect(_on_add_point_btn_pressed)
 	point_list.add_child(add_point_btn)
 
-	add_custom_control(point_list)
+	# add_custom_control(point_list)
+	return point_list
+
+
+
+func _create_inspector_section(title:String, content:Control, curve:BaconCurve) -> Control:
+	var root = VBoxContainer.new()
+	root.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+
+	var header = Button.new()
+	header.text = title
+	header.toggle_mode = true
+	header.button_pressed = curve._points_section_expanded
+	header.flat = true
+	header.alignment = HORIZONTAL_ALIGNMENT_LEFT
+	header.focus_mode = Control.FOCUS_NONE
+	header.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+
+	var icons = EditorInterface.get_editor_theme()
+	var icon_open = icons.get_icon("GuiTreeArrowDown", "EditorIcons")
+	var icon_closed = icons.get_icon("GuiTreeArrowRight", "EditorIcons")
+
+	header.icon = icon_open if header.button_pressed else icon_closed
+
+	root.add_child(header)
+
+	content.visible = header.button_pressed
+	root.add_child(content)
+
+	header.toggled.connect(func(pressed:bool):
+		content.visible = pressed
+		header.icon = icon_open if pressed else icon_closed
+
+		# 🔥 Persist to resource
+		curve._points_section_expanded = pressed
+		curve.notify_property_list_changed()
+		curve.emit_changed()
+	)
+
+	return root
 
 
 
@@ -558,7 +597,10 @@ func _parse_property(object, type, name, hint_type, hint_string, usage_flags, wi
 		handle_bacon_curve_editor(object)
 		return true
 	if object is BaconCurve and name == "points":
-		handle_points(object)
+		# handle_points(object)
+		var content = handle_points(object)
+		var section = _create_inspector_section("Points", content, object)
+		add_custom_control(section)
 		return true
 	return false
 

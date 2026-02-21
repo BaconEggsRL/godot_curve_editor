@@ -8,16 +8,16 @@
 
 [sub_resource type="Resource" id="Resource_nqoy3"]
 script = ExtResource("2_nqoy3")
-right_control_point = Vector2(0.63, 1)
 
 [sub_resource type="Resource" id="Resource_60j5k"]
 script = ExtResource("2_nqoy3")
 position = Vector2(1, 1)
-left_control_point = Vector2(0.37, 0)
+left_control_point = Vector2(1, 1)
 right_control_point = Vector2(1, 1)
 
 [sub_resource type="Resource" id="Resource_4o500"]
 script = ExtResource("3_60j5k")
+_points_section_expanded = false
 points = Array[ExtResource("2_nqoy3")]([SubResource("Resource_nqoy3"), SubResource("Resource_60j5k")])
 metadata/_custom_type_script = "uid://c10cjby72qngf"
 
