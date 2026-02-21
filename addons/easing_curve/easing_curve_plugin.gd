@@ -484,7 +484,7 @@ func _on_curve_editor_point_changed(i: int, new_point: Point) -> void:
 
 
 # Returns a dictionary containing the OptionButton and its Reset Button
-func _create_option_with_reset(options:Array, default_index:int, label_text:String="", on_change:Callable=func():pass) -> Dictionary:
+func _create_option_with_reset(enum_dict:Dictionary, default_index:int, label_text:String="", on_change:Callable=func():pass) -> Dictionary:
 	var hbox = HBoxContainer.new()
 	hbox.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 
@@ -508,8 +508,12 @@ func _create_option_with_reset(options:Array, default_index:int, label_text:Stri
 
 	# OptionButton
 	var option = OptionButton.new()
-	for i in range(options.size()):
-		option.add_item(options[i])
+	var keys = enum_dict.keys()
+	for key in keys:
+		var display = key.to_lower().capitalize().replace("_", " ")
+		option.add_item(display, enum_dict[key])  # store enum value as ID
+	#for i in range(options.size()):
+		#option.add_item(options[i])
 	option.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	option.selected = default_index
 	option_and_reset.add_child(option)
@@ -569,13 +573,13 @@ func handle_bacon_curve_editor(object) -> void:
 
 		# Toolbar setup
 		var ease_dict = _create_option_with_reset(
-			["In", "Out", "In Out", "Out In"],
+			BaconCurve.EASE,
 			object.ease_type,
 		    "Ease"
 		)
 
 		var trans_dict = _create_option_with_reset(
-			["Linear", "Constant", "Cubic", "Sine"],
+			BaconCurve.TRANS,
 			object.trans_type,
 			"Trans",
 			_update_ease_disabled

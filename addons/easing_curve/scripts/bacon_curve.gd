@@ -46,7 +46,13 @@ signal range_changed
 
 
 enum EASE { IN, OUT, IN_OUT, OUT_IN }
-enum TRANS { LINEAR, CONSTANT, CUBIC, SINE }
+enum TRANS {
+	CONSTANT,
+	LINEAR,
+	QUAD,
+	CUBIC,
+	SINE
+}
 
 var ease_type:EASE = EASE.IN
 var trans_type:TRANS = TRANS.LINEAR
@@ -84,13 +90,24 @@ func _update_preset() -> void:
 
 	match trans_type:
 
+		TRANS.CONSTANT:
+			add_point(Point.new(Vector2(0, 0.5)))
+			add_point(Point.new(Vector2(1, 0.5)))
+
 		TRANS.LINEAR:
 			add_point(Point.new(Vector2(0, 0)))
 			add_point(Point.new(Vector2(1, 1)))
 
-		TRANS.CONSTANT:
-			add_point(Point.new(Vector2(0, 0.5)))
-			add_point(Point.new(Vector2(1, 0.5)))
+		TRANS.QUAD:
+			match ease_type:
+				EASE.IN:
+					cubic_bezier(0.11, 0, 0.5, 0)
+				EASE.OUT:
+					cubic_bezier(0.5, 1, 0.89, 1)
+				EASE.IN_OUT:
+					cubic_bezier(0.45, 0, 0.55, 1)
+				EASE.OUT_IN:
+					cubic_bezier(0.55, 1, 0.45, 0)
 
 		TRANS.CUBIC:
 			match ease_type:
