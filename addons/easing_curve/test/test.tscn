@@ -6,19 +6,90 @@
 [ext_resource type="Texture2D" uid="uid://d23t7b73acleh" path="res://icon.svg" id="4_ppyta"]
 [ext_resource type="Texture2D" uid="uid://ckq8rdh87fm8m" path="res://addons/easing_curve/icons/Reload.svg" id="4_ykrsh"]
 
-[sub_resource type="Resource" id="Resource_nqoy3"]
+[sub_resource type="Resource" id="Resource_4o500"]
 script = ExtResource("2_nqoy3")
-right_control_point = Vector2(0.12, 0)
 
-[sub_resource type="Resource" id="Resource_60j5k"]
+[sub_resource type="Resource" id="Resource_vwehw"]
+script = ExtResource("2_nqoy3")
+position = Vector2(0.04, -0.0004)
+left_control_point = Vector2(0.04, -0.0004)
+right_control_point = Vector2(0.04, -0.0004)
+
+[sub_resource type="Resource" id="Resource_q2aj0"]
+script = ExtResource("2_nqoy3")
+position = Vector2(0.08, -0.0016)
+left_control_point = Vector2(0.08, -0.0016)
+right_control_point = Vector2(0.08, -0.0016)
+
+[sub_resource type="Resource" id="Resource_d7jmg"]
+script = ExtResource("2_nqoy3")
+position = Vector2(0.14, -0.0017)
+left_control_point = Vector2(0.14, -0.0017)
+right_control_point = Vector2(0.14, -0.0017)
+
+[sub_resource type="Resource" id="Resource_fc0vi"]
+script = ExtResource("2_nqoy3")
+position = Vector2(0.18, 0.0004)
+left_control_point = Vector2(0.18, 0.0004)
+right_control_point = Vector2(0.18, 0.0004)
+
+[sub_resource type="Resource" id="Resource_td2e8"]
+script = ExtResource("2_nqoy3")
+position = Vector2(0.26, 0.0058)
+left_control_point = Vector2(0.26, 0.0058)
+right_control_point = Vector2(0.26, 0.0058)
+
+[sub_resource type="Resource" id="Resource_7fh63"]
+script = ExtResource("2_nqoy3")
+position = Vector2(0.28, 0.0055)
+left_control_point = Vector2(0.28, 0.0055)
+right_control_point = Vector2(0.28, 0.0055)
+
+[sub_resource type="Resource" id="Resource_mvwga"]
+script = ExtResource("2_nqoy3")
+position = Vector2(0.4, -0.0156)
+left_control_point = Vector2(0.4, -0.0156)
+right_control_point = Vector2(0.4, -0.0156)
+
+[sub_resource type="Resource" id="Resource_70ex7"]
+script = ExtResource("2_nqoy3")
+position = Vector2(0.42, -0.0164)
+left_control_point = Vector2(0.42, -0.0164)
+right_control_point = Vector2(0.42, -0.0164)
+
+[sub_resource type="Resource" id="Resource_pwl80"]
+script = ExtResource("2_nqoy3")
+position = Vector2(0.56, 0.0463)
+left_control_point = Vector2(0.56, 0.0463)
+right_control_point = Vector2(0.56, 0.0463)
+
+[sub_resource type="Resource" id="Resource_a0168"]
+script = ExtResource("2_nqoy3")
+position = Vector2(0.58, -0.044)
+left_control_point = Vector2(0.58, -0.044)
+right_control_point = Vector2(0.58, -0.044)
+
+[sub_resource type="Resource" id="Resource_id2u8"]
+script = ExtResource("2_nqoy3")
+position = Vector2(0.72, 0.1312)
+left_control_point = Vector2(0.72, 0.1312)
+right_control_point = Vector2(0.72, 0.1312)
+
+[sub_resource type="Resource" id="Resource_yerde"]
+script = ExtResource("2_nqoy3")
+position = Vector2(0.86, -0.3706)
+left_control_point = Vector2(0.86, -0.3706)
+right_control_point = Vector2(0.86, -0.3706)
+
+[sub_resource type="Resource" id="Resource_k4lk0"]
 script = ExtResource("2_nqoy3")
 position = Vector2(1, 1)
-left_control_point = Vector2(0.39, 0)
+left_control_point = Vector2(1, 1)
 right_control_point = Vector2(1, 1)
 
-[sub_resource type="Resource" id="Resource_4o500"]
+[sub_resource type="Resource" id="Resource_1trul"]
 script = ExtResource("3_60j5k")
-points = Array[ExtResource("2_nqoy3")]([SubResource("Resource_nqoy3"), SubResource("Resource_60j5k")])
+points = Array[ExtResource("2_nqoy3")]([SubResource("Resource_4o500"), SubResource("Resource_vwehw"), SubResource("Resource_q2aj0"), SubResource("Resource_d7jmg"), SubResource("Resource_fc0vi"), SubResource("Resource_td2e8"), SubResource("Resource_7fh63"), SubResource("Resource_mvwga"), SubResource("Resource_70ex7"), SubResource("Resource_pwl80"), SubResource("Resource_a0168"), SubResource("Resource_id2u8"), SubResource("Resource_yerde"), SubResource("Resource_k4lk0")])
 metadata/_custom_type_script = "uid://c10cjby72qngf"
 
 [sub_resource type="Animation" id="Animation_ehkex"]
@@ -38,8 +109,8 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_37kl0")
-tween_trans = 1
-bacon_curve = SubResource("Resource_4o500")
+tween_trans = 6
+bacon_curve = SubResource("Resource_1trul")
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="." unique_id=1681444400]
 libraries/ = SubResource("AnimationLibrary_xersf")

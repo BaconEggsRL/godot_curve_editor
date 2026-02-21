@@ -48,9 +48,21 @@ signal range_changed
 enum EASE { IN, OUT, IN_OUT, OUT_IN }
 enum TRANS {
 	CONSTANT,
+
 	LINEAR,
 	QUAD,
 	CUBIC,
+	QUART,
+	QUINT,
+	EXPO,
+
+	CIRC,
+	BACK,
+
+	ELASTIC,
+	BOUNCE,
+	SPRING,
+
 	SINE
 }
 
@@ -91,8 +103,8 @@ func _update_preset() -> void:
 	match trans_type:
 
 		TRANS.CONSTANT:
-			add_point(Point.new(Vector2(0, 0.5)))
-			add_point(Point.new(Vector2(1, 0.5)))
+			add_point(Point.new(Vector2(0, .5)))
+			add_point(Point.new(Vector2(1, .5)))
 
 		TRANS.LINEAR:
 			add_point(Point.new(Vector2(0, 0)))
@@ -101,13 +113,13 @@ func _update_preset() -> void:
 		TRANS.QUAD:
 			match ease_type:
 				EASE.IN:
-					cubic_bezier(0.11, 0, 0.5, 0)
+					cubic_bezier(.11, 0, .5, 0)
 				EASE.OUT:
-					cubic_bezier(0.5, 1, 0.89, 1)
+					cubic_bezier(.5, 1, .89, 1)
 				EASE.IN_OUT:
-					cubic_bezier(0.45, 0, 0.55, 1)
+					cubic_bezier(.45, 0, .55, 1)
 				EASE.OUT_IN:
-					cubic_bezier(0.55, 1, 0.45, 0)
+					cubic_bezier(.55, 1, .45, 0)
 
 		TRANS.CUBIC:
 			match ease_type:
@@ -119,6 +131,94 @@ func _update_preset() -> void:
 					cubic_bezier(.65, 0, .35, 1)
 				EASE.OUT_IN:
 					cubic_bezier(.35, 1, .65, 0)
+
+		TRANS.QUART:
+			match ease_type:
+				EASE.IN:
+					cubic_bezier(.5, 0, .75, 0)
+				EASE.OUT:
+					cubic_bezier(.25, 1, .5, 1)
+				EASE.IN_OUT:
+					cubic_bezier(.76, 0, .24, 1)
+				EASE.OUT_IN:
+					cubic_bezier(.24, 1, .76, 0)
+
+		TRANS.QUINT:
+			match ease_type:
+				EASE.IN:
+					cubic_bezier(.64, 0, .78, 0)
+				EASE.OUT:
+					cubic_bezier(.22, 1, .36, 1)
+				EASE.IN_OUT:
+					cubic_bezier(.83, 0, .17, 1)
+				EASE.OUT_IN:
+					cubic_bezier(.17, 1, .83, 0)
+
+		TRANS.EXPO:
+			match ease_type:
+				EASE.IN:
+					cubic_bezier(.7, 0, .84, 0)
+				EASE.OUT:
+					cubic_bezier(.16, 1, .3, 1)
+				EASE.IN_OUT:
+					cubic_bezier(.87, 0, .13, 1)
+				EASE.OUT_IN:
+					cubic_bezier(.13, 1, .87, 0)
+
+		TRANS.CIRC:
+			match ease_type:
+				EASE.IN:
+					cubic_bezier(.55, 0, 1, .45)
+				EASE.OUT:
+					cubic_bezier(0, .55, .45, 1)
+				EASE.IN_OUT:
+					cubic_bezier(.85, 0, .15, 1)
+				EASE.OUT_IN:
+					cubic_bezier(.15, 1, .85, 0)
+
+		TRANS.BACK:
+			match ease_type:
+				EASE.IN:
+					cubic_bezier(.36, 0, .66, -0.56)
+				EASE.OUT:
+					cubic_bezier(.34, 1.56, .64, 1)
+				EASE.IN_OUT:
+					cubic_bezier(.68, -0.6, .32, 1.6)
+				EASE.OUT_IN:
+					cubic_bezier(.32, 1.6, .68, -0.6)
+
+		TRANS.ELASTIC:
+			add_point(Point.new(Vector2(0, 0)))
+
+			add_point(Point.new(Vector2(.04, -0.0004)))
+
+			add_point(Point.new(Vector2(.08, -0.0016)))
+
+			add_point(Point.new(Vector2(.14, -0.0017)))
+
+			add_point(Point.new(Vector2(.18, 0.0004)))
+
+			add_point(Point.new(Vector2(.26, 0.0058)))
+
+			add_point(Point.new(Vector2(.28, 0.0055)))
+
+			add_point(Point.new(Vector2(.40, -0.0156)))
+
+			add_point(Point.new(Vector2(.42, -0.0164)))
+
+			add_point(Point.new(Vector2(.56, 0.0463)))
+
+			add_point(Point.new(Vector2(.58, -0.044)))
+			add_point(Point.new(Vector2(.72, .1312)))
+			add_point(Point.new(Vector2(.86, -0.3706)))
+			add_point(Point.new(Vector2(1, 1)))
+
+		TRANS.BOUNCE:
+			pass
+
+		TRANS.SPRING:
+			pass
+
 
 		TRANS.SINE:
 			match ease_type:
