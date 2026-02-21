@@ -106,6 +106,11 @@ func _draw() -> void:
 
 
 func start_tween(tween_ref: Tween, end: Marker2D, node: Node2D, use_curve: bool) -> void:
+
+	# 🚫 If this is the curve tween but we have no curve → do nothing
+	if use_curve and bacon_curve == null:
+		return
+
 	var target := end.position
 	var duration := 2.0
 
@@ -113,19 +118,21 @@ func start_tween(tween_ref: Tween, end: Marker2D, node: Node2D, use_curve: bool)
 	if tween_ref:
 		tween_ref.kill()
 
-	# Create new tween and store it in the member variable
+	# Create new tween
 	var new_tween = create_tween()
-	if tween_ref == curve_tween:
+
+	if use_curve:
 		curve_tween = new_tween
-	elif tween_ref == tween_tween:
+	else:
 		tween_tween = new_tween
 
 	var position_tweener = new_tween.tween_property(node, "position", target, duration)
 
-	if bacon_curve and use_curve:
+	if use_curve:
 		position_tweener.set_custom_interpolator(tween_bacon_curve.bind(bacon_curve))
 	else:
-		position_tweener.set_ease(tween_ease as int).set_trans(tween_trans as int)
+		position_tweener.set_ease(tween_ease)
+		position_tweener.set_trans(tween_trans)
 
 
 
