@@ -8,6 +8,8 @@ var _zoom_x: float = 1.0  # horizontal zoom
 var _zoom_y: float = 1.0  # vertical zoom
 const ZOOM_MIN := 0.1      # can't zoom out past auto range
 const ZOOM_MAX := 10.0     # how far you can zoom in
+# var _user_zoomed := false
+# var _user_panned := false
 
 var pan_offset := Vector2.ZERO
 var is_panning := false
@@ -113,6 +115,19 @@ func update_view_transform() -> void:
 	# Apply Y zoom (zoom in reduces visible height)
 	var zoomed_height = auto_height / _zoom_y
 	var center_y = (auto_min_y + auto_max_y) * 0.5
+	#var zoomed_height: float
+	#var center_y: float
+	#if _user_zoomed:
+		## Keep current zoom/pan
+		#center_y = (auto_min_y + auto_max_y) * 0.5  # Or store previous center
+		#zoomed_height = (auto_max_y - auto_min_y) / _zoom_y
+	#else:
+		## Auto-fit range
+		#center_y = (auto_min_y + auto_max_y) * 0.5
+		#zoomed_height = auto_height / _zoom_y
+
+
+
 	var min_y = center_y - zoomed_height * 0.5
 	var max_y = center_y + zoomed_height * 0.5
 
@@ -121,6 +136,8 @@ func update_view_transform() -> void:
 	var center_x = (MIN_X + MAX_X) * 0.5
 	var min_x = center_x - zoomed_width * 0.5
 	var max_x = center_x + zoomed_width * 0.5
+
+
 
 	# Get world rect
 	var world_rect = Rect2(Vector2(min_x, min_y), Vector2(max_x - min_x, max_y - min_y))
@@ -212,32 +229,7 @@ func _draw():
 	else:
 		draw_rect(Rect2(Vector2.ZERO, size), Color(0.1, 0.1, 0.1, 0.8))
 
-	## --- Draw Grid ---
-	#draw_set_transform_matrix(_world_to_view)
-	#var min_edge: Vector2 = get_world_pos(Vector2(0, size.y))
-	#var max_edge: Vector2 = get_world_pos(Vector2(size.x, 0))
-#
-	#var grid_color_primary: Color = Color(0.3, 0.3, 0.3, 0.8)
-	#var grid_color: Color = Color(0.2, 0.2, 0.2, 0.3)
-#
-	#var grid_steps: Vector2 = Vector2i(4, 2)
-	#var step_size: Vector2 = Vector2(1, (_curve.max_value - _curve.min_value)) / grid_steps
-#
-	## Primary borders
-	#draw_line(Vector2(min_edge.x, _curve.min_value), Vector2(max_edge.x, _curve.min_value), grid_color_primary)
-	#draw_line(Vector2(max_edge.x, _curve.max_value), Vector2(min_edge.x, _curve.max_value), grid_color_primary)
-	#draw_line(Vector2(0, min_edge.y), Vector2(0, max_edge.y), grid_color_primary)
-	#draw_line(Vector2(1, max_edge.y), Vector2(1, min_edge.y), grid_color_primary)
 
-	## Internal grid
-	#for i in range(1, grid_steps.x):
-		#var x = i * step_size.x
-		#draw_line(Vector2(x, min_edge.y), Vector2(x, max_edge.y), grid_color)
-	#for i in range(1, grid_steps.y):
-		#var y = _curve.min_value + i * step_size.y
-		#draw_line(Vector2(min_edge.x, y), Vector2(max_edge.x, y), grid_color)
-#
-	#draw_set_transform_matrix(Transform2D()) # Reset transform
 
 	# --- Draw Grid ---
 	var grid_color_primary: Color = Color(0.3, 0.3, 0.3, 0.8)
@@ -388,6 +380,7 @@ func _gui_input(event: InputEvent) -> void:
 		var delta = event.position - last_mouse_pos
 		pan_offset += delta
 		last_mouse_pos = event.position
+		# _user_panned = true
 		queue_redraw()
 		get_viewport().set_input_as_handled()
 
@@ -491,12 +484,14 @@ func _gui_input(event: InputEvent) -> void:
 			# var num_steps = 5
 			_zoom_x = clamp(_zoom_x * 1.2, ZOOM_MIN, ZOOM_MAX)
 			_zoom_y = clamp(_zoom_y * 1.2, ZOOM_MIN, ZOOM_MAX)
+			# _user_zoomed = true
 			queue_redraw()
 			accept_event()
 			return
 		elif event.pressed and event.button_index == MOUSE_BUTTON_WHEEL_DOWN:
 			_zoom_x = clamp(_zoom_x / 1.2, ZOOM_MIN, ZOOM_MAX)
 			_zoom_y = clamp(_zoom_y / 1.2, ZOOM_MIN, ZOOM_MAX)
+			# _user_zoomed = true
 			queue_redraw()
 			accept_event()
 			return

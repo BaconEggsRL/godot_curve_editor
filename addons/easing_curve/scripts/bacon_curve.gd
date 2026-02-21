@@ -250,6 +250,7 @@ func sort_points() -> void:
 	force_update()
 
 
+
 func swap_properties(p0:Point, p1:Point) -> void:
 	var temp_position_x = p0.position.x
 	p0.position.x = p1.position.x
@@ -291,6 +292,7 @@ func add_point(p:Point) -> void:
 	points.append(p)
 	p.changed.connect(_on_point_changed)
 	sort_points()
+
 
 
 func remove_point(p:Point) -> void:
