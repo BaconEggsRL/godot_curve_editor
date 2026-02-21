@@ -5,6 +5,17 @@ extends Resource
 
 
 
+var _last_zoom := Vector2(1,1)
+var _last_pan := Vector2.ZERO
+
+func _on_curve_editor_zoom_changed(zoom:Vector2) -> void:
+	_last_zoom = zoom
+
+func _on_curve_editor_pan_changed(pan: Vector2) -> void:
+	_last_pan = pan
+
+
+
 var _last_t := 0.0
 
 

@@ -3,6 +3,8 @@ class_name BaconCurveEditor
 extends Control
 
 signal point_changed
+signal zoom_changed
+signal pan_changed
 
 var _zoom_x: float = 1.0  # horizontal zoom
 var _zoom_y: float = 1.0  # vertical zoom
@@ -62,6 +64,15 @@ var snap_count: int = 10
 var _world_to_view: Transform2D
 
 var _editor_scale: float = 1.0
+
+
+
+func set_pan(pan:Vector2) -> void:
+	pan_offset = pan
+
+func set_zoom(zoom:Vector2) -> void:
+	_zoom_x = zoom.x
+	_zoom_y = zoom.y
 
 
 func _ready() -> void:
@@ -383,6 +394,7 @@ func _gui_input(event: InputEvent) -> void:
 		# _user_panned = true
 		queue_redraw()
 		get_viewport().set_input_as_handled()
+		pan_changed.emit(pan_offset)
 
 	# =========================
 	# MOUSE MOTION (drag points/controls)
@@ -487,6 +499,7 @@ func _gui_input(event: InputEvent) -> void:
 			# _user_zoomed = true
 			queue_redraw()
 			accept_event()
+			zoom_changed.emit(Vector2(_zoom_y, _zoom_y))
 			return
 		elif event.pressed and event.button_index == MOUSE_BUTTON_WHEEL_DOWN:
 			_zoom_x = clamp(_zoom_x / 1.2, ZOOM_MIN, ZOOM_MAX)
@@ -494,6 +507,7 @@ func _gui_input(event: InputEvent) -> void:
 			# _user_zoomed = true
 			queue_redraw()
 			accept_event()
+			zoom_changed.emit(Vector2(_zoom_y, _zoom_y))
 			return
 
 		# --- LEFT CLICK ---

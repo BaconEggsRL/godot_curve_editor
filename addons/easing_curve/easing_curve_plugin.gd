@@ -38,6 +38,8 @@ var curve:BaconCurve
 
 const STEP = 0.001
 
+
+
 # var points:Array[Dictionary] = []
 
 
@@ -609,6 +611,15 @@ func handle_bacon_curve_editor(object) -> void:
 		# Add curve editor
 		bacon_curve_editor = BaconCurveEditor.new()
 		bacon_curve_editor.set_curve(object)
+
+		# Restore last UI state
+		if object._last_zoom:
+			bacon_curve_editor.set_zoom(object._last_zoom)
+		if object._last_pan:
+			bacon_curve_editor.set_pan(object._last_pan)
+
+		bacon_curve_editor.zoom_changed.connect(object._on_curve_editor_zoom_changed)
+		bacon_curve_editor.pan_changed.connect(object._on_curve_editor_pan_changed)
 		bacon_curve_editor.point_changed.connect(_on_curve_editor_point_changed)
 
 		curve = object
