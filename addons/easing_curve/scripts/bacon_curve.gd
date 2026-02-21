@@ -18,6 +18,9 @@ var _points_section_expanded: bool = true
 # @export_group("Points")
 @export var points: Array[Point] = []
 
+@export_group("Points ")
+@export var test_arr:Array = [1,2,3]
+
 @export_group("")
 #func get_point_count() -> int:
 	#return points.size()

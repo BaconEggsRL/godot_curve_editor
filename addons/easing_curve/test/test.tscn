@@ -21,7 +21,6 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_37kl0")
-tween_type = 8
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="." unique_id=1681444400]
 libraries/ = SubResource("AnimationLibrary_xersf")

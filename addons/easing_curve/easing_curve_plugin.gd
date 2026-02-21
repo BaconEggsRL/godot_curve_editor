@@ -4,6 +4,14 @@ extends EditorInspectorPlugin
 const X_STYLEBOX = preload("uid://dsapcj11t0kpu")
 const BTN_NORMAL = preload("uid://c6hb75fm8lwht")
 
+const GUI_TREE_ARROW_RIGHT = preload("uid://dnkfk70we8l0")
+const GUI_TREE_ARROW_DOWN = preload("uid://chvtawloukkig")
+
+const OPEN_SANS_BOLD = preload("uid://byt4ohyep02mx")
+const INTER_24_PT_BOLD = preload("uid://cxflgjp5gmsnn")
+
+
+
 
 const RELOAD = preload("uid://ckq8rdh87fm8m")
 const REMOVE = preload("uid://rcefrsneyc5r")
@@ -408,27 +416,56 @@ func _create_inspector_section(title:String, content:Control, curve:BaconCurve) 
 	header.text = title
 	header.toggle_mode = true
 	header.button_pressed = curve._points_section_expanded
-	header.flat = true
 	header.alignment = HORIZONTAL_ALIGNMENT_LEFT
+	header.icon_alignment = HORIZONTAL_ALIGNMENT_LEFT
 	header.focus_mode = Control.FOCUS_NONE
 	header.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	header.flat = true
 
-	var icons = EditorInterface.get_editor_theme()
-	var icon_open = icons.get_icon("GuiTreeArrowDown", "EditorIcons")
-	var icon_closed = icons.get_icon("GuiTreeArrowRight", "EditorIcons")
+	# ────────────────
+	# Bold Font
+	# ────────────────
+	var bold_font_res := INTER_24_PT_BOLD
+	if bold_font_res:
+		header.add_theme_font_override("font", bold_font_res)
 
+	# ────────────────
+	# Icons
+	# ────────────────
+	var icon_open = GUI_TREE_ARROW_DOWN
+	var icon_closed = GUI_TREE_ARROW_RIGHT
 	header.icon = icon_open if header.button_pressed else icon_closed
 
-	root.add_child(header)
+	# ────────────────
+	# Reduce left padding so icon can sit flush
+	# ────────────────
+	# Theme stylebox override
+	for state in ["normal", "hover", "pressed", "disabled", "focus"]:
+		var sb = header.get_theme_stylebox(state)
+		if sb:
+			sb.content_margin_left = 0
+			sb.content_margin_top = 0
+			sb.content_margin_bottom = 0
+			header.add_theme_stylebox_override(state, sb)
 
+	# Reduce extra spacing between icon and text
+	header.add_theme_constant_override("icon_margin_right", 4) # tweak as needed
+
+	# ────────────────
+	# Add children
+	# ────────────────
+	root.add_child(header)
 	content.visible = header.button_pressed
 	root.add_child(content)
 
+	# ────────────────
+	# Connect toggle
+	# ────────────────
 	header.toggled.connect(func(pressed:bool):
 		content.visible = pressed
 		header.icon = icon_open if pressed else icon_closed
 
-		# 🔥 Persist to resource
+		# Persist fold state
 		curve._points_section_expanded = pressed
 		curve.notify_property_list_changed()
 		curve.emit_changed()
