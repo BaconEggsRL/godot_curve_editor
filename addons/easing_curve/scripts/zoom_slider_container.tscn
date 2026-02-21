@@ -44,6 +44,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+mouse_filter = 2
 script = ExtResource("1_58cbu")
 
 [node name="HBoxContainer" type="HBoxContainer" parent="." unique_id=1043790673]
@@ -53,11 +54,13 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+mouse_filter = 2
 alignment = 2
 
 [node name="zoom_icon" type="TextureRect" parent="HBoxContainer" unique_id=555512905]
 texture_filter = 1
 layout_mode = 2
+mouse_filter = 2
 texture = ExtResource("2_ttjl0")
 stretch_mode = 5
 
@@ -72,11 +75,13 @@ theme_override_styles/slider = SubResource("StyleBoxFlat_x2nmy")
 theme_override_styles/grabber_area = SubResource("StyleBoxFlat_vwsjo")
 theme_override_styles/grabber_area_highlight = SubResource("StyleBoxFlat_vwsjo")
 max_value = 1.0
-step = 0.01
+step = 0.1
 value = 0.5
 
 [node name="autofit_btn" type="Button" parent="HBoxContainer" unique_id=276472231]
 texture_filter = 1
 layout_mode = 2
+theme_override_colors/icon_normal_color = Color(0.77254903, 0.77254903, 0.77254903, 1)
+theme_override_colors/icon_pressed_color = Color(0.34117648, 0.627451, 1, 1)
 icon = ExtResource("5_wx5pa")
 flat = true
