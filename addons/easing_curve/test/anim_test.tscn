@@ -31,10 +31,27 @@ tracks/0/keys = {
 "times": PackedFloat32Array(0, 0.56666666, 0.6, 1)
 }
 
+[sub_resource type="Animation" id="Animation_80te6"]
+resource_name = "new_animation_2"
+step = 0.0333333
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2D:rotation")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(),
+"transitions": PackedFloat32Array(),
+"update": 1,
+"values": []
+}
+
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_82u7t"]
 _data = {
 &"RESET": SubResource("Animation_ttyv3"),
-&"new_animation": SubResource("Animation_4pmk4")
+&"new_animation": SubResource("Animation_4pmk4"),
+&"new_animation_2": SubResource("Animation_80te6")
 }
 
 [node name="Control" type="Control" unique_id=708088561]

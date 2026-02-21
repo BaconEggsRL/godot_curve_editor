@@ -1,0 +1,73 @@
+[gd_scene format=3 uid="uid://r1ymwr6nae"]
+
+[ext_resource type="Texture2D" uid="uid://f3f3d5qs4sqb" path="res://addons/easing_curve/icons/AnimationAutoFitBezier.svg" id="1_cgyel"]
+[ext_resource type="Texture2D" uid="uid://ctl70j7a1e3h2" path="res://addons/easing_curve/icons/Zoom.svg" id="1_ok00s"]
+[ext_resource type="Texture2D" uid="uid://cbuotaayujkpj" path="res://addons/easing_curve/icons/GuiSliderGrabber.svg" id="2_4aii0"]
+[ext_resource type="Texture2D" uid="uid://bcs0avj35u0f1" path="res://addons/easing_curve/icons/GuiSliderGrabberHl.svg" id="3_vwsjo"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_x2nmy"]
+content_margin_left = 4.0
+content_margin_top = 4.0
+content_margin_right = 4.0
+content_margin_bottom = 4.0
+bg_color = Color(0.1, 0.1, 0.1, 0.6)
+border_width_top = 2
+border_width_bottom = 2
+border_color = Color(0.8, 0.8, 0.8, 0)
+corner_radius_top_left = 2
+corner_radius_top_right = 2
+corner_radius_bottom_right = 2
+corner_radius_bottom_left = 2
+corner_detail = 12
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_vwsjo"]
+content_margin_left = 4.0
+content_margin_top = 4.0
+content_margin_right = 4.0
+content_margin_bottom = 4.0
+bg_color = Color(1, 1, 1, 0.4)
+border_width_top = 2
+border_width_bottom = 2
+border_color = Color(0.8, 0.8, 0.8, 0)
+corner_radius_top_left = 2
+corner_radius_top_right = 2
+corner_radius_bottom_right = 2
+corner_radius_bottom_left = 2
+corner_detail = 12
+
+[node name="zoom_slider" type="Control" unique_id=1822114991]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="HBoxContainer" type="HBoxContainer" parent="." unique_id=1043790673]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="Button" type="Button" parent="HBoxContainer" unique_id=1979483419]
+texture_filter = 1
+layout_mode = 2
+icon = ExtResource("1_ok00s")
+
+[node name="HSlider" type="HSlider" parent="HBoxContainer" unique_id=1514295285]
+texture_filter = 1
+custom_minimum_size = Vector2(100, 0)
+layout_mode = 2
+size_flags_vertical = 4
+theme_override_icons/grabber = ExtResource("2_4aii0")
+theme_override_icons/grabber_highlight = ExtResource("3_vwsjo")
+theme_override_styles/slider = SubResource("StyleBoxFlat_x2nmy")
+theme_override_styles/grabber_area = SubResource("StyleBoxFlat_vwsjo")
+theme_override_styles/grabber_area_highlight = SubResource("StyleBoxFlat_vwsjo")
+max_value = 1.0
+step = 0.01
+value = 0.5
+
+[node name="auto_fit" type="Button" parent="HBoxContainer" unique_id=276472231]
+texture_filter = 1
+layout_mode = 2
+icon = ExtResource("1_cgyel")

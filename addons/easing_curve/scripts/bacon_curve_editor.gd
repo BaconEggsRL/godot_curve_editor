@@ -4,6 +4,10 @@ extends Control
 
 signal point_changed
 
+var _zoom_y: float = 1.0   # 1.0 = default auto range
+const ZOOM_MIN := 1.0      # can't zoom out past auto range
+const ZOOM_MAX := 20.0     # how far you can zoom in
+
 var _curve: BaconCurve
 
 const ASPECT_RATIO: float = 6. / 13.
@@ -96,8 +100,18 @@ func update_view_transform() -> void:
 	# var min_y: float = _curve.min_value
 	# var max_y: float = _curve.max_value
 	var auto_range = _compute_auto_y_range()
-	var min_y = auto_range.x
-	var max_y = auto_range.y
+	var auto_min_y = auto_range.x
+	var auto_max_y = auto_range.y
+	var auto_height = auto_max_y - auto_min_y
+
+	# Apply zoom (zoom in reduces visible height)
+	var zoomed_height = auto_height / _zoom_y
+	var center_y = (auto_min_y + auto_max_y) * 0.5
+
+	var min_y = center_y - zoomed_height * 0.5
+	var max_y = center_y + zoomed_height * 0.5
+
+
 
 	var world_rect: Rect2 = Rect2(MIN_X, min_y, MAX_X, max_y - min_y)
 	var view_margin: Vector2 = Vector2(margin, margin)
@@ -406,8 +420,20 @@ func _gui_input(event: InputEvent) -> void:
 	# MOUSE BUTTONS
 	# =========================
 	if event is InputEventMouseButton:
+		# --- Mouse Wheel Zoom ---
+		if event.pressed and event.button_index == MOUSE_BUTTON_WHEEL_UP:
+			_zoom_y = clamp(_zoom_y * 1.1, ZOOM_MIN, ZOOM_MAX)
+			queue_redraw()
+			accept_event()
+			return
+		elif event.pressed and event.button_index == MOUSE_BUTTON_WHEEL_DOWN:
+			_zoom_y = clamp(_zoom_y / 1.1, ZOOM_MIN, ZOOM_MAX)
+			queue_redraw()
+			accept_event()
+			return
+
 		# --- LEFT CLICK ---
-		if event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
+		elif event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
 			var control = get_control_at(event.position)
 			var point_idx = get_point_at(event.position)
 

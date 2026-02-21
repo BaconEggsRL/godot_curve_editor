@@ -1,8 +1,25 @@
 [gd_scene format=3 uid="uid://qviblxegxd23"]
 
 [ext_resource type="Script" uid="uid://cjoavnop3pyl2" path="res://addons/easing_curve/test/test.gd" id="1_37kl0"]
+[ext_resource type="Script" uid="uid://cxmmenoobxiyp" path="res://addons/easing_curve/scripts/point.gd" id="2_nqoy3"]
+[ext_resource type="Script" uid="uid://c10cjby72qngf" path="res://addons/easing_curve/scripts/bacon_curve.gd" id="3_60j5k"]
 [ext_resource type="Texture2D" uid="uid://d23t7b73acleh" path="res://icon.svg" id="4_ppyta"]
 [ext_resource type="Texture2D" uid="uid://ckq8rdh87fm8m" path="res://addons/easing_curve/icons/Reload.svg" id="4_ykrsh"]
+
+[sub_resource type="Resource" id="Resource_4o500"]
+script = ExtResource("2_nqoy3")
+right_control_point = Vector2(0.5, 0)
+
+[sub_resource type="Resource" id="Resource_vwehw"]
+script = ExtResource("2_nqoy3")
+position = Vector2(1, 1)
+left_control_point = Vector2(0.75, 0)
+right_control_point = Vector2(1, 1)
+
+[sub_resource type="Resource" id="Resource_q2aj0"]
+script = ExtResource("3_60j5k")
+points = Array[ExtResource("2_nqoy3")]([SubResource("Resource_4o500"), SubResource("Resource_vwehw")])
+metadata/_custom_type_script = "uid://c10cjby72qngf"
 
 [node name="test" type="Control" unique_id=198225181]
 layout_mode = 3
@@ -12,6 +29,7 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_37kl0")
+bacon_curve = SubResource("Resource_q2aj0")
 
 [node name="nodes" type="Node2D" parent="." unique_id=1843378729]
 position = Vector2(0, 367)
@@ -57,7 +75,6 @@ position = Vector2(320, 0)
 position = Vector2(960, 0)
 
 [node name="restart" type="Button" parent="." unique_id=2072471650]
-texture_filter = 1
 layout_mode = 1
 anchors_preset = 1
 anchor_left = 1.0
