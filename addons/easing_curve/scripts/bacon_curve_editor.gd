@@ -340,22 +340,41 @@ func _gui_input(event: InputEvent) -> void:
 				ControlIndex.LEFT:
 					if dragging_point != 0: # ignore left control for first point
 						p.left_control_point = world_pos
+						# Clamp left control X between previous point and main point
+						# var min_x = _curve.points[dragging_point - 1].position.x
+						# var max_x = p.position.x
+						# p.left_control_point = Vector2(clamp(world_pos.x, min_x, max_x), world_pos.y)
 
 				ControlIndex.RIGHT:
 					if dragging_point != _curve.points.size() - 1: # ignore right control for last point
 						p.right_control_point = world_pos
+						# Clamp right control X between main point and next point
+						# var min_x = p.position.x
+						# var max_x = _curve.points[dragging_point + 1].position.x
+						# p.right_control_point = Vector2(clamp(world_pos.x, min_x, max_x), world_pos.y)
 
 				ControlIndex.NONE: # dragging main point
 					var clamped_pos = world_pos.clamp(Vector2(0, _curve.min_value), Vector2(1.0, _curve.max_value))
+					# Clamp main point X between previous and next points
+					# var min_x = 0.0 if dragging_point == 0 else _curve.points[dragging_point - 1].position.x + 0.001
+					# var max_x = 1.0 if dragging_point == _curve.points.size() - 1 else _curve.points[dragging_point + 1].position.x - 0.001
+					# var clamped_pos = Vector2(clamp(world_pos.x, min_x, max_x), clamp(world_pos.y, _curve.min_value, _curve.max_value))
+
 					var delta = clamped_pos - p.position
 					p.position = clamped_pos
 					#p.left_control_point += delta
 					#p.right_control_point += delta
+
 					# Only move controls if they are NOT locked
 					if not p.locked["left_control_point"]:
 						p.left_control_point += delta
+						# Ensure left control X <= main point X
+						# p.left_control_point.x = min(p.left_control_point.x, p.position.x)
 					if not p.locked["right_control_point"]:
 						p.right_control_point += delta
+						# Ensure right control X >= main point X
+						# p.right_control_point.x = max(p.right_control_point.x, p.position.x)
+
 
 			point_changed.emit(dragging_point, p)
 			queue_redraw()

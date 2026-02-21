@@ -26,9 +26,9 @@ tracks/0/path = NodePath("Sprite2D:rotation")
 tracks/0/interp = 1
 tracks/0/loop_wrap = true
 tracks/0/keys = {
-"handle_modes": PackedInt32Array(0, 0, 3, 0),
-"points": PackedFloat32Array(0, -0.25, 0, 0, -0.01641637, 0.5202521, 0, -0.73917174, 0, 1.0749376, 0.22210297, -0.03333336, -0.71555805, 0.03333336, 0.71555805, 1.3550699, -0.03333336, -2.1551926, 0.25, 0),
-"times": PackedFloat32Array(0, 0.5, 0.76666665, 1)
+"handle_modes": PackedInt32Array(0, 2, 2, 1),
+"points": PackedFloat32Array(0, -0.25, 0, 0, -0.01641637, 1.1069113, -0.083333336, -0.11292249, 0.083333336, 0.11292249, 0.059130277, -0.038888894, -0.0220377, 0.06666666, 0.037778907, 1.3550699, 0, 0, 0, 0),
+"times": PackedFloat32Array(0, 0.56666666, 0.6, 1)
 }
 
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_82u7t"]
