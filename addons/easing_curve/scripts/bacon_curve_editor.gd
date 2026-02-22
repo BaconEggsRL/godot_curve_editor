@@ -158,8 +158,9 @@ func _ready() -> void:
 
 
 func _on_curve_changed() -> void:
-	print("curve changed")
+	# print("curve changed")
 	queue_redraw()
+	pass
 
 func set_curve(bacon_curve: BaconCurve):
 	if _curve != bacon_curve:
@@ -564,41 +565,20 @@ func _gui_input(event: InputEvent) -> void:
 
 		# --- Mouse Wheel Zoom ---
 		if event.pressed and event.button_index == MOUSE_BUTTON_WHEEL_UP:
-			#_zoom_x = clamp(_zoom_x * 1.2, ZOOM_MIN, ZOOM_MAX)
-			#_zoom_y = clamp(_zoom_y * 1.2, ZOOM_MIN, ZOOM_MAX)
-			# zoom_changed.emit(Vector2(_zoom_y, _zoom_y))
-
-			#var desired_zoom := clamp(_zoom_x * 1.2, ZOOM_MIN, ZOOM_MAX)
-			#print("desired_zoom = ", desired_zoom)
-			#set_slider_value(zoom_to_slider(desired_zoom))
-
 			_zoom_step = clamp(_zoom_step + 1, 0, ZOOM_STEPS)
 			_apply_zoom_from_step()
-
 			queue_redraw()
 			accept_event()
-
-
 			return
 		elif event.pressed and event.button_index == MOUSE_BUTTON_WHEEL_DOWN:
-			# _zoom_x = clamp(_zoom_x / 1.2, ZOOM_MIN, ZOOM_MAX)
-			# _zoom_y = clamp(_zoom_y / 1.2, ZOOM_MIN, ZOOM_MAX)
-			# zoom_changed.emit(Vector2(_zoom_y, _zoom_y))
-
-			#var desired_zoom := clamp(_zoom_x * 1.2, ZOOM_MIN, ZOOM_MAX)
-			#print("desired_zoom = ", desired_zoom)
-			#set_slider_value(zoom_to_slider(desired_zoom))
-
 			_zoom_step = clamp(_zoom_step - 1, 0, ZOOM_STEPS)
 			_apply_zoom_from_step()
-
 			queue_redraw()
 			accept_event()
-
 			return
 
 		# --- LEFT CLICK ---
-		elif event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
+		if event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
 			var control = get_control_at(event.position)
 			var point_idx = get_point_at(event.position)
 
