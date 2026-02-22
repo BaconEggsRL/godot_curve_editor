@@ -495,9 +495,9 @@ func auto_smooth_handles():
 		tangent *= min(len1, len2)
 
 
-		var handle_length = 1.0 / 3.0
-		if is_peak or is_valley:
-			handle_length *= 0.6
+		var handle_length = 1.0/3.0
+		#if is_peak or is_valley:
+			#handle_length *= 0.6
 
 		p.right_control_point = p.position + tangent * handle_length
 		p.left_control_point  = p.position - tangent * handle_length
@@ -517,6 +517,7 @@ func auto_smooth_handles():
 	# Clamp endpoints
 	points[0].left_control_point = points[0].position
 	points[-1].right_control_point = points[-1].position
+
 
 
 
