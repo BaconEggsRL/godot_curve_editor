@@ -53,16 +53,18 @@ var _points_section_expanded: bool = true
 	#return points.duplicate()
 
 
-@export var min_value: float = 0.0:
-	set(value):
-		min_value = value
-		range_changed.emit()
+#@export var min_value: float = 0.0:
+	#set(value):
+		#min_value = value
+		#range_changed.emit()
+#
+#@export var max_value: float = 1.0:
+	#set(value):
+		#max_value = value
+		#range_changed.emit()
 
-@export var max_value: float = 1.0:
-	set(value):
-		max_value = value
-		range_changed.emit()
-
+const min_value := 0.0
+const max_value := 1.0
 signal range_changed
 
 

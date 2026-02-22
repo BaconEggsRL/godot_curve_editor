@@ -153,11 +153,12 @@ func _ready() -> void:
 
 	if _curve == null:
 		_curve = BaconCurve.new()
-		_curve.range_changed.connect(_on_curve_changed)
+		# _curve.range_changed.connect(_on_curve_changed)
 		_curve.changed.connect(_on_curve_changed)
 
 
 func _on_curve_changed() -> void:
+	print("curve changed")
 	queue_redraw()
 
 func set_curve(bacon_curve: BaconCurve):
