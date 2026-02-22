@@ -1,96 +1,8 @@
 [gd_scene format=3 uid="uid://qviblxegxd23"]
 
 [ext_resource type="Script" uid="uid://cjoavnop3pyl2" path="res://addons/easing_curve/test/test.gd" id="1_37kl0"]
-[ext_resource type="Script" uid="uid://cxmmenoobxiyp" path="res://addons/easing_curve/scripts/point.gd" id="2_nqoy3"]
-[ext_resource type="Script" uid="uid://c10cjby72qngf" path="res://addons/easing_curve/scripts/bacon_curve.gd" id="3_60j5k"]
 [ext_resource type="Texture2D" uid="uid://d23t7b73acleh" path="res://icon.svg" id="4_ppyta"]
 [ext_resource type="Texture2D" uid="uid://ckq8rdh87fm8m" path="res://addons/easing_curve/icons/Reload.svg" id="4_ykrsh"]
-
-[sub_resource type="Resource" id="Resource_nqoy3"]
-script = ExtResource("2_nqoy3")
-
-[sub_resource type="Resource" id="Resource_60j5k"]
-script = ExtResource("2_nqoy3")
-position = Vector2(0.04, -0.0004)
-left_control_point = Vector2(0.013338663, 0.00013317345)
-right_control_point = Vector2(0.066661336, -0.00093317346)
-
-[sub_resource type="Resource" id="Resource_4o500"]
-script = ExtResource("2_nqoy3")
-position = Vector2(0.08, -0.0016)
-left_control_point = Vector2(0.05332735, -0.0011777678)
-right_control_point = Vector2(0.106672645, -0.0020222322)
-
-[sub_resource type="Resource" id="Resource_vwehw"]
-script = ExtResource("2_nqoy3")
-position = Vector2(0.14, -0.0017)
-left_control_point = Vector2(0.113314986, -0.002377747)
-right_control_point = Vector2(0.16668501, -0.0010222528)
-
-[sub_resource type="Resource" id="Resource_q2aj0"]
-script = ExtResource("2_nqoy3")
-position = Vector2(0.18, 0.0004)
-left_control_point = Vector2(0.15334529, -0.0011991935)
-right_control_point = Vector2(0.20665473, 0.0019991936)
-
-[sub_resource type="Resource" id="Resource_d7jmg"]
-script = ExtResource("2_nqoy3")
-position = Vector2(0.26, 0.0058)
-left_control_point = Vector2(0.24668103, 0.005450971)
-right_control_point = Vector2(0.27331895, 0.006149029)
-
-[sub_resource type="Resource" id="Resource_fc0vi"]
-script = ExtResource("2_nqoy3")
-position = Vector2(0.28, 0.0055)
-left_control_point = Vector2(0.26676664, 0.0067546414)
-right_control_point = Vector2(0.29323336, 0.0042453585)
-
-[sub_resource type="Resource" id="Resource_td2e8"]
-script = ExtResource("2_nqoy3")
-position = Vector2(0.4, -0.0156)
-left_control_point = Vector2(0.38676217, -0.0141779)
-right_control_point = Vector2(0.41323784, -0.0170221)
-
-[sub_resource type="Resource" id="Resource_7fh63"]
-script = ExtResource("2_nqoy3")
-position = Vector2(0.42, -0.0164)
-left_control_point = Vector2(0.40724412, -0.018860428)
-right_control_point = Vector2(0.43275586, -0.0139395725)
-
-[sub_resource type="Resource" id="Resource_mvwga"]
-script = ExtResource("2_nqoy3")
-position = Vector2(0.56, 0.0463)
-left_control_point = Vector2(0.5251968, 0.063798845)
-right_control_point = Vector2(0.58, 0.028801154)
-
-[sub_resource type="Resource" id="Resource_70ex7"]
-script = ExtResource("2_nqoy3")
-position = Vector2(0.58, -0.044)
-left_control_point = Vector2(0.56, -0.03798447)
-right_control_point = Vector2(0.6059122, -0.050015528)
-
-[sub_resource type="Resource" id="Resource_pwl80"]
-script = ExtResource("2_nqoy3")
-position = Vector2(0.72, 0.1312)
-left_control_point = Vector2(0.6532442, 0.14480531)
-right_control_point = Vector2(0.78675586, 0.1175947)
-
-[sub_resource type="Resource" id="Resource_a0168"]
-script = ExtResource("2_nqoy3")
-position = Vector2(0.86, -0.3706)
-left_control_point = Vector2(0.7956872, -0.37608904)
-right_control_point = Vector2(0.92431283, -0.36511093)
-
-[sub_resource type="Resource" id="Resource_id2u8"]
-script = ExtResource("2_nqoy3")
-position = Vector2(1, 1)
-left_control_point = Vector2(1, 1)
-right_control_point = Vector2(1, 1)
-
-[sub_resource type="Resource" id="Resource_yerde"]
-script = ExtResource("3_60j5k")
-points = Array[ExtResource("2_nqoy3")]([SubResource("Resource_nqoy3"), SubResource("Resource_60j5k"), SubResource("Resource_4o500"), SubResource("Resource_vwehw"), SubResource("Resource_q2aj0"), SubResource("Resource_d7jmg"), SubResource("Resource_fc0vi"), SubResource("Resource_td2e8"), SubResource("Resource_7fh63"), SubResource("Resource_mvwga"), SubResource("Resource_70ex7"), SubResource("Resource_pwl80"), SubResource("Resource_a0168"), SubResource("Resource_id2u8")])
-metadata/_custom_type_script = "uid://c10cjby72qngf"
 
 [node name="test" type="Control" unique_id=198225181]
 layout_mode = 3
@@ -100,8 +12,6 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_37kl0")
-tween_trans = 6
-bacon_curve = SubResource("Resource_yerde")
 
 [node name="nodes" type="Node2D" parent="." unique_id=1843378729]
 position = Vector2(0, 367)
