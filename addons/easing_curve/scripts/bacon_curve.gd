@@ -236,6 +236,9 @@ func _update_preset() -> void:
 			add_point(Point.new(Vector2(.86, -0.3706)))
 			add_point(Point.new(Vector2(1, 1)))
 
+			auto_smooth_handles()
+
+
 		TRANS.BOUNCE:
 			pass
 
@@ -351,28 +354,6 @@ func notify_changed() -> void:
 	notify_property_list_changed()
 
 
-#func sample(offset: float) -> float:
-	#if points.size() < 2:
-		#return 0.0
-#
-	#offset = clamp(offset, 0.0, 1.0)
-#
-	#var a = points[0]
-	#var b = points[1]
-#
-	## Solve t from X using Newton–Raphson
-	#var t = _solve_for_t(offset, a, b)
-	#_last_t = t  # store for debug
-#
-	## Evaluate Y at that t
-	#return _bezier_interpolate(
-		#a.position.y,
-		#a.right_control_point.y,
-		#b.left_control_point.y,
-		#b.position.y,
-		#t
-	#)
-
 
 # Sample the curve, calculating f(t) given x
 func sample(offset: float) -> float:
@@ -431,12 +412,37 @@ func _solve_for_t(x: float, a: Point, b: Point) -> float:
 		)
 
 		if abs(dx) < 0.000001:
-			break
+			return _binary_search_t(x, a, b)
 
 		t -= (x_est - x) / dx
 		t = clamp(t, 0.0, 1.0)
 
 	return t
+
+
+
+func _binary_search_t(x: float, a: Point, b: Point) -> float:
+	var low := 0.0
+	var high := 1.0
+	var mid := 0.5
+
+	for i in range(12): # 10–15 iterations is plenty
+		mid = (low + high) * 0.5
+
+		var x_est = _bezier_interpolate(
+			a.position.x,
+			a.right_control_point.x,
+			b.left_control_point.x,
+			b.position.x,
+			mid
+		)
+
+		if x_est < x:
+			low = mid
+		else:
+			high = mid
+
+	return mid
 
 
 
@@ -451,3 +457,90 @@ func _bezier_derivative(p0: float, p1: float, p2: float, p3: float, t: float) ->
 func _bezier_interpolate(p0: float, p1: float, p2: float, p3: float, t: float) -> float:
 	var omt = 1.0 - t
 	return omt*omt*omt*p0 + 3*omt*omt*t*p1 + 3*omt*t*t*p2 + t*t*t*p3
+
+
+
+##########################################################
+
+# Catmull-Rom → Bézier conversion
+func auto_smooth_handles():
+	if points.size() < 2:
+		return
+
+	for i in range(points.size()):
+		var p = points[i]
+
+		var p_prev = points[max(i - 1, 0)]
+		var p_next = points[min(i + 1, points.size() - 1)]
+
+		var prev = p_prev.position.y
+		var curr = p.position.y
+		var next = p_next.position.y
+
+		var is_peak = (curr > prev and curr > next)
+		var is_valley = (curr < prev and curr < next)
+
+
+		#var tangent = (p_next.position - p_prev.position) * 0.5
+		var d1 = p.position - p_prev.position
+		var d2 = p_next.position - p.position
+
+		var len1 = d1.length()
+		var len2 = d2.length()
+
+		if len1 == 0 or len2 == 0:
+			continue
+
+		var tangent = (d1.normalized() + d2.normalized())
+		tangent *= min(len1, len2)
+
+
+		var handle_length = 1.0 / 3.0
+		if is_peak or is_valley:
+			handle_length *= 0.6
+
+		p.right_control_point = p.position + tangent * handle_length
+		p.left_control_point  = p.position - tangent * handle_length
+
+		p.right_control_point.x = clamp(
+			p.right_control_point.x,
+			p.position.x,
+			points[min(i + 1, points.size() - 1)].position.x
+		)
+
+		p.left_control_point.x = clamp(
+			p.left_control_point.x,
+			points[max(i - 1, 0)].position.x,
+			p.position.x
+		)
+
+	# Clamp endpoints
+	points[0].left_control_point = points[0].position
+	points[-1].right_control_point = points[-1].position
+
+
+
+func ease_in_elastic(x: float) -> float:
+	var c4 = (2.0 * PI) / 3.0
+
+	if x == 0.0:
+		return 0.0
+	if x == 1.0:
+		return 1.0
+
+	return -pow(2.0, 10.0 * x - 10.0) * sin((x * 10.0 - 10.75) * c4)
+
+
+
+func generate_from_function(func_ref: Callable, resolution := 40):
+	points.clear()
+
+	for i in range(resolution + 1):
+		var x = float(i) / resolution
+		var y = func_ref.call(x)
+		add_point(Point.new(Vector2(x, y)))
+
+
+
+func derivative(func_ref: Callable, x: float, eps := 0.0001) -> float:
+	return (func_ref.call(x + eps) - func_ref.call(x - eps)) / (2.0 * eps)
