@@ -14,8 +14,11 @@ signal pan_changed
 
 var _zoom_x: float = 1.0  # horizontal zoom
 var _zoom_y: float = 1.0  # vertical zoom
-const ZOOM_MIN := 0.1      # can't zoom out past auto range
-const ZOOM_MAX := 10.0     # how far you can zoom in
+const ZOOM_MIN := 0.1
+const ZOOM_MAX := 10.0
+const ZOOM_FACTOR := 1.2   # same as wheel multiplier
+const ZOOM_STEPS := int(round(log(ZOOM_MAX / ZOOM_MIN) / log(ZOOM_FACTOR)))
+const DEFAULT_SLIDER_VALUE := floor(ZOOM_STEPS / 2.0)
 # var _user_zoomed := false
 # var _user_panned := false
 
@@ -24,6 +27,7 @@ var is_panning := false
 var last_mouse_pos := Vector2.ZERO
 
 var slider_value := 0.0: set = set_slider_value
+var _zoom_step := 0
 
 
 var _curve: BaconCurve
@@ -76,18 +80,26 @@ var _editor_scale: float = 1.0
 
 
 
-func zoom_to_slider(zoom_val: float) -> float:
-	var log_min = log(0.1)
-	var log_max = log(10.0)
-	var log_val = log(zoom_val)
-	return (log_val - log_min) / (log_max - log_min)
+#func zoom_to_slider(zoom_val: float) -> float:
+	#var log_min = log(0.1)
+	#var log_max = log(10.0)
+	#var log_val = log(zoom_val)
+	#return (log_val - log_min) / (log_max - log_min)
+#
+#
+#func slider_to_zoom(slider_val: float) -> float:
+	#var log_min = log(0.1)
+	#var log_max = log(10.0)
+	#var log_val = lerp(log_min, log_max, slider_val)
+	#return exp(log_val)
 
 
-func slider_to_zoom(slider_val: float) -> float:
-	var log_min = log(0.1)
-	var log_max = log(10.0)
-	var log_val = lerp(log_min, log_max, slider_val)
-	return exp(log_val)
+func step_to_zoom(step: int) -> float:
+	return ZOOM_MIN * pow(ZOOM_FACTOR, step)
+
+
+func zoom_to_step(zoom: float) -> int:
+	return int(round(log(zoom / ZOOM_MIN) / log(ZOOM_FACTOR)))
 
 
 
@@ -95,29 +107,58 @@ func slider_to_zoom(slider_val: float) -> float:
 func set_slider_container(value:ZoomSliderContainer) -> void:
 	_slider = value
 	print("_slider = ", _slider)
+
+	_slider.slider.min_value = 0
+	_slider.slider.max_value = ZOOM_STEPS
+	_slider.slider.step = 1
+
 	_slider.slider_changed.connect(_on_slider_changed)
+	_slider.autofit_pressed.connect(_on_autofit_pressed)
 	# set_slider_value(_curve._last_slider_value)
+
+
+func _on_autofit_pressed() -> void:
+	set_slider_value(DEFAULT_SLIDER_VALUE)
+	pan_offset = Vector2.ZERO
+	pan_changed.emit(pan_offset)
+	queue_redraw()
+
 
 func _on_slider_changed(value:float) -> void:
 	print("slider changed to: ", value)
-	_curve._last_slider_value = value
-	_update_zoom_from_slider(value)
+	# _curve._last_slider_value = value
+	# _update_zoom_from_slider(value)
+	_zoom_step = int(value)
+	_apply_zoom_from_step()
+
+
+func _apply_zoom_from_step():
+	var zoom := step_to_zoom(_zoom_step)
+	_zoom_x = zoom
+	_zoom_y = zoom
+	_curve._last_slider_value = _zoom_step
+	_slider.slider.value = _zoom_step
+	queue_redraw()
+	zoom_changed.emit(Vector2(zoom, zoom))
+
 
 func set_slider_value(value:float) -> void:
 	print("set slider value: ", value)
 	print("checking if slider exists... ", _slider)
 	print("checking if slider exists... ", _slider.slider)
 	# Update slider value from resource memory
-	_slider.slider.value = value
+	# _slider.slider.value = value
 	## TODO: Update zoom based on slider value.
-	_update_zoom_from_slider(value)
+	# _update_zoom_from_slider(value)
+	_on_slider_changed(value)
 
-func _update_zoom_from_slider(value:float) -> void:
-	var zoom := slider_to_zoom(value)
-	_zoom_x = zoom
-	_zoom_y = zoom
-	queue_redraw()
-	zoom_changed.emit(Vector2(_zoom_y, _zoom_y))
+
+#func _update_zoom_from_slider(value:float) -> void:
+	#var zoom := slider_to_zoom(value)
+	#_zoom_x = zoom
+	#_zoom_y = zoom
+	#queue_redraw()
+	#zoom_changed.emit(Vector2(_zoom_y, _zoom_y))
 
 
 
@@ -559,22 +600,37 @@ func _gui_input(event: InputEvent) -> void:
 
 		# --- Mouse Wheel Zoom ---
 		if event.pressed and event.button_index == MOUSE_BUTTON_WHEEL_UP:
-			# var step = 0.1
-			# var num_steps = 5
-			_zoom_x = clamp(_zoom_x * 1.2, ZOOM_MIN, ZOOM_MAX)
-			_zoom_y = clamp(_zoom_y * 1.2, ZOOM_MIN, ZOOM_MAX)
-			# _user_zoomed = true
+			#_zoom_x = clamp(_zoom_x * 1.2, ZOOM_MIN, ZOOM_MAX)
+			#_zoom_y = clamp(_zoom_y * 1.2, ZOOM_MIN, ZOOM_MAX)
+			# zoom_changed.emit(Vector2(_zoom_y, _zoom_y))
+
+			#var desired_zoom := clamp(_zoom_x * 1.2, ZOOM_MIN, ZOOM_MAX)
+			#print("desired_zoom = ", desired_zoom)
+			#set_slider_value(zoom_to_slider(desired_zoom))
+
+			_zoom_step = clamp(_zoom_step + 1, 0, ZOOM_STEPS)
+			_apply_zoom_from_step()
+
 			queue_redraw()
 			accept_event()
-			zoom_changed.emit(Vector2(_zoom_y, _zoom_y))
+
+
 			return
 		elif event.pressed and event.button_index == MOUSE_BUTTON_WHEEL_DOWN:
-			_zoom_x = clamp(_zoom_x / 1.2, ZOOM_MIN, ZOOM_MAX)
-			_zoom_y = clamp(_zoom_y / 1.2, ZOOM_MIN, ZOOM_MAX)
-			# _user_zoomed = true
+			# _zoom_x = clamp(_zoom_x / 1.2, ZOOM_MIN, ZOOM_MAX)
+			# _zoom_y = clamp(_zoom_y / 1.2, ZOOM_MIN, ZOOM_MAX)
+			# zoom_changed.emit(Vector2(_zoom_y, _zoom_y))
+
+			#var desired_zoom := clamp(_zoom_x * 1.2, ZOOM_MIN, ZOOM_MAX)
+			#print("desired_zoom = ", desired_zoom)
+			#set_slider_value(zoom_to_slider(desired_zoom))
+
+			_zoom_step = clamp(_zoom_step - 1, 0, ZOOM_STEPS)
+			_apply_zoom_from_step()
+
 			queue_redraw()
 			accept_event()
-			zoom_changed.emit(Vector2(_zoom_y, _zoom_y))
+
 			return
 
 		# --- LEFT CLICK ---

@@ -3,11 +3,17 @@ class_name ZoomSliderContainer
 extends Control
 
 signal slider_changed
+signal autofit_pressed
+
+const ZOOM_MIN := 0.1
+const ZOOM_MAX := 10.0
+const ZOOM_FACTOR := 1.2   # same as wheel multiplier
+const ZOOM_STEPS := int(round(log(ZOOM_MAX / ZOOM_MIN) / log(ZOOM_FACTOR)))
+
+const DEFAULT_SLIDER_VALUE := floor(ZOOM_STEPS / 2.0)
 
 @export var slider:HSlider
 @export var autofit_btn:Button
-
-const DEFAULT_SLIDER_VALUE = 0.5
 
 
 func _ready():
@@ -26,7 +32,9 @@ func _on_slider_value_changed(value:float) -> void:
 
 func _on_autofit_btn_pressed() -> void:
 	# print("fit")
-	slider.value = DEFAULT_SLIDER_VALUE
+	# slider.value = DEFAULT_SLIDER_VALUE
+	autofit_pressed.emit()
+	pass
 
 
 func _on_slider_gui_input(event: InputEvent) -> void:

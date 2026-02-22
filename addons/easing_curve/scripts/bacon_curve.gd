@@ -3,8 +3,14 @@
 class_name BaconCurve
 extends Resource
 
+const ZOOM_MIN := 0.1
+const ZOOM_MAX := 10.0
+const ZOOM_FACTOR := 1.2   # same as wheel multiplier
+const ZOOM_STEPS := int(round(log(ZOOM_MAX / ZOOM_MIN) / log(ZOOM_FACTOR)))
 
-var _last_slider_value:float = ZoomSliderContainer.DEFAULT_SLIDER_VALUE
+const DEFAULT_SLIDER_VALUE := floor(ZOOM_STEPS / 2.0)
+
+var _last_slider_value:float = DEFAULT_SLIDER_VALUE
 var _last_zoom := Vector2(1,1)
 var _last_pan := Vector2.ZERO
 
