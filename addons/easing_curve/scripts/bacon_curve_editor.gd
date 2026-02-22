@@ -80,20 +80,6 @@ var _editor_scale: float = 1.0
 
 
 
-#func zoom_to_slider(zoom_val: float) -> float:
-	#var log_min = log(0.1)
-	#var log_max = log(10.0)
-	#var log_val = log(zoom_val)
-	#return (log_val - log_min) / (log_max - log_min)
-#
-#
-#func slider_to_zoom(slider_val: float) -> float:
-	#var log_min = log(0.1)
-	#var log_max = log(10.0)
-	#var log_val = lerp(log_min, log_max, slider_val)
-	#return exp(log_val)
-
-
 func step_to_zoom(step: int) -> float:
 	return ZOOM_MIN * pow(ZOOM_FACTOR, step)
 
@@ -106,7 +92,7 @@ func zoom_to_step(zoom: float) -> int:
 
 func set_slider_container(value:ZoomSliderContainer) -> void:
 	_slider = value
-	print("_slider = ", _slider)
+	# print("_slider = ", _slider)
 
 	_slider.slider.min_value = 0
 	_slider.slider.max_value = ZOOM_STEPS
@@ -114,7 +100,6 @@ func set_slider_container(value:ZoomSliderContainer) -> void:
 
 	_slider.slider_changed.connect(_on_slider_changed)
 	_slider.autofit_pressed.connect(_on_autofit_pressed)
-	# set_slider_value(_curve._last_slider_value)
 
 
 func _on_autofit_pressed() -> void:
@@ -125,9 +110,7 @@ func _on_autofit_pressed() -> void:
 
 
 func _on_slider_changed(value:float) -> void:
-	print("slider changed to: ", value)
-	# _curve._last_slider_value = value
-	# _update_zoom_from_slider(value)
+	# print("slider changed to: ", value)
 	_zoom_step = int(value)
 	_apply_zoom_from_step()
 
@@ -143,22 +126,10 @@ func _apply_zoom_from_step():
 
 
 func set_slider_value(value:float) -> void:
-	print("set slider value: ", value)
-	print("checking if slider exists... ", _slider)
-	print("checking if slider exists... ", _slider.slider)
-	# Update slider value from resource memory
-	# _slider.slider.value = value
-	## TODO: Update zoom based on slider value.
-	# _update_zoom_from_slider(value)
+	# print("set slider value: ", value)
+	# print("checking if slider exists... ", _slider)
+	# print("checking if slider exists... ", _slider.slider)
 	_on_slider_changed(value)
-
-
-#func _update_zoom_from_slider(value:float) -> void:
-	#var zoom := slider_to_zoom(value)
-	#_zoom_x = zoom
-	#_zoom_y = zoom
-	#queue_redraw()
-	#zoom_changed.emit(Vector2(_zoom_y, _zoom_y))
 
 
 
@@ -185,13 +156,6 @@ func _ready() -> void:
 		_curve.range_changed.connect(_on_curve_changed)
 		_curve.changed.connect(_on_curve_changed)
 
-	#if _slider == null:
-		#_slider = ZOOM_SLIDER_CONTAINER.instantiate()
-		#_slider.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-		#_slider.size_flags_vertical = Control.SIZE_SHRINK_END
-		#_slider.slider_changed.connect(_on_slider_changed)
-		#add_child(_slider)
-
 
 func _on_curve_changed() -> void:
 	queue_redraw()
@@ -204,9 +168,8 @@ func set_curve(bacon_curve: BaconCurve):
 		if _curve != null:
 			_curve.changed.connect(_on_curve_changed)
 		queue_redraw()
-	print("_curve = ", _curve)
-	print("_curve._last_slider_value = ", _curve._last_slider_value)
-	# set_slider_value(_curve._last_slider_value)
+	# print("_curve = ", _curve)
+	# print("_curve._last_slider_value = ", _curve._last_slider_value)
 
 
 func get_curve() -> BaconCurve:
