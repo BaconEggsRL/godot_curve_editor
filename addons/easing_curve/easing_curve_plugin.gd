@@ -618,6 +618,7 @@ func handle_bacon_curve_editor(object) -> void:
 		if object._last_pan:
 			bacon_curve_editor.set_pan(object._last_pan)
 
+		bacon_curve_editor.slider_changed.connect(object._on_curve_editor_slider_value_changed)
 		bacon_curve_editor.zoom_changed.connect(object._on_curve_editor_zoom_changed)
 		bacon_curve_editor.pan_changed.connect(object._on_curve_editor_pan_changed)
 		bacon_curve_editor.point_changed.connect(_on_curve_editor_point_changed)
@@ -634,8 +635,10 @@ func handle_bacon_curve_editor(object) -> void:
 		# Add zoom slider
 		var zoom_slider_container := ZOOM_SLIDER_CONTAINER.instantiate()
 		zoom_slider_container.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-
 		curve_section.add_child(zoom_slider_container)
+		bacon_curve_editor._slider = zoom_slider_container
+		if object._last_slider_value:
+			bacon_curve_editor.set_slider_value(object._last_slider_value)
 
 		########################################
 		# Add all controls

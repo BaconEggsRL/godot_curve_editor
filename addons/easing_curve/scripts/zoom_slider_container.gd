@@ -2,8 +2,12 @@
 class_name ZoomSliderContainer
 extends Control
 
-@onready var slider: HSlider = $HBoxContainer/slider
-@onready var autofit_btn: Button = $HBoxContainer/autofit_btn
+signal slider_changed
+
+@export var slider:HSlider
+@export var autofit_btn:Button
+
+const DEFAULT_SLIDER_VALUE = 0.5
 
 
 func _ready():
@@ -12,11 +16,17 @@ func _ready():
 	# slider.mouse_entered.connect(_on_slider_hover)
 	# slider.mouse_exited.connect(_on_slider_exit)
 	autofit_btn.pressed.connect(_on_autofit_btn_pressed)
+	slider.value_changed.connect(_on_slider_value_changed)
+
+
+
+func _on_slider_value_changed(value:float) -> void:
+	slider_changed.emit(value)
 
 
 func _on_autofit_btn_pressed() -> void:
 	# print("fit")
-	slider.value = 0.5
+	slider.value = DEFAULT_SLIDER_VALUE
 
 
 func _on_slider_gui_input(event: InputEvent) -> void:

@@ -2,7 +2,13 @@
 class_name BaconCurveEditor
 extends Control
 
+
+const ZOOM_SLIDER_CONTAINER = preload("uid://r1ymwr6nae")
+
+
 signal point_changed
+
+signal slider_changed
 signal zoom_changed
 signal pan_changed
 
@@ -17,8 +23,11 @@ var pan_offset := Vector2.ZERO
 var is_panning := false
 var last_mouse_pos := Vector2.ZERO
 
+var slider_value := 0.0: set = set_slider_value
+
 
 var _curve: BaconCurve
+var _slider: ZoomSliderContainer: set = set_slider_container
 
 const ASPECT_RATIO: float = 6. / 13.
 const MIN_X: float = 0.0
@@ -67,6 +76,27 @@ var _editor_scale: float = 1.0
 
 
 
+func set_slider_container(value:ZoomSliderContainer) -> void:
+	_slider = value
+	print("_slider = ", _slider)
+	_slider.slider_changed.connect(_on_slider_changed)
+	# set_slider_value(_curve._last_slider_value)
+
+func _on_slider_changed(value:float) -> void:
+	print("slider changed to: ", value)
+	_curve._last_slider_value = value
+
+func set_slider_value(value:float) -> void:
+	print("set slider value: ", value)
+	print("checking if slider exists... ", _slider)
+	print("checking if slider exists... ", _slider.slider)
+	_slider.slider.value = value
+	## TODO: Update slider value
+	## TODO: Update zoom based on slider value.
+
+
+
+
 func set_pan(pan:Vector2) -> void:
 	pan_offset = pan
 
@@ -88,6 +118,13 @@ func _ready() -> void:
 		_curve.range_changed.connect(_on_curve_changed)
 		_curve.changed.connect(_on_curve_changed)
 
+	#if _slider == null:
+		#_slider = ZOOM_SLIDER_CONTAINER.instantiate()
+		#_slider.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		#_slider.size_flags_vertical = Control.SIZE_SHRINK_END
+		#_slider.slider_changed.connect(_on_slider_changed)
+		#add_child(_slider)
+
 
 func _on_curve_changed() -> void:
 	queue_redraw()
@@ -100,6 +137,10 @@ func set_curve(bacon_curve: BaconCurve):
 		if _curve != null:
 			_curve.changed.connect(_on_curve_changed)
 		queue_redraw()
+	print("_curve = ", _curve)
+	print("_curve._last_slider_value = ", _curve._last_slider_value)
+	# set_slider_value(_curve._last_slider_value)
+
 
 func get_curve() -> BaconCurve:
 	return _curve

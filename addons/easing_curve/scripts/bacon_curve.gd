@@ -4,9 +4,13 @@ class_name BaconCurve
 extends Resource
 
 
-
+var _last_slider_value:float = ZoomSliderContainer.DEFAULT_SLIDER_VALUE
 var _last_zoom := Vector2(1,1)
 var _last_pan := Vector2.ZERO
+
+func _on_curve_editor_slider_value_changed(slider_value:float) -> void:
+	_last_slider_value = slider_value
+	print("_curve._last_slider_value = ", slider_value)
 
 func _on_curve_editor_zoom_changed(zoom:Vector2) -> void:
 	_last_zoom = zoom

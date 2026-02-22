@@ -36,7 +36,7 @@ corner_radius_bottom_right = 2
 corner_radius_bottom_left = 2
 corner_detail = 12
 
-[node name="zoom_slider_container" type="Control" unique_id=1822114991]
+[node name="zoom_slider_container" type="Control" unique_id=1822114991 node_paths=PackedStringArray("slider", "autofit_btn")]
 custom_minimum_size = Vector2(0, 32)
 layout_mode = 3
 anchors_preset = 15
@@ -46,6 +46,8 @@ grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
 script = ExtResource("1_58cbu")
+slider = NodePath("HBoxContainer/slider")
+autofit_btn = NodePath("HBoxContainer/autofit_btn")
 
 [node name="HBoxContainer" type="HBoxContainer" parent="." unique_id=1043790673]
 layout_mode = 1
