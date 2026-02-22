@@ -76,6 +76,22 @@ var _editor_scale: float = 1.0
 
 
 
+func zoom_to_slider(zoom_val: float) -> float:
+	var log_min = log(0.1)
+	var log_max = log(10.0)
+	var log_val = log(zoom_val)
+	return (log_val - log_min) / (log_max - log_min)
+
+
+func slider_to_zoom(slider_val: float) -> float:
+	var log_min = log(0.1)
+	var log_max = log(10.0)
+	var log_val = lerp(log_min, log_max, slider_val)
+	return exp(log_val)
+
+
+
+
 func set_slider_container(value:ZoomSliderContainer) -> void:
 	_slider = value
 	print("_slider = ", _slider)
@@ -85,14 +101,24 @@ func set_slider_container(value:ZoomSliderContainer) -> void:
 func _on_slider_changed(value:float) -> void:
 	print("slider changed to: ", value)
 	_curve._last_slider_value = value
+	_update_zoom_from_slider(value)
 
 func set_slider_value(value:float) -> void:
 	print("set slider value: ", value)
 	print("checking if slider exists... ", _slider)
 	print("checking if slider exists... ", _slider.slider)
+	# Update slider value from resource memory
 	_slider.slider.value = value
-	## TODO: Update slider value
 	## TODO: Update zoom based on slider value.
+	_update_zoom_from_slider(value)
+
+func _update_zoom_from_slider(value:float) -> void:
+	var zoom := slider_to_zoom(value)
+	_zoom_x = zoom
+	_zoom_y = zoom
+	queue_redraw()
+	zoom_changed.emit(Vector2(_zoom_y, _zoom_y))
+
 
 
 

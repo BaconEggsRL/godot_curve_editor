@@ -637,8 +637,7 @@ func handle_bacon_curve_editor(object) -> void:
 		zoom_slider_container.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		curve_section.add_child(zoom_slider_container)
 		bacon_curve_editor._slider = zoom_slider_container
-		if object._last_slider_value:
-			bacon_curve_editor.set_slider_value(object._last_slider_value)
+		bacon_curve_editor.set_slider_value(object._last_slider_value)
 
 		########################################
 		# Add all controls
